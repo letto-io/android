@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.ActPresentation">
+
+    <include android:id="@+id/tb_presentation"
+        layout="@layout/toolbar_tab" />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_presentation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_below="@+id/tb_presentation"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        app:tabGravity="fill"
+        />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_presentation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tab_presentation" />
+
+    <RelativeLayout
+        android:id="@+id/rl_fragment_container"
+        android:layout_below="@+id/tab_presentation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_plus_white"
+            android:visibility="invisible"
+            />
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</RelativeLayout>

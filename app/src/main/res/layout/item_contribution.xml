@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:paddingBottom="20dp"
+    android:paddingTop="20dp">
+
+    <TextView
+        android:id="@+id/tv_person_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:text="[personName]"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_createdat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingRight="16dp"
+        android:text="[yyyy-mm-yy 00:00:00]"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_person_name"
+        android:layout_toLeftOf="@+id/iv_understand"
+        android:layout_toStartOf="@+id/iv_understand"
+        android:paddingLeft="16dp"
+        android:gravity="fill_vertical"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:text="[text of the contribution] uahsuhsuahsuahushaushuashuahsuahhaushuashaushuash"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/iv_understand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tv_createdat"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_check" />
+
+</RelativeLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Here the lines which define the color of text when either selected, focused or pressed are as following -->
+    <item android:state_selected="true" android:color="@android:color/white" />
+    <item android:state_focused="true" android:color="@android:color/white" />
+    <item android:state_pressed="true" android:color="@android:color/white" />
+
+    <!-- And the line below defines the default color for the text on tabs. -->
+    <item android:color="#B2DFDB" />
+</selector>

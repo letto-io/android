@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
+
+    <ImageView
+        android:id="@+id/iv_participant_online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_account_check"
+        android:paddingTop="8dp"
+        android:paddingLeft="16dp"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:textColor="@color/colorPrimaryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Robson Luiz Monteiro"
+        android:id="@+id/tv_person_name"
+        android:textSize="14sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="54dp"
+        android:paddingRight="16dp"/>
+
+</RelativeLayout>

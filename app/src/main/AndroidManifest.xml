@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="br.com.sienaidea.oddin">
+
+    <!-- NORMALS PERMISSIONS -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- DANGEROUS PERMISSIONS -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_oddin"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value="br.com.sienaidea.miragemobile.view.ActSearchable" />
+
+        <provider
+            android:name="br.com.sienaidea.oddin.provider.SearchableProvider"
+            android:authorities="br.com.sienaidea.oddin.provider.SearchableProvider" />
+
+        <activity
+            android:name=".view.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActForgotPassword"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActPresentation"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActDiscipline"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActDoubts"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActNewDoubt"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActNewPresentation"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActSearchable"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|adjustNothing">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActDisciplineDetails"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActPresentationDetails"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActParticipants"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActDoubtDetails"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.ActNewContribution"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="br.com.sienaidea.oddin.view.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

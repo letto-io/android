@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp">
+
+    <TextView
+        android:id="@+id/tv_material_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/iv_understand"
+        android:layout_toStartOf="@+id/iv_understand"
+        android:drawableLeft="@drawable/ic_file_document_box"
+        android:drawablePadding="8dp"
+        android:gravity="fill_vertical"
+        android:lines="1"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="Materialakhdkdhsakdshdkashdkadhakhdkahdkahdakdhakdhakakdkad.pdf"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="14sp"
+        />
+
+    <ImageView
+        android:id="@+id/iv_understand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_check" />
+
+</RelativeLayout>

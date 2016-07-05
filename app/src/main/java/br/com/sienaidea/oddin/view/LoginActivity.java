@@ -2,6 +2,8 @@ package br.com.sienaidea.oddin.view;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -18,11 +20,13 @@ import com.loopj.android.http.PersistentCookieStore;
 import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
+import br.com.sienaidea.oddin.model.User;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.entity.StringEntity;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     //URL request
     private static final String URL_LOGIN = "controller/login";
@@ -33,16 +37,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mForgotPasswordTextView;
     private Button mSignInButton;
 
+    private TextInputLayout mTextInputLayoutEmail;
+    private TextInputLayout mTextInputLayoutPassword;
+
+    private View mRootLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_login);
+        setContentView(R.layout.activity_login);
 
-        if(!getCookie().equals("[]")){
+        if (!getCookie().equals("[]")) {
             startActivity(new Intent(LoginActivity.this, ActDiscipline.class));
         }
 
         // Set up the login form.
+        mRootLayout = findViewById(R.id.root_layout);
+
         mEmailEditText = (EditText) findViewById(R.id.input_email);
         mPasswordEditText = (EditText) findViewById(R.id.input_password);
 
@@ -51,33 +62,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mSignInButton = (Button) findViewById(R.id.btn_login);
         mSignInButton.setOnClickListener(this);
+
+        mTextInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
+        mTextInputLayoutEmail.setErrorEnabled(true);
+
+        mTextInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
+        mTextInputLayoutPassword.setErrorEnabled(true);
     }
 
     public void login() {
 
         if (!validate()) {
-            onLoginFailed();
             return;
         }
 
         DetectConnection detectConnection = new DetectConnection(this);
-        if (detectConnection.existeConexao()) {
+        if (detectConnection.existConnection()) {
 
-            final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                    R.style.AppTheme_Dark_Dialog);
+            final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
             progressDialog.setMessage("Autenticando...");
             progressDialog.show();
 
-            String email = mEmailEditText.getText().toString();
+            final String email = mEmailEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
 
-            // TODO: Implement your own authentication logic here.
             HttpEntity entity = null;
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("email", email);
-                jsonObject.put("password", password);
+                jsonObject.put(User.EMAIL, email);
+                jsonObject.put(User.PASSWORD, password);
 
                 entity = new StringEntity(jsonObject.toString());
             } catch (Exception e) {
@@ -88,46 +102,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     Intent intent = new Intent(LoginActivity.this, ActDiscipline.class);
+                    intent.putExtra(User.EMAIL, email);
                     startActivity(intent);
                     progressDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
                     BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle);
-                    builder.setPositiveButton("OK", null);
-
+                    onLoginFailed(statusCode);
                     progressDialog.dismiss();
-
-                    switch (statusCode) {
-                        case 502:
-                            builder.setTitle("Informação");
-                            builder.setMessage("Falha no servidor");
-                            builder.show();
-                            break;
-                        case 401:
-                            builder.setTitle("Informação");
-                            builder.setMessage("Senha incorreta");
-                            builder.show();
-                            break;
-                        case 404:
-                            builder.setTitle("Informação");
-                            builder.setMessage("Email incorreto");
-                            builder.show();
-                    }
                 }
             });
 
         } else {
-            AlertDialog.Builder builder =
-                    new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle);
-            builder.setTitle("Ops...");
-            builder.setMessage("Verifique sua conexão");
-            builder.setPositiveButton("OK", null);
-            builder.show();
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -136,9 +125,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    private void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-        //_loginButton.setEnabled(true);
+    private void onLoginFailed(int statusCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle);
+        builder.setPositiveButton("OK", null);
+
+        switch (statusCode) {
+            case 502:
+                builder.setTitle("Informação");
+                builder.setMessage("Falha no servidor");
+                builder.show();
+                break;
+            case 401:
+                builder.setTitle("Informação");
+                builder.setMessage("Email e/ou Senha incorretos");
+                builder.show();
+                break;
+            case 404:
+                builder.setTitle("Informação");
+                builder.setMessage("Email e/ou Senha incorretos");
+                builder.show();
+        }
     }
 
     private boolean validate() {
@@ -148,17 +154,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = mPasswordEditText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mEmailEditText.setError("entre com um email válido");
+            mTextInputLayoutEmail.setError("entre com um email válido");
             valid = false;
         } else {
-            mEmailEditText.setError(null);
+            mTextInputLayoutEmail.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
-            mPasswordEditText.setError("entre 3 and 10 caracteres");
+            mTextInputLayoutPassword.setError("entre 3 e 10 caracteres");
             valid = false;
         } else {
-            mPasswordEditText.setError(null);
+            mTextInputLayoutPassword.setError(null);
         }
 
         return valid;
@@ -174,7 +180,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private String getCookie(){
+    private String getCookie() {
         return new PersistentCookieStore(getApplicationContext()).getCookies().toString();
     }
 }

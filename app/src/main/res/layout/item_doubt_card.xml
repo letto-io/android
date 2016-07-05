@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="4dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="3dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="false">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        >
+
+        <TextView
+            android:id="@+id/tv_person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:singleLine="true"
+            android:text="[Person Name]"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_person_name"
+            android:maxLines="3"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="[Content doubt...]"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_comment"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_comment_outline"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tv_text"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <!--
+        android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="36dp"
+        -->
+
+        <ImageView
+            android:id="@+id/iv_closed"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_lock_outline"
+            android:visibility="gone"
+            android:layout_below="@+id/tv_text"
+            android:layout_toLeftOf="@+id/iv_comment"
+            android:layout_toStartOf="@+id/iv_comment" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/tv_person_name"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:text="[00:00:00]"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="10sp" />
+
+        <View
+            android:id="@+id/vw_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.4dp"
+            android:layout_below="@+id/iv_comment"
+            android:background="@color/colorDividerColor" />
+
+        <TextView
+            android:id="@+id/iv_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/vw_divider"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_chevron_up"
+            android:text="[00]"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp" />
+
+        <!--TextView
+            android:id="@+id/iv_understand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/vw_divider"
+            android:layout_toEndOf="@+id/iv_like"
+            android:layout_toRightOf="@+id/iv_like"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_checkbox_blank_outline"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:text="ENTENDI"
+            android:gravity="center"
+            android:textSize="14sp" /-->
+
+        <ImageView
+            android:id="@+id/iv_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/vw_divider"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_lock_open_outline"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

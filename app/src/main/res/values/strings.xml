@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Oddin</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Senha</string>
+    <string name="action_sign_in">Entrar</string>
+    <string name="action_logout">Sair</string>
+
+    <!-- Strings related to Dialog -->
+    <string name="dialog_cancel">CANCELAR</string>
+    <string name="dialog_confirm">CONFIRMAR</string>
+    <string name="dialog_close_presentation">Fechar apresentação?</string>
+    <string name="dialog_close_doubt">Fechar dúvida?</string>
+    <string name="dialog_open_doubt">Abrir dúvida?</string>
+
+    <!-- Strings related to Snakebar -->
+    <string name="snake_no_connection">Sem conexão</string>
+    <string name="snake_try_again">TENTAR NOVAMENTE</string>
+
+    <!-- Strings related to Tabs -->
+    <string name="tab_presentation_open">ABERTAS</string>
+    <string name="tab_presentation_closed">FECHADAS</string>
+
+    <!-- Strings related to validation -->
+    <string name="error_invalid_email">Endereço de email inválido</string>
+    <string name="error_invalid_password">Senha muito curta</string>
+    <string name="error_field_required">Campo obrigatório</string>
+    <string name="error_field_max_length">Limite de caracteres ultrapassados</string>
+    <string name="error_session_expired">Sua sessão expirou, faça login para continuar</string>
+    <string name="error_could_not_complete_your_request">Não foi possível completar sua requisição</string>
+
+    <!-- Strings related to adapters -->
+    <string name="adapter_class">Turma </string>
+    <string name="adapter_start_date">Início: </string>
+    <string name="adapter_like"> curtida</string>
+    <string name="adapter_likes"> curtidas</string>
+
+    <!-- Strings related to Toasts -->
+    <string name="toast_new_presentation_added">Nova apresentação adicionada</string>
+    <string name="toast_fails_to_start">Falha ao iniciar</string>
+
+    <string name="label_forgot_password">Esqueceu a Senha?</string>
+    <string name="search">Pesquisar</string>
+    <string name="search_hint">Pesquisar</string>
+    <string name="action_attachment">Anexos</string>
+    <string name="action_participants">Participantes</string>
+    <string name="navigation_drawer_open">drawerOpen</string>
+    <string name="navigation_drawer_close">drawer_close</string>
+    <string name="no_data_available">Vazio</string>
+    <string name="no_data_available_searchable">Nenhum dado encontrado.</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="action_delete">Excluir histórico</string>
+    <string name="action_remove_sugestions">Deletar buscas recentes</string>
+    <string name="dialog_send">ENVIAR</string>
+    <string name="content_description_login_image">Logo Oddin</string>
+    <string name="authenticating">Autenticando...</string>
+</resources>
