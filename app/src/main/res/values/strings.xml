@@ -29,6 +29,7 @@
     <string name="error_field_max_length">Limite de caracteres ultrapassados</string>
     <string name="error_session_expired">Sua sessão expirou, faça login para continuar</string>
     <string name="error_could_not_complete_your_request">Não foi possível completar sua requisição</string>
+    <string name="unauthorized">Email e/ou senha incorretos</string>
 
     <!-- Strings related to adapters -->
     <string name="adapter_class">Turma </string>
@@ -51,8 +52,10 @@
     <string name="no_data_available_searchable">Nenhum dado encontrado.</string>
     <string name="internal_storage">Internal Storage</string>
     <string name="action_delete">Excluir histórico</string>
-    <string name="action_remove_sugestions">Deletar buscas recentes</string>
+    <string name="action_remove_sugestions">Limpar buscas recentes</string>
     <string name="dialog_send">ENVIAR</string>
     <string name="content_description_login_image">Logo Oddin</string>
     <string name="authenticating">Autenticando...</string>
+    <string name="error_server">Falha no servidor</string>
+    <string name="dialog_ok">OK</string>
 </resources>

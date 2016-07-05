@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
@@ -71,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void login() {
-
         if (!validate()) {
             return;
         }
@@ -81,17 +79,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Autenticando...");
+            progressDialog.setMessage(getResources().getString(R.string.authenticating));
             progressDialog.show();
-
-            final String email = mEmailEditText.getText().toString();
-            String password = mPasswordEditText.getText().toString();
 
             HttpEntity entity = null;
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put(User.EMAIL, email);
-                jsonObject.put(User.PASSWORD, password);
+                jsonObject.put(User.EMAIL, mEmailEditText.getText().toString());
+                jsonObject.put(User.PASSWORD, mPasswordEditText.getText().toString());
 
                 entity = new StringEntity(jsonObject.toString());
             } catch (Exception e) {
@@ -101,9 +96,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             BossClient.postLogin(getApplicationContext(), URL_LOGIN, entity, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Intent intent = new Intent(LoginActivity.this, ActDiscipline.class);
-                    intent.putExtra(User.EMAIL, email);
-                    startActivity(intent);
+                    onLoginSuccess();
                     progressDialog.dismiss();
                 }
 
@@ -120,29 +113,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void onLoginSuccess() {
-        //_loginButton.setEnabled(true);
+    private void onLoginSuccess() {
+        Intent intent = new Intent(LoginActivity.this, ActDiscipline.class);
+        intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
+        startActivity(intent);
         finish();
     }
 
     private void onLoginFailed(int statusCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle);
-        builder.setPositiveButton("OK", null);
+        builder.setPositiveButton(R.string.dialog_ok, null);
 
         switch (statusCode) {
             case 502:
-                builder.setTitle("Informação");
-                builder.setMessage("Falha no servidor");
+                builder.setMessage(R.string.error_server);
                 builder.show();
                 break;
             case 401:
-                builder.setTitle("Informação");
-                builder.setMessage("Email e/ou Senha incorretos");
+                builder.setMessage(R.string.unauthorized);
                 builder.show();
                 break;
             case 404:
-                builder.setTitle("Informação");
-                builder.setMessage("Email e/ou Senha incorretos");
+                builder.setMessage(R.string.error_server);
                 builder.show();
         }
     }
@@ -154,17 +146,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = mPasswordEditText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mTextInputLayoutEmail.setError("entre com um email válido");
+            mTextInputLayoutEmail.setError(getResources().getString(R.string.error_invalid_email));
             valid = false;
         } else {
             mTextInputLayoutEmail.setError(null);
-        }
 
-        if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
-            mTextInputLayoutPassword.setError("entre 3 e 10 caracteres");
-            valid = false;
-        } else {
-            mTextInputLayoutPassword.setError(null);
+            if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
+                mTextInputLayoutPassword.setError(getResources().getString(R.string.error_invalid_email));
+                valid = false;
+            } else {
+                mTextInputLayoutPassword.setError(null);
+            }
         }
 
         return valid;
@@ -174,8 +166,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         if (v == mSignInButton) {
             login();
-        }
-        if (v == mForgotPasswordTextView) {
+        } else if (v == mForgotPasswordTextView) {
             startActivity(new Intent(LoginActivity.this, ActForgotPassword.class));
         }
     }
