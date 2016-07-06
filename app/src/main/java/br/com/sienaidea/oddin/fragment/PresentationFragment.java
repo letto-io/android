@@ -75,20 +75,23 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0){
-                    ((ActPresentation) getActivity()).fabHide();
-                }else {
-                    ((ActPresentation) getActivity()).fabShow();
-                }
-            }
-        });
-
         mListPresentation = getArguments().getParcelableArrayList(Presentation.NAME);
         mDiscipline = getArguments().getParcelable(Discipline.NAME);
+
+        if (mDiscipline != null)
+            if (mDiscipline.getProfile() == 2) {
+                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        if (dy > 0) {
+                            ((ActPresentation) getActivity()).fabHide();
+                        } else {
+                            ((ActPresentation) getActivity()).fabShow();
+                        }
+                    }
+                });
+            }
 
         if (mListPresentation != null) {
             mAdapterPresentation = new AdapterPresentation(mContext, mListPresentation);

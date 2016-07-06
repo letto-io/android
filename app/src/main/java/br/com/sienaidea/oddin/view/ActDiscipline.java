@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -106,6 +107,7 @@ public class ActDiscipline extends AppCompatActivity implements NavigationView.O
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
                         JSONArray lectures = response.getJSONArray("lectures");
+                        Log.d("DISCIPLINES", lectures.toString());
                         mListDiscipline.clear();
                         for (int i = 0; i < lectures.length(); i++) {
 

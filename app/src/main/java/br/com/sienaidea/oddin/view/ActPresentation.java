@@ -91,13 +91,13 @@ public class ActPresentation extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_presentation);
         mToolbar.setTitle(mDiscipline.getNome());
-        mToolbar.setSubtitle("Apresentações");
+        mToolbar.setSubtitle("Aulas");
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab_presentation);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

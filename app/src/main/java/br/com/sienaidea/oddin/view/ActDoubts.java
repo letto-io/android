@@ -127,9 +127,10 @@ public class ActDoubts extends AppCompatActivity {
         });
 
         if (!(mDiscipline.getProfile() == Discipline.TEACHER)) {
-            if (!(mPresentation.getStatus() == Presentation.FINISHED)) {
-                fab.setVisibility(View.VISIBLE);
-            }
+            fab.setVisibility(View.VISIBLE);
+//            if (!(mPresentation.getStatus() == Presentation.FINISHED)) {
+//                fab.setVisibility(View.VISIBLE);
+//            }
         }
     }
 
