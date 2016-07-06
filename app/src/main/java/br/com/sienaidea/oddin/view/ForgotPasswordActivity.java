@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -47,7 +48,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         mRootLayout = findViewById(R.id.root_layout);
         mTextInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_forgot_password);
-        mEmailEditText = (EditText) findViewById(R.id.et_email);
+        mEmailEditText = (EditText) findViewById(R.id.input_email);
     }
 
     private void attempEnviar() {
@@ -68,15 +69,22 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            final ProgressDialog progressDialog = new ProgressDialog(ForgotPasswordActivity.this, R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage(getResources().getString(R.string.sending));
+            progressDialog.show();
+
             BossClient.post(getApplicationContext(), URL_RECOVER_PASSWORD, entity, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     onRecoverPasswordSuccess();
+                    progressDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     onRecoverPasswordFailure();
+                    progressDialog.dismiss();
                 }
             });
         } else {
@@ -99,14 +107,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         return valid;
     }
 
-    private void onRecoverPasswordSuccess(){
+    private void onRecoverPasswordSuccess() {
         Toast.makeText(getApplicationContext(), R.string.email_sent, Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 
-    private void onRecoverPasswordFailure(){
+    private void onRecoverPasswordFailure() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage(R.string.error_server);
         builder.setPositiveButton(R.string.dialog_ok, null);

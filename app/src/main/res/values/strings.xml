@@ -55,9 +55,10 @@
     <string name="action_remove_sugestions">Limpar buscas recentes</string>
     <string name="dialog_send">ENVIAR</string>
     <string name="content_description_login_image">Logo Oddin</string>
-    <string name="authenticating">Autenticando...</string>
+    <string name="authenticating">Autenticando</string>
     <string name="error_server">Falha no servidor</string>
     <string name="dialog_ok">OK</string>
     <string name="recover_password">Recuperar Senha</string>
-    <string name="email_sent">Email enviado...</string>
+    <string name="email_sent">Email enviado</string>
+    <string name="sending">Enviando</string>
 </resources>
