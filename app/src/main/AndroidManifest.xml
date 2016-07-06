@@ -29,7 +29,7 @@
             android:name=".view.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActForgotPassword"
+            android:name=".view.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="br.com.sienaidea.oddin.view.ActPresentation"

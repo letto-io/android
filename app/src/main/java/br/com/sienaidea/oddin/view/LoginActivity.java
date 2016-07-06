@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-                    onLoginFailed(statusCode);
+                    onLoginFailure(statusCode);
                     progressDialog.dismiss();
                 }
             });
@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    private void onLoginFailed(int statusCode) {
+    private void onLoginFailure(int statusCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setPositiveButton(R.string.dialog_ok, null);
 
@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (v == mSignInButton) {
             login();
         } else if (v == mForgotPasswordTextView) {
-            startActivity(new Intent(LoginActivity.this, ActForgotPassword.class));
+            startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         }
     }
 

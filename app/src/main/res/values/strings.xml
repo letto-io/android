@@ -23,7 +23,7 @@
     <string name="tab_presentation_closed">FECHADAS</string>
 
     <!-- Strings related to validation -->
-    <string name="error_invalid_email">Endereço de email inválido</string>
+    <string name="error_invalid_email">Informe um endereço de email válido</string>
     <string name="error_invalid_password">Senha muito curta</string>
     <string name="error_field_required">Campo obrigatório</string>
     <string name="error_field_max_length">Limite de caracteres ultrapassados</string>
@@ -58,4 +58,6 @@
     <string name="authenticating">Autenticando...</string>
     <string name="error_server">Falha no servidor</string>
     <string name="dialog_ok">OK</string>
+    <string name="recover_password">Recuperar Senha</string>
+    <string name="email_sent">Email enviado...</string>
 </resources>
