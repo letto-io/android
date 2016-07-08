@@ -194,12 +194,7 @@ public class ActDiscipline extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        /*if (id == R.id.settings) {
-            Toast.makeText(getApplicationContext(), "Configurações", Toast.LENGTH_LONG).show();
-        } else*/
-        if (id == R.id.action_logout) {
+        if (item.getItemId() == R.id.action_logout) {
             BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
             startActivity(new Intent(ActDiscipline.this, LoginActivity.class));
             finish();
