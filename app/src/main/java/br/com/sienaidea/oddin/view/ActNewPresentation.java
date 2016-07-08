@@ -2,9 +2,11 @@ package br.com.sienaidea.oddin.view;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,21 +26,23 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ActNewPresentation extends AppCompatActivity {
-    private EditText mEtTheme;
+    private EditText mEditTextTheme;
     private Presentation mPresentation;
     private Discipline mDiscipline;
     private View mRootLayout;
+    private TextInputLayout mTextInputLayoutPresentation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_act_new_presentation);
 
-        mEtTheme = (EditText) findViewById(R.id.et_theme);
+        mTextInputLayoutPresentation = (TextInputLayout) findViewById(R.id.til_presentation);
+        mEditTextTheme = (EditText) findViewById(R.id.input_theme);
         mRootLayout = findViewById(R.id.root);
 
         if (savedInstanceState != null) {
-            mEtTheme.setText(savedInstanceState.getString("mEtTheme"));
+            mEditTextTheme.setText(savedInstanceState.getString("mEtTheme"));
             mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
@@ -59,8 +63,11 @@ public class ActNewPresentation extends AppCompatActivity {
     }
 
     private void newPresentation() {
-        DetectConnection mDetectConnection = new DetectConnection(getApplicationContext());
+        if (!validate()){
+            return;
+        }
 
+        DetectConnection mDetectConnection = new DetectConnection(getApplicationContext());
         if (mDetectConnection.existConnection()) {
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
@@ -69,7 +76,7 @@ public class ActNewPresentation extends AppCompatActivity {
                     .build();
             HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-            mPresentation = new Presentation(mEtTheme.getText().toString());
+            mPresentation = new Presentation(mEditTextTheme.getText().toString());
 
             Call<Presentation> call = service.postPresentation(CookieUtil.getCookie(getApplicationContext()),
                     String.valueOf(mDiscipline.getInstruction_id()),
@@ -109,6 +116,19 @@ public class ActNewPresentation extends AppCompatActivity {
         }
     }
 
+    private boolean validate() {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(mEditTextTheme.getText().toString())) {
+            mTextInputLayoutPresentation.setError(getResources().getString(R.string.error_field_required));
+            valid = false;
+        } else {
+            mTextInputLayoutPresentation.setError(null);
+        }
+
+        return valid;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_act_new, menu);
@@ -131,7 +151,7 @@ public class ActNewPresentation extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("mEtTheme", mEtTheme.toString());
+        outState.putString("mEtTheme", mEditTextTheme.toString());
         outState.putParcelable(Discipline.NAME, mDiscipline);
         super.onSaveInstanceState(outState);
     }

@@ -22,7 +22,7 @@
         app:counterMaxLength="30">
 
         <EditText
-            android:id="@+id/et_theme"
+            android:id="@+id/input_theme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tema"
