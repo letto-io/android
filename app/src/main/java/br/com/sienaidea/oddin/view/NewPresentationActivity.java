@@ -25,7 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ActNewPresentation extends AppCompatActivity {
+public class NewPresentationActivity extends AppCompatActivity {
     private EditText mEditTextTheme;
     private Presentation mPresentation;
     private Discipline mDiscipline;
@@ -35,7 +35,7 @@ public class ActNewPresentation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_new_presentation);
+        setContentView(R.layout.activity_new_presentation);
 
         mTextInputLayoutPresentation = (TextInputLayout) findViewById(R.id.til_presentation);
         mEditTextTheme = (EditText) findViewById(R.id.input_theme);
@@ -54,7 +54,7 @@ public class ActNewPresentation extends AppCompatActivity {
         }
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_presentation);
-        mToolbar.setTitle("Nova Apresentação");
+        mToolbar.setTitle(R.string.new_presentation);
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {

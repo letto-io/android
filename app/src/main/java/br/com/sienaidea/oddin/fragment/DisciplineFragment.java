@@ -17,8 +17,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.sienaidea.oddin.view.ActDiscipline;
-import br.com.sienaidea.oddin.view.ActPresentation;
+import br.com.sienaidea.oddin.view.DisciplineActivity;
+import br.com.sienaidea.oddin.view.PresentationActivity;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterDiscipline;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
@@ -55,7 +55,7 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
 
-        mList = ((ActDiscipline) getActivity()).getListDiscipline();
+        mList = ((DisciplineActivity) getActivity()).getListDiscipline();
 
         AdapterDiscipline adapter = new AdapterDiscipline(mContext, mList);
         mRecyclerView.setAdapter(adapter);
@@ -65,7 +65,7 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDiscipline) getActivity()).loadListDiscipline();
+                ((DisciplineActivity) getActivity()).loadListDiscipline();
             }
         });
 
@@ -98,7 +98,7 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
     @Override
     public void onClickListener(View view, int position) {
         Discipline discipline = mAdapterDiscipline.getDiscipline(position);
-        Intent intent = new Intent(mContext, ActPresentation.class);
+        Intent intent = new Intent(mContext, PresentationActivity.class);
         intent.putExtra(Discipline.NAME, discipline);
         mContext.startActivity(intent);
     }

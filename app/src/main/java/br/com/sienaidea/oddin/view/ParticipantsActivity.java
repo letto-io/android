@@ -30,7 +30,7 @@ import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import cz.msebera.android.httpclient.Header;
 
-public class ActParticipants extends AppCompatActivity {
+public class ParticipantsActivity extends AppCompatActivity {
     private static String URL_GET_PARTICIPANTS;
     private static String TAB_POSITION = "TAB_POSITION";
 
@@ -51,7 +51,7 @@ public class ActParticipants extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_participants);
+        setContentView(R.layout.activity_participants);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_participants);
         mViewPager = (ViewPager) findViewById(R.id.vp_participants);

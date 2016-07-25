@@ -30,7 +30,7 @@ import br.com.sienaidea.oddin.adapter.AdapterMaterialDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerMaterial;
 import br.com.sienaidea.oddin.model.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
-import br.com.sienaidea.oddin.view.ActDoubtDetails;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerMaterial, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -80,9 +80,9 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0){
-                    ((ActDoubtDetails) getActivity()).fabHide();
+                    ((DoubtDetailsActivity) getActivity()).fabHide();
                 }else {
-                    ((ActDoubtDetails) getActivity()).fabShow();
+                    ((DoubtDetailsActivity) getActivity()).fabShow();
                 }
             }
         });
@@ -100,7 +100,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDoubtDetails) getActivity()).getContentDoubt();
+                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
             }
         });
 
@@ -152,7 +152,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // TODO: chamar metodo understand aqui:
-                    //((ActDoubtDetails) getActivity()).attemptGetMaterialContent(position, material);
+                    //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                     Log.d(TAG, "isUnderstand");
                 }
             });
@@ -169,7 +169,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
                 builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ((ActDoubtDetails) getActivity()).attemptGetMaterialContent(position, material);
+                        ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                     }
                 });
                 builder.show();

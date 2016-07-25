@@ -27,7 +27,7 @@ import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.model.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 
-public class ActSearchable extends AppCompatActivity implements RecyclerViewOnClickListenerHack, View.OnClickListener {
+public class SearchableActivity extends AppCompatActivity implements RecyclerViewOnClickListenerHack, View.OnClickListener {
     private List<Doubt> mListDoubt = new ArrayList<>();
     private List<Doubt> mListAuxDoubt = new ArrayList<>();
     private AdapterDoubt mAdapterDoubt;
@@ -45,12 +45,12 @@ public class ActSearchable extends AppCompatActivity implements RecyclerViewOnCl
 
     private RecyclerView mRecyclerView;
 
-    public static String TAG = ActSearchable.class.getName();
+    public static String TAG = SearchableActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_searchable);
+        setContentView(R.layout.activity_searchable);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
@@ -186,13 +186,13 @@ public class ActSearchable extends AppCompatActivity implements RecyclerViewOnCl
     @Override
     public void onClickListener(View view, int position) {
         if (isDoubt) {
-            Intent intent = new Intent(ActSearchable.this, ActDoubtDetails.class);
+            Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
             intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
             intent.putExtra(Discipline.NAME, mDiscipline);
             intent.putExtra(Presentation.NAME, mPresentation);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(ActSearchable.this, ActDoubts.class);
+            Intent intent = new Intent(SearchableActivity.this, DoubtActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
             Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
             intent.putExtra(Presentation.NAME, presentation);

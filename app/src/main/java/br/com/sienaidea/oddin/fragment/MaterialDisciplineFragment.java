@@ -26,7 +26,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterial;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListener;
 import br.com.sienaidea.oddin.model.Material;
-import br.com.sienaidea.oddin.view.ActDisciplineDetails;
+import br.com.sienaidea.oddin.view.DisciplineDetailsActivity;
 
 public class MaterialDisciplineFragment extends Fragment implements RecyclerViewOnClickListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -81,7 +81,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDisciplineDetails) getActivity()).loadMaterial();
+                ((DisciplineDetailsActivity) getActivity()).loadMaterial();
             }
         });
 
@@ -127,7 +127,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((ActDisciplineDetails) getActivity()).attemptGetMaterialContent(position, material);
+                    ((DisciplineDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                 }
             });
             builder.show();

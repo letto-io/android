@@ -36,7 +36,7 @@ import br.com.sienaidea.oddin.util.DateUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import cz.msebera.android.httpclient.Header;
 
-public class ActDiscipline extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class DisciplineActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String URL_GET_DISCIPLINE = "controller/instruction";
 
     private List<Discipline> mListDiscipline = new ArrayList<>();
@@ -53,7 +53,7 @@ public class ActDiscipline extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_discipline);
+        setContentView(R.layout.activity_discipline);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_discipline);
         mToolbar.setTitle("Disciplinas");
@@ -196,7 +196,7 @@ public class ActDiscipline extends AppCompatActivity implements NavigationView.O
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.action_logout) {
             BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-            startActivity(new Intent(ActDiscipline.this, LoginActivity.class));
+            startActivity(new Intent(DisciplineActivity.this, LoginActivity.class));
             finish();
         }
 

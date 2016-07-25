@@ -57,7 +57,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ActDoubts extends AppCompatActivity {
+public class DoubtActivity extends AppCompatActivity {
     private static String URL_GET_DOUBTS, URL_POST_LIKE, URL_DELETE_LIKE, URL_POST_UNDERSTAND, URL_REMOVE_UNDERSTAND, URL_POST_CHANGE_STATUS;
     private static String TAB_POSITION = "TAB_POSITION";
     static final int NEW_DOUBT_REQUEST = 1;
@@ -81,7 +81,7 @@ public class ActDoubts extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_doubts);
+        setContentView(R.layout.activity_doubt);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_doubts);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -120,7 +120,7 @@ public class ActDoubts extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplication(), ActNewDoubt.class);
+                Intent intent = new Intent(getApplication(), NewDoubtActivity.class);
                 intent.putExtra(Presentation.NAME, mPresentation);
                 startActivityForResult(intent, NEW_DOUBT_REQUEST);
             }
@@ -435,7 +435,7 @@ public class ActDoubts extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.action_attachment) {
-            Intent intent = new Intent(this, ActPresentationDetails.class);
+            Intent intent = new Intent(this, PresentationDetailsActivity.class);
             intent.putExtra(Presentation.NAME, mPresentation);
             intent.putExtra(Discipline.NAME, mDiscipline);
             startActivity(intent);

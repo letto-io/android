@@ -30,8 +30,8 @@ import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.model.Presentation;
-import br.com.sienaidea.oddin.view.ActDoubtDetails;
-import br.com.sienaidea.oddin.view.ActDoubts;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
+import br.com.sienaidea.oddin.view.DoubtActivity;
 
 public class DoubtFragment extends Fragment implements RecyclerViewOnClickListenerHack, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -89,7 +89,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDoubts) getActivity()).getDoubts();
+                ((DoubtActivity) getActivity()).getDoubts();
             }
         });
 
@@ -195,15 +195,15 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         if (option != null) {
             if (option.equals(LIKE) && mDiscipline.getProfile() == 0) {
                 if (mList.get(position).isLike()) {
-                    ((ActDoubts) getActivity()).removeLike(position, doubt);
+                    ((DoubtActivity) getActivity()).removeLike(position, doubt);
                 } else {
-                    ((ActDoubts) getActivity()).like(position, doubt);
+                    ((DoubtActivity) getActivity()).like(position, doubt);
                 }
             } else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
                 if (mList.get(position).isUnderstand()) {
-                    ((ActDoubts) getActivity()).removeUnderstand(position, doubt);
+                    ((DoubtActivity) getActivity()).removeUnderstand(position, doubt);
                 } else {
-                    ((ActDoubts) getActivity()).understand(position, doubt);
+                    ((DoubtActivity) getActivity()).understand(position, doubt);
                 }
             } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
 
@@ -215,7 +215,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                         builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ((ActDoubts) getActivity()).changeStatus(position, doubt, 2);
+                                ((DoubtActivity) getActivity()).changeStatus(position, doubt, 2);
                             }
                         });
                         builder.setMessage(R.string.dialog_close_doubt);
@@ -228,7 +228,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                     builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ((ActDoubts) getActivity()).changeStatus(position, doubt, 0);
+                            ((DoubtActivity) getActivity()).changeStatus(position, doubt, 0);
                         }
                     });
                     builder.setMessage(R.string.dialog_open_doubt);
@@ -236,7 +236,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                 }
             }
         } else {
-            Intent intent = new Intent(mContext, ActDoubtDetails.class);
+            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
             intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
             intent.putExtra(Discipline.NAME, mDiscipline);
             intent.putExtra(Presentation.NAME, mPresentation);

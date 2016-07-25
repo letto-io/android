@@ -61,4 +61,5 @@
     <string name="recover_password">Recuperar Senha</string>
     <string name="email_sent">Email enviado</string>
     <string name="sending">Enviando</string>
+    <string name="new_presentation">Nova Apresentação</string>
 </resources>

@@ -32,22 +32,22 @@
             android:name=".view.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActPresentation"
+            android:name=".view.PresentationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActDiscipline"
+            android:name=".view.DisciplineActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActDoubts"
+            android:name=".view.DoubtActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActNewDoubt"
+            android:name=".view.NewDoubtActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActNewPresentation"
+            android:name=".view.NewPresentationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActSearchable"
+            android:name=".view.SearchableActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustNothing">
@@ -60,19 +60,19 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActDisciplineDetails"
+            android:name=".view.DisciplineDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActPresentationDetails"
+            android:name=".view.PresentationDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActParticipants"
+            android:name=".view.ParticipantsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActDoubtDetails"
+            android:name=".view.DoubtDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.sienaidea.oddin.view.ActNewContribution"
+            android:name=".view.NewContributionActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="br.com.sienaidea.oddin.view.SplashActivity"

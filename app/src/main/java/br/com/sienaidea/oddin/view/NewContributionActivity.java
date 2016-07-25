@@ -33,7 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class ActNewContribution extends AppCompatActivity {
+public class NewContributionActivity extends AppCompatActivity {
     private static String URL_POST_CONTRIBUTION;
     private EditText mEtTextContribution;
     private View mRootLayout;
@@ -43,7 +43,7 @@ public class ActNewContribution extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_new_contribution);
+        setContentView(R.layout.activity_new_contribution);
 
         mEtTextContribution = (EditText) findViewById(R.id.et_text_contribution);
         mRootLayout = findViewById(R.id.root);

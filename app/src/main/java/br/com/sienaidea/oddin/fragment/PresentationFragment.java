@@ -25,8 +25,8 @@ import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Presentation;
-import br.com.sienaidea.oddin.view.ActDoubts;
-import br.com.sienaidea.oddin.view.ActPresentation;
+import br.com.sienaidea.oddin.view.DoubtActivity;
+import br.com.sienaidea.oddin.view.PresentationActivity;
 
 public class PresentationFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -85,9 +85,9 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         if (dy > 0) {
-                            ((ActPresentation) getActivity()).fabHide();
+                            ((PresentationActivity) getActivity()).fabHide();
                         } else {
-                            ((ActPresentation) getActivity()).fabShow();
+                            ((PresentationActivity) getActivity()).fabShow();
                         }
                     }
                 });
@@ -104,7 +104,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActPresentation) getActivity()).getPresentations();
+                ((PresentationActivity) getActivity()).getPresentations();
             }
         });
 
@@ -151,7 +151,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
     public void onClickListener(int position) {
         Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
 
-        Intent intent = new Intent(mContext, ActDoubts.class);
+        Intent intent = new Intent(mContext, DoubtActivity.class);
         intent.putExtra(Presentation.NAME, presentation);
         intent.putExtra(Discipline.NAME, mDiscipline);
         mContext.startActivity(intent);
@@ -168,7 +168,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((ActPresentation) getActivity()).closePresentation(position, presentation);
+                    ((PresentationActivity) getActivity()).closePresentation(position, presentation);
                 }
             });
             builder.setNegativeButton(R.string.dialog_cancel, null);

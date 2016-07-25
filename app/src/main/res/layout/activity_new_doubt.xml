@@ -5,29 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".view.ActNewPresentation"
+    tools:context=".view.NewDoubtActivity"
     android:id="@+id/root">
 
     <include
-        android:id="@+id/tb_new_presentation"
+        android:id="@+id/tb_new_doubt"
         layout="@layout/toolbar" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/til_presentation"
-        android:layout_below="@+id/tb_new_presentation"
+        android:id="@+id/til_doubt"
+        android:layout_below="@+id/tb_new_doubt"
         android:padding="16dp"
         app:counterEnabled="true"
-        app:counterMaxLength="30">
+        app:counterMaxLength="140">
 
         <EditText
-            android:id="@+id/input_theme"
+            android:id="@+id/edt_doubt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tema"
-            android:maxLength="30"/>
+            android:hint="Descreva sua dúvida"
+            android:maxLength="140"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <CheckBox
+        android:id="@+id/chk_anonimous"
+        android:layout_marginLeft="16dp"
+        android:layout_below="@id/til_doubt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Anônimo" />
 
 </RelativeLayout>

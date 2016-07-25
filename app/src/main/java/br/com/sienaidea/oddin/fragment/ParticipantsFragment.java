@@ -18,7 +18,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterParticipant;
 import br.com.sienaidea.oddin.model.Participant;
-import br.com.sienaidea.oddin.view.ActParticipants;
+import br.com.sienaidea.oddin.view.ParticipantsActivity;
 
 public class ParticipantsFragment extends Fragment {
     public static String TAG = ParticipantsFragment.class.getName();
@@ -79,7 +79,7 @@ public class ParticipantsFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActParticipants) getActivity()).getParticipants();
+                ((ParticipantsActivity) getActivity()).getParticipants();
             }
         });
 

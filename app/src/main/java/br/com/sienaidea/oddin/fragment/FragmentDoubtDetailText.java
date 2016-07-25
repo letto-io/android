@@ -18,7 +18,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterContribution;
 import br.com.sienaidea.oddin.model.Contribution;
-import br.com.sienaidea.oddin.view.ActDoubtDetails;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class FragmentDoubtDetailText extends Fragment {
     private RecyclerView mRecyclerView;
@@ -65,9 +65,9 @@ public class FragmentDoubtDetailText extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0){
-                    ((ActDoubtDetails) getActivity()).fabHide();
+                    ((DoubtDetailsActivity) getActivity()).fabHide();
                 }else {
-                    ((ActDoubtDetails) getActivity()).fabShow();
+                    ((DoubtDetailsActivity) getActivity()).fabShow();
                 }
             }
         });
@@ -86,7 +86,7 @@ public class FragmentDoubtDetailText extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDoubtDetails) getActivity()).getContentDoubt();
+                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
             }
         });
 

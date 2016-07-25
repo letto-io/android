@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".view.ActSearchable">
+    tools:context=".view.SearchableActivity">
 
     <include android:id="@+id/tb_searchable"
         layout="@layout/toolbar" />

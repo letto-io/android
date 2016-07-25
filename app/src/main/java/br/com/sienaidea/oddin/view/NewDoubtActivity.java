@@ -28,7 +28,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
-public class ActNewDoubt extends AppCompatActivity {
+public class NewDoubtActivity extends AppCompatActivity {
     private static String URL_POST_DOUBTS;
     private CheckBox mChkAnonymous;
     private EditText mEdtDoubt;
@@ -38,7 +38,7 @@ public class ActNewDoubt extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_new_doubt);
+        setContentView(R.layout.activity_new_doubt);
 
         mEdtDoubt = (EditText) findViewById(R.id.edt_doubt);
         mChkAnonymous = (CheckBox) findViewById(R.id.chk_anonimous);

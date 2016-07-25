@@ -77,8 +77,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ActDoubtDetails extends AppCompatActivity implements View.OnClickListener {
-    private static final String LOG_TAG = "ActDoubtDetails";
+public class DoubtDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String LOG_TAG = DoubtDetailsActivity.class.getName();
     private static String URL_GET_CONTRIBUTION;
     private static String URL_GET_MATERIAL;
 
@@ -144,7 +144,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_doubt_details);
+        setContentView(R.layout.activity_doubt_details);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_doubt_details);
         mViewPager = (ViewPager) findViewById(R.id.vp_doubt_details);
@@ -250,14 +250,14 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
         fab.hideProgress();
         mProgressTypes.offer(ProgressType.HIDDEN);
 
-        final EditText inputName = new EditText(ActDoubtDetails.this);
+        final EditText inputName = new EditText(DoubtDetailsActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         inputName.setLayoutParams(lp);
 
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(ActDoubtDetails.this, R.style.AppCompatAlertDialogStyle);
+                new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Nova contribuição");
         inputName.setText(mFileName);
         builder.setView(inputName);
@@ -562,7 +562,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
                             }
 
                             AlertDialog.Builder builder =
-                                    new AlertDialog.Builder(ActDoubtDetails.this, R.style.AppCompatAlertDialogStyle);
+                                    new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
                             builder.setMessage("Material salvo em: " + file.getAbsolutePath());
                             builder.setPositiveButton("OK", null);
                             builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
@@ -699,7 +699,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
 
             switch (position) {
                 case 0:
-                    Intent intent = new Intent(ActDoubtDetails.this, ActNewContribution.class);
+                    Intent intent = new Intent(DoubtDetailsActivity.this, NewContributionActivity.class);
                     intent.putExtra(Presentation.NAME, mPresentation);
                     intent.putExtra(Doubt.NAME, mDoubt);
                     startActivityForResult(intent, ACTION_POST_TEXT_REQUEST);
@@ -722,23 +722,23 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
         switch (requestCode) {
             case REQUEST_PERMISSION_UPLOAD:
                 //se uma das duas permissões não estiverem liberadas
-                if (ContextCompat.checkSelfPermission(ActDoubtDetails.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(ActDoubtDetails.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                     //verifica se já foi recusado a permissão de escrita
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ActDoubtDetails.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         callDialog("É preciso a permission WRITE_EXTERNAL_STORAGE para acessar o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
                         return;
                     }
 
                     //verifica se já foi recusado a permissão de leitura
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ActDoubtDetails.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         callDialog("É preciso a permission READ_EXTERNAL_STORAGE para acessar o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
                         return;
                     }
 
                     //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
-                    ActivityCompat.requestPermissions(ActDoubtDetails.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
+                    ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
 
                 } else
                     openFileManager();
@@ -746,16 +746,16 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
 
             case REQUEST_PERMISSION_CAMERA:
                 //verifica se já foi liberado
-                if (ContextCompat.checkSelfPermission(ActDoubtDetails.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
                     //verifica se já foi recusado
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ActDoubtDetails.this, Manifest.permission.CAMERA)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.CAMERA)) {
                         callDialog("É preciso acessar a câmera em seu aparelho.", new String[]{Manifest.permission.CAMERA}, requestCode);
                         return;
                     }
 
                     //caso for a primeira vez que precisa do acesso, será solicitado aqui
-                    ActivityCompat.requestPermissions(ActDoubtDetails.this, new String[]{Manifest.permission.CAMERA}, requestCode);
+                    ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.CAMERA}, requestCode);
 
                 } else
                     openCamera();
@@ -763,21 +763,21 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
 
             case REQUEST_PERMISSION_RECORD_SOUND:
                 //verifica se já foi liberado
-                if (ContextCompat.checkSelfPermission(ActDoubtDetails.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(ActDoubtDetails.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                     //verifica se já foi recusado
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ActDoubtDetails.this, Manifest.permission.RECORD_AUDIO)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.RECORD_AUDIO)) {
                         callDialog("É preciso acessar o gravador de áudio em seu aparelho.", new String[]{Manifest.permission.RECORD_AUDIO}, requestCode);
                     } else
                         //caso for a primeira vez que precisa do acesso, será solicitado aqui
-                        ActivityCompat.requestPermissions(ActDoubtDetails.this, new String[]{Manifest.permission.RECORD_AUDIO}, requestCode);
+                        ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, requestCode);
 
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ActDoubtDetails.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         callDialog("É preciso acesso para gravar em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
                     } else
                         //caso for a primeira vez que precisa do acesso, será solicitado aqui
-                        ActivityCompat.requestPermissions(ActDoubtDetails.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+                        ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
                 } else
                     startRecording();
                 break;
@@ -790,12 +790,12 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ActDoubtDetails.this, R.style.AppCompatAlertDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage(message);
         builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ActivityCompat.requestPermissions(ActDoubtDetails.this, permissions, requestCode);
+                ActivityCompat.requestPermissions(DoubtDetailsActivity.this, permissions, requestCode);
             }
         });
         builder.setNegativeButton(R.string.dialog_cancel, null);
@@ -807,7 +807,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(final int requestCode, int resultCode, final Intent data) {
         if (resultCode == Activity.RESULT_OK) {
 
-            final EditText inputName = new EditText(ActDoubtDetails.this);
+            final EditText inputName = new EditText(DoubtDetailsActivity.this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -843,7 +843,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
 
 
                 final AlertDialog.Builder builder =
-                        new AlertDialog.Builder(ActDoubtDetails.this, R.style.AppCompatAlertDialogStyle);
+                        new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
                 builder.setTitle("Novo anexo");
                 inputName.setText(mFileName);
                 builder.setView(inputName);
@@ -886,7 +886,7 @@ public class ActDoubtDetails extends AppCompatActivity implements View.OnClickLi
                 } else mFileName = returnUri.getLastPathSegment();
 
                 AlertDialog.Builder builder =
-                        new AlertDialog.Builder(ActDoubtDetails.this, R.style.AppCompatAlertDialogStyle);
+                        new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
                 builder.setTitle("Novo video");
                 inputName.setText(mFileName);
                 builder.setView(inputName);

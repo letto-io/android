@@ -28,7 +28,7 @@ import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Contribution;
 import br.com.sienaidea.oddin.model.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
-import br.com.sienaidea.oddin.view.ActDoubtDetails;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerHack, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -76,9 +76,9 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0){
-                    ((ActDoubtDetails) getActivity()).fabHide();
+                    ((DoubtDetailsActivity) getActivity()).fabHide();
                 }else {
-                    ((ActDoubtDetails) getActivity()).fabShow();
+                    ((DoubtDetailsActivity) getActivity()).fabShow();
                 }
             }
         });
@@ -98,7 +98,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((ActDoubtDetails) getActivity()).getContentDoubt();
+                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
             }
         });
 
@@ -157,7 +157,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: chamar metodo understand aqui:
-                        //((ActDoubtDetails) getActivity()).attemptGetMaterialContent(position, material);
+                        //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
 
                     }
                 });
@@ -171,7 +171,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             builder.setPositiveButton("CONFIRMAR", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((ActDoubtDetails) getActivity()).attemptGetMaterialContent(position, material);
+                    ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                 }
             });
             builder.show();

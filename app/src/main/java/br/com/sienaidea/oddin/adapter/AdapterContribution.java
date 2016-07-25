@@ -54,7 +54,7 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             // TODO: chamar metodo understand aqui:
-                            //((ActDoubtDetails) getActivity()).attemptGetMaterialContent(position, material);
+                            //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                         }
                     });
                     builder.show();

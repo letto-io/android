@@ -43,7 +43,7 @@ import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DateUtil;
 import cz.msebera.android.httpclient.Header;
 
-public class ActPresentation extends AppCompatActivity {
+public class PresentationActivity extends AppCompatActivity {
     private static String TAB_POSITION = "TAB_POSITION";
     private static String URL_GET_PRESENTATION;
     private static String URL_POST_CLOSE_PRESENTATION;
@@ -66,7 +66,7 @@ public class ActPresentation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act_presentation);
+        setContentView(R.layout.activity_presentation);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_presentation);
         mViewPager = (ViewPager) findViewById(R.id.vp_presentation);
@@ -101,7 +101,7 @@ public class ActPresentation extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplication(), ActNewPresentation.class);
+                Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
                 intent.putExtra(Discipline.NAME, mDiscipline);
                 startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
             }
@@ -249,11 +249,11 @@ public class ActPresentation extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.action_attachment) {
-            Intent intent = new Intent(this, ActDisciplineDetails.class);
+            Intent intent = new Intent(this, DisciplineDetailsActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
             startActivity(intent);
         } else if (id == R.id.action_participants) {
-            Intent intent = new Intent(this, ActParticipants.class);
+            Intent intent = new Intent(this, ParticipantsActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
             startActivity(intent);
         } else if (id == R.id.action_remove_sugestions) {

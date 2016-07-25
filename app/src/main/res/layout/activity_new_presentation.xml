@@ -5,28 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".view.ActNewContribution"
+    tools:context=".view.NewPresentationActivity"
     android:id="@+id/root">
 
     <include
-        android:id="@+id/tb_new_contribution"
+        android:id="@+id/tb_new_presentation"
         layout="@layout/toolbar" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/til_contribution"
-        android:layout_below="@+id/tb_new_contribution"
+        android:id="@+id/til_presentation"
+        android:layout_below="@+id/tb_new_presentation"
         android:padding="16dp"
         app:counterEnabled="true"
-        app:counterMaxLength="255">
+        app:counterMaxLength="30">
 
         <EditText
-            android:id="@+id/et_text_contribution"
+            android:id="@+id/input_theme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Digite sua resposta aqui..."
-            android:maxLength="255"/>
+            android:hint="Tema"
+            android:maxLength="30"/>
 
     </android.support.design.widget.TextInputLayout>
 

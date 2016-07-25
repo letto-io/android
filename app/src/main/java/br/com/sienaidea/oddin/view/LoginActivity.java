@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         if (!getCookie().equals("[]")) {
-            startActivity(new Intent(LoginActivity.this, ActDiscipline.class));
+            startActivity(new Intent(LoginActivity.this, DisciplineActivity.class));
         }
 
         // Set up the login form.
@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void onLoginSuccess() {
-        Intent intent = new Intent(LoginActivity.this, ActDiscipline.class);
+        Intent intent = new Intent(LoginActivity.this, DisciplineActivity.class);
         intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
         startActivity(intent);
         finish();
