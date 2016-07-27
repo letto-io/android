@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.server;
 
 import android.content.Context;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.model.Session;
 import br.com.sienaidea.oddin.model.User;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import okhttp3.MediaType;
@@ -32,8 +34,9 @@ import retrofit2.http.Query;
 
 public class HttpApi {
 
-    public static final String API_URL = "http://ws-edupanel.herokuapp.com/";
-
+    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //TESTE
+    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //PRODUÇÃO
+    public static final String API_URL = "http://rws-edupanel.herokuapp.com/"; //NEW
     /**
      * Generic HttpBin.org Response Container
      */
@@ -93,6 +96,18 @@ public class HttpApi {
                                             @Path("instruction_id") String instruction_id,
                                             @Body PresentationRetrofit presentation);
         */
+
+        //NEW BACK
+        //Session
+        @POST("session")
+        Call<Session> Login(@Body User user);
+
+        //Lectures
+        @GET("lectures")
+        Call<JSONArray> Lectures(@Header("x-session-token") String token);
+
+
+        //FIM NEW BACK
 
 
         //Login

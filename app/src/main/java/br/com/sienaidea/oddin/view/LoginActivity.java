@@ -13,23 +13,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.PersistentCookieStore;
-
-import org.json.JSONObject;
-
 import br.com.sienaidea.oddin.R;
+import br.com.sienaidea.oddin.model.Session;
 import br.com.sienaidea.oddin.model.User;
-import br.com.sienaidea.oddin.server.BossClient;
+import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.entity.StringEntity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    //URL request
-    private static final String URL_LOGIN = "controller/login";
-
     // UI references.
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
@@ -45,10 +40,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        if (!getCookie().equals("[]")) {
-            startActivity(new Intent(LoginActivity.this, DisciplineActivity.class));
-        }
 
         // Set up the login form.
         mRootLayout = findViewById(R.id.root_layout);
@@ -69,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mTextInputLayoutPassword.setErrorEnabled(true);
     }
 
-    public void login() {
+    private void login() {
         if (!validate()) {
             return;
         }
@@ -82,40 +73,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             progressDialog.setMessage(getResources().getString(R.string.authenticating));
             progressDialog.show();
 
-            HttpEntity entity = null;
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(User.EMAIL, mEmailEditText.getText().toString());
-                jsonObject.put(User.PASSWORD, mPasswordEditText.getText().toString());
+            User user = new User(mEmailEditText.getText().toString(), mPasswordEditText.getText().toString());
 
-                entity = new StringEntity(jsonObject.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-            BossClient.postLogin(getApplicationContext(), URL_LOGIN, entity, new AsyncHttpResponseHandler() {
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Call<Session> request = service.Login(user);
+
+            request.enqueue(new Callback<Session>() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    onLoginSuccess();
-                    progressDialog.dismiss();
+                public void onResponse(Call<Session> call, Response<Session> response) {
+                    if (response.isSuccessful()){
+                        Session session = response.body();
+                        onLoginSuccess(session);
+                        progressDialog.dismiss();
+                    }else {
+                        onLoginFailure(response.code());
+                        progressDialog.dismiss();
+                    }
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-                    onLoginFailure(statusCode);
+                public void onFailure(Call<Session> call, Throwable t) {
+                    onLoginFailure(502);
                     progressDialog.dismiss();
                 }
             });
-
         } else {
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void onLoginSuccess() {
+    private void onLoginSuccess(Session session) {
         Intent intent = new Intent(LoginActivity.this, DisciplineActivity.class);
         intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
+        intent.putExtra(Session.TAG, session);
         startActivity(intent);
         finish();
     }
@@ -151,8 +149,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             mTextInputLayoutEmail.setError(null);
 
-            if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
-                mTextInputLayoutPassword.setError(getResources().getString(R.string.error_invalid_email));
+            if (password.isEmpty() || password.length() < 8) {
+                mTextInputLayoutPassword.setError(getResources().getString(R.string.error_invalid_password));
                 valid = false;
             } else {
                 mTextInputLayoutPassword.setError(null);
@@ -169,10 +167,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == mForgotPasswordTextView) {
             startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         }
-    }
-
-    private String getCookie() {
-        return new PersistentCookieStore(getApplicationContext()).getCookies().toString();
     }
 }
 

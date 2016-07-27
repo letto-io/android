@@ -30,6 +30,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.DisciplineFragment;
 import br.com.sienaidea.oddin.model.Discipline;
+import br.com.sienaidea.oddin.model.Session;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DateUtil;
@@ -79,6 +80,7 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
             userEmail = savedInstanceState.getString("userEmail");
         } else {
             userEmail = getIntent().getStringExtra("email");
+            Session session = getIntent().getParcelableExtra(Session.TAG);
 
             //create fragment
             mDisciplineFragment = new DisciplineFragment();

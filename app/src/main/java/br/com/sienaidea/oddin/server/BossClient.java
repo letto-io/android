@@ -10,7 +10,8 @@ import com.loopj.android.http.RequestParams;
 import cz.msebera.android.httpclient.HttpEntity;
 
 public class BossClient {
-    private static final String BASE_URL = "http://ws-edupanel.herokuapp.com/";
+    private static final String BASE_URL = "http://ws-edupanel.herokuapp.com/"; // TESTE
+    //private static final String BASE_URL = "http://ws-oddin.herokuapp.com/"; //PRODUÇÃO
     private static String CLOSE_PRESENTATION_URL;
 
     //Servidor é lento, necessário setar um tempo maior para as requisições

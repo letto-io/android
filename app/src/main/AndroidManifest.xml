@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="android.app.default_searchable"
-            android:value="br.com.sienaidea.miragemobile.view.ActSearchable" />
+            android:value="br.com.sienaidea.oddin.view.SearchableActivity" />
 
         <provider
             android:name="br.com.sienaidea.oddin.provider.SearchableProvider"
