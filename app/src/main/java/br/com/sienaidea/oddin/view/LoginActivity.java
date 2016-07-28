@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Session;
-import br.com.sienaidea.oddin.model.User;
+import br.com.sienaidea.oddin.retrofitModel.Session;
+import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
@@ -89,11 +89,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             request.enqueue(new Callback<Session>() {
                 @Override
                 public void onResponse(Call<Session> call, Response<Session> response) {
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         Session session = response.body();
                         onLoginSuccess(session);
                         progressDialog.dismiss();
-                    }else {
+                    } else {
                         onLoginFailure(response.code());
                         progressDialog.dismiss();
                     }

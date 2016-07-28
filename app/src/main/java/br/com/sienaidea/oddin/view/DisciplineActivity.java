@@ -11,39 +11,33 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.PersistentCookieStore;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.DisciplineFragment;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Session;
-import br.com.sienaidea.oddin.server.BossClient;
-import br.com.sienaidea.oddin.util.CookieUtil;
-import br.com.sienaidea.oddin.util.DateUtil;
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
+import br.com.sienaidea.oddin.retrofitModel.Session;
+import br.com.sienaidea.oddin.retrofitModel.User;
+import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DisciplineActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String URL_GET_DISCIPLINE = "controller/instruction";
 
-    private List<Discipline> mListDiscipline = new ArrayList<>();
-    private Discipline discipline;
+    private List<Lecture> mList = new ArrayList<>();
     private String userName, userEmail;
     private View mRootLayout;
+    private Session mSession;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private DisciplineFragment mDisciplineFragment;
@@ -76,19 +70,13 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
         TextView userEmailTextView = (TextView) header.findViewById(R.id.user_email_drawer);
 
         if (savedInstanceState != null) {
-            mListDiscipline = savedInstanceState.getParcelableArrayList(Discipline.NAME);
-            userEmail = savedInstanceState.getString("userEmail");
+            mList = savedInstanceState.getParcelableArrayList(Lecture.TAG);
+            userEmail = savedInstanceState.getString(User.EMAIL);
         } else {
-            userEmail = getIntent().getStringExtra("email");
-            Session session = getIntent().getParcelableExtra(Session.TAG);
+            userEmail = getIntent().getStringExtra(User.EMAIL);
+            mSession = getIntent().getParcelableExtra(Session.TAG);
 
-            //create fragment
-            mDisciplineFragment = new DisciplineFragment();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.rl_fragment_container, mDisciplineFragment, DisciplineFragment.TAG);
-            fragmentTransaction.commit();
-
-            loadListDiscipline();
+            getLectures();
         }
 
         userNameTextView.setText("User Name");
@@ -99,89 +87,84 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
         }
     }
 
-    public void loadListDiscipline() {
+    public void getLectures() {
         DetectConnection detectConnection = new DetectConnection(this);
-
         if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-            BossClient.get(URL_GET_DISCIPLINE, null, CookieUtil.getCookie(getApplicationContext()), new JsonHttpResponseHandler() {
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Call<List<Lecture>> request = service.Lectures(mSession.getToken());
+
+            request.enqueue(new Callback<List<Lecture>>() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    try {
-                        JSONArray lectures = response.getJSONArray("lectures");
-                        Log.d("DISCIPLINES", lectures.toString());
-                        mListDiscipline.clear();
-                        for (int i = 0; i < lectures.length(); i++) {
-
-                            String tempDateFormat = DateUtil.getDateFormat(lectures.getJSONObject(i).getString("startdate") + " 00:00:00");
-                            discipline = new Discipline();
-                            discipline.setCodigo(lectures.getJSONObject(i).getString("code"));
-                            discipline.setNome(lectures.getJSONObject(i).getString("name"));
-                            discipline.setDataInicio(tempDateFormat);
-                            discipline.setTurma(lectures.getJSONObject(i).getInt("class"));
-                            discipline.setCodEvent(lectures.getJSONObject(i).getJSONObject("event").getString("code"));
-                            discipline.setProfile(lectures.getJSONObject(i).getInt("profile"));
-                            discipline.setInstruction_id(lectures.getJSONObject(i).getInt("id"));
-
-                            addListDiscipline(discipline);
-                        }
-
-                        mDisciplineFragment = (DisciplineFragment) fragmentManager.findFragmentByTag(DisciplineFragment.TAG);
-                        if (mDisciplineFragment != null) {
-                            mDisciplineFragment.notifyDataSetChanged();
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (mDisciplineFragment != null) {
-                        mDisciplineFragment.swipeRefreshStop();
+                public void onResponse(Call<List<Lecture>> call, Response<List<Lecture>> response) {
+                    if (response.isSuccessful()) {
+                        mList.clear();
+                        mList = response.body();
+                        onRequestSuccess();
+                    } else {
+                        onRequestFailure(response.code());
                     }
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    switch (statusCode) {
-                        case 401:
-                            BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-                            startActivity(new Intent(getApplication(), LoginActivity.class));
-                            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-                            finish();
-                            break;
-                        default:
-                            BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
-                            startActivity(new Intent(getApplication(), LoginActivity.class));
-                            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-                            finish();
-                    }
-
-                    mDisciplineFragment.swipeRefreshStop();
+                public void onFailure(Call<List<Lecture>> call, Throwable t) {
+                    onRequestFailure(401);
                 }
             });
+
         } else {
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            loadListDiscipline();
+                            getLectures();
                         }
                     }).show();
         }
     }
 
-    public List<Discipline> getListDiscipline() {
-        return mListDiscipline;
+    private void onRequestSuccess() {
+        mDisciplineFragment = (DisciplineFragment) fragmentManager.findFragmentByTag(DisciplineFragment.TAG);
+        if (mDisciplineFragment != null) {
+            //refresh fragment
+            mDisciplineFragment.notifyDataSetChanged();
+        } else {
+            //create fragment
+            mDisciplineFragment = new DisciplineFragment();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.rl_fragment_container, mDisciplineFragment, DisciplineFragment.TAG);
+            fragmentTransaction.commit();
+        }
     }
 
-    private void addListDiscipline(Discipline discipline) {
-        mListDiscipline.add(discipline);
+    private void onRequestFailure(int statusCode) {
+        mDisciplineFragment.swipeRefreshStop();
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    public List<Lecture> getList() {
+        return mList;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Discipline.NAME, (ArrayList<Discipline>) mListDiscipline);
-        outState.putString("userEmail", userEmail);
+        outState.putParcelableArrayList(Lecture.TAG, (ArrayList<Lecture>) mList);
+        outState.putString(User.EMAIL, userEmail);
         super.onSaveInstanceState(outState);
     }
 
@@ -197,7 +180,7 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.action_logout) {
-            BossClient.clearCookie(new PersistentCookieStore(getApplicationContext()));
+            //TODO clear session
             startActivity(new Intent(DisciplineActivity.this, LoginActivity.class));
             finish();
         }

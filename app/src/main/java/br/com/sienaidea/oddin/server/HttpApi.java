@@ -2,16 +2,17 @@ package br.com.sienaidea.oddin.server;
 
 import android.content.Context;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.model.Presentation;
-import br.com.sienaidea.oddin.model.Session;
-import br.com.sienaidea.oddin.model.User;
+import br.com.sienaidea.oddin.retrofitModel.Session;
+import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -104,7 +105,7 @@ public class HttpApi {
 
         //Lectures
         @GET("lectures")
-        Call<JSONArray> Lectures(@Header("x-session-token") String token);
+        Call<List<Lecture>> Lectures(@Header("x-session-token") String token);
 
 
         //FIM NEW BACK

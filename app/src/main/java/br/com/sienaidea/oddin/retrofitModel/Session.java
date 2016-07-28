@@ -1,4 +1,4 @@
-package br.com.sienaidea.oddin.model;
+package br.com.sienaidea.oddin.retrofitModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;

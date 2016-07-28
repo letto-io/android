@@ -3,6 +3,7 @@ package br.com.sienaidea.oddin.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.view.DisciplineActivity;
 import br.com.sienaidea.oddin.view.PresentationActivity;
 import br.com.sienaidea.oddin.R;
@@ -28,7 +30,7 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
     private AdapterDiscipline mAdapterDiscipline;
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Discipline> mList = new ArrayList<>();
+    private List<Lecture> mList = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
 
@@ -41,10 +43,8 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_lecture, container, false);
         mEmptyView = (TextView) view.findViewById(R.id.empty_view);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_list);
@@ -55,23 +55,27 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
 
-        mList = ((DisciplineActivity) getActivity()).getListDiscipline();
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                ((DisciplineActivity) getActivity()).getLectures();
+//            }
+//        });
 
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mList = ((DisciplineActivity) getActivity()).getList();
         AdapterDiscipline adapter = new AdapterDiscipline(mContext, mList);
         mRecyclerView.setAdapter(adapter);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                ((DisciplineActivity) getActivity()).loadListDiscipline();
-            }
-        });
-
         mAdapterDiscipline = (AdapterDiscipline) mRecyclerView.getAdapter();
-
-        return view;
     }
 
     private void setEmpty(boolean isEmpty) {
@@ -97,10 +101,10 @@ public class DisciplineFragment extends Fragment implements RecyclerViewOnClickL
 
     @Override
     public void onClickListener(View view, int position) {
-        Discipline discipline = mAdapterDiscipline.getDiscipline(position);
-        Intent intent = new Intent(mContext, PresentationActivity.class);
-        intent.putExtra(Discipline.NAME, discipline);
-        mContext.startActivity(intent);
+//        Lecture lecture = mAdapterDiscipline.getDiscipline(position);
+//        Intent intent = new Intent(mContext, PresentationActivity.class);
+//        intent.putExtra(Discipline.NAME, lecture);
+//        mContext.startActivity(intent);
     }
 
     @Override

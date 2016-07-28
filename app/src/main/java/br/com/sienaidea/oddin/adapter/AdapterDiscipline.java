@@ -14,13 +14,14 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Discipline;
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 
 public class AdapterDiscipline extends RecyclerView.Adapter<AdapterDiscipline.MyViewHolder> {
-    private List<Discipline> mList;
+    private List<Lecture> mList;
     private LayoutInflater mLayoutInflater;
 
-    public AdapterDiscipline(Context c, List<Discipline> listDiscipline) {
-        mList = listDiscipline;
+    public AdapterDiscipline(Context c, List<Lecture> list) {
+        mList = list;
         mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -32,9 +33,9 @@ public class AdapterDiscipline extends RecyclerView.Adapter<AdapterDiscipline.My
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
-        myViewHolder.tvNome.setText(mList.get(position).getNome());
-        myViewHolder.tvTurma.setText("Turma: " + mList.get(position).getTurma());
-        myViewHolder.tvDataInicio.setText("Início: " + mList.get(position).getDataInicio());
+        myViewHolder.tvNome.setText(mList.get(position).getName());
+        //myViewHolder.tvTurma.setText("Turma: " + mList.get(position).getTurma());
+        //myViewHolder.tvDataInicio.setText("Início: " + mList.get(position).getDataInicio());
 
         try {
             YoYo.with(Techniques.ZoomIn)
@@ -50,7 +51,7 @@ public class AdapterDiscipline extends RecyclerView.Adapter<AdapterDiscipline.My
         return mList.size();
     }
 
-    public Discipline getDiscipline(int position) {
+    public Lecture getDiscipline(int position) {
         return mList.get(position);
     }
 

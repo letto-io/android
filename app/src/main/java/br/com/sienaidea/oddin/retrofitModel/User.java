@@ -1,4 +1,4 @@
-package br.com.sienaidea.oddin.model;
+package br.com.sienaidea.oddin.retrofitModel;
 
 /**
  * Created by Siena Idea on 27/07/2016.

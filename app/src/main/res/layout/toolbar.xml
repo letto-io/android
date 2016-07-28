@@ -8,7 +8,7 @@
     android:minHeight="?attr/actionBarSize"
     android:layout_alignParentLeft="true"
     android:background="?attr/colorPrimary"
-    app:theme="@style/AppTheme.Toolbar"
+    android:theme="@style/AppTheme.Toolbar"
     app:popupTheme="@style/AppTheme.PopupOverlay">
 
 </android.support.v7.widget.Toolbar>

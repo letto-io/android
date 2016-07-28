@@ -19,7 +19,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.User;
+import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import cz.msebera.android.httpclient.Header;
