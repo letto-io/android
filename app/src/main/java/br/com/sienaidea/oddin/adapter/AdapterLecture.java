@@ -13,29 +13,26 @@ import com.daimajia.androidanimations.library.YoYo;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
 
-public class AdapterDiscipline extends RecyclerView.Adapter<AdapterDiscipline.MyViewHolder> {
+public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHolder> {
     private List<Lecture> mList;
     private LayoutInflater mLayoutInflater;
 
-    public AdapterDiscipline(Context c, List<Lecture> list) {
+    public AdapterLecture(Context context, List<Lecture> list) {
         mList = list;
-        mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View v = mLayoutInflater.inflate(R.layout.item_discipline, viewGroup, false);
+        View v = mLayoutInflater.inflate(R.layout.item_lecture, viewGroup, false);
         return new MyViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         myViewHolder.tvNome.setText(mList.get(position).getName());
-        //myViewHolder.tvTurma.setText("Turma: " + mList.get(position).getTurma());
-        //myViewHolder.tvDataInicio.setText("Início: " + mList.get(position).getDataInicio());
 
         try {
             YoYo.with(Techniques.ZoomIn)
@@ -51,21 +48,16 @@ public class AdapterDiscipline extends RecyclerView.Adapter<AdapterDiscipline.My
         return mList.size();
     }
 
-    public Lecture getDiscipline(int position) {
+    public Lecture getLecture(int position) {
         return mList.get(position);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tvNome;
-        public TextView tvTurma;
-        public TextView tvDataInicio;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
-            tvNome = (TextView) itemView.findViewById(R.id.tv_nome);
-            tvTurma = (TextView) itemView.findViewById(R.id.tv_turma);
-            tvDataInicio = (TextView) itemView.findViewById(R.id.tv_dataInicio);
+            tvNome = (TextView) itemView.findViewById(R.id.tv_name);
         }
     }
 }

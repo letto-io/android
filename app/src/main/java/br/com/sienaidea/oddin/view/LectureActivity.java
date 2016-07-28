@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.fragment.DisciplineFragment;
+import br.com.sienaidea.oddin.fragment.LectureFragment;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
@@ -32,7 +32,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class DisciplineActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class LectureActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private List<Lecture> mList = new ArrayList<>();
     private String userName, userEmail;
@@ -40,7 +40,7 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
     private Session mSession;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
-    private DisciplineFragment mDisciplineFragment;
+    private LectureFragment mLectureFragment;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -48,7 +48,7 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_discipline);
+        setContentView(R.layout.activity_lecture);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_discipline);
         mToolbar.setTitle("Disciplinas");
@@ -131,21 +131,20 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
     }
 
     private void onRequestSuccess() {
-        mDisciplineFragment = (DisciplineFragment) fragmentManager.findFragmentByTag(DisciplineFragment.TAG);
-        if (mDisciplineFragment != null) {
+        mLectureFragment = (LectureFragment) fragmentManager.findFragmentByTag(LectureFragment.TAG);
+        if (mLectureFragment != null) {
             //refresh fragment
-            mDisciplineFragment.notifyDataSetChanged();
+            mLectureFragment.notifyDataSetChanged();
         } else {
             //create fragment
-            mDisciplineFragment = new DisciplineFragment();
+            mLectureFragment = new LectureFragment();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.rl_fragment_container, mDisciplineFragment, DisciplineFragment.TAG);
+            fragmentTransaction.add(R.id.rl_fragment_container, mLectureFragment, LectureFragment.TAG);
             fragmentTransaction.commit();
         }
     }
 
     private void onRequestFailure(int statusCode) {
-        mDisciplineFragment.swipeRefreshStop();
         if (statusCode == 401) {
             startActivity(new Intent(getApplication(), LoginActivity.class));
             Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
@@ -181,7 +180,7 @@ public class DisciplineActivity extends AppCompatActivity implements NavigationV
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.action_logout) {
             //TODO clear session
-            startActivity(new Intent(DisciplineActivity.this, LoginActivity.class));
+            startActivity(new Intent(LectureActivity.this, LoginActivity.class));
             finish();
         }
 

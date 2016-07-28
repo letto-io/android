@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:paddingTop="20dp"
+    android:paddingLeft="16dp">
+
+    <ImageView
+        android:id="@+id/iv_lecture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_book_multiple"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:textColor="@color/colorPrimaryText"
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="16dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="[Lecture Name]"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/iv_lecture"
+        android:layout_toEndOf="@+id/iv_lecture" />
+
+    <!--<TextView-->
+        <!--android:textColor="@color/colorSecondaryText"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--android:text="date"-->
+        <!--android:id="@+id/tv_dataInicio"-->
+        <!--android:textSize="14sp"-->
+        <!--android:layout_above="@+id/vw_divider"-->
+        <!--android:layout_alignRight="@+id/vw_divider"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:layout_marginRight="16dp"/>-->
+
+    <!--<TextView-->
+        <!--android:textColor="@color/colorSecondaryText"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--android:text="turma"-->
+        <!--android:id="@+id/tv_turma"-->
+        <!--android:textSize="14sp"-->
+        <!--android:layout_below="@+id/iv_discipline"-->
+        <!--android:layout_alignLeft="@+id/tv_nome"-->
+        <!--android:layout_alignStart="@+id/tv_nome" />-->
+
+    <View
+        android:id="@+id/vw_divider"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/tv_name"
+        android:layout_alignLeft="@+id/tv_name"
+        android:background="@color/colorDividerColor"
+        android:layout_width="match_parent"
+        android:layout_height="0.4dp" />
+
+</RelativeLayout>

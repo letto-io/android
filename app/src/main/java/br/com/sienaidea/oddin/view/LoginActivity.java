@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void onLoginSuccess(Session session) {
-        Intent intent = new Intent(LoginActivity.this, DisciplineActivity.class);
+        Intent intent = new Intent(LoginActivity.this, LectureActivity.class);
         intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
         intent.putExtra(Session.TAG, session);
         startActivity(intent);

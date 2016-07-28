@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.model.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Session;
@@ -102,6 +103,10 @@ public class HttpApi {
         //Session
         @POST("session")
         Call<Session> Login(@Body User user);
+
+        //Instructions
+        @GET("instructions")
+        Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 
         //Lectures
         @GET("lectures")

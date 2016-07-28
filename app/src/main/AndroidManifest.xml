@@ -35,7 +35,7 @@
             android:name=".view.PresentationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.DisciplineActivity"
+            android:name=".view.LectureActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.DoubtActivity"

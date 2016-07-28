@@ -9,10 +9,11 @@ import android.os.Parcelable;
 public class Lecture implements Parcelable {
     public static String TAG = Lecture.class.getName();
 
-    private String id, code, name, workload;
+    private int id;
+    private String code, name, workload;
 
     protected Lecture(Parcel in) {
-        id = in.readString();
+        id = in.readInt();
         code = in.readString();
         name = in.readString();
         workload = in.readString();
@@ -30,11 +31,11 @@ public class Lecture implements Parcelable {
         }
     };
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -69,7 +70,7 @@ public class Lecture implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
+        dest.writeInt(id);
         dest.writeString(code);
         dest.writeString(name);
         dest.writeString(workload);

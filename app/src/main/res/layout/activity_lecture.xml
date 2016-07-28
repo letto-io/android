@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:id="@+id/root"
-        tools:context=".view.DisciplineActivity">
+        tools:context=".view.LectureActivity">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
