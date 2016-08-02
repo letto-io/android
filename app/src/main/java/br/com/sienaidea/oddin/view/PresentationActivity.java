@@ -122,11 +122,11 @@ public class PresentationActivity extends AppCompatActivity {
 //        }
     }
 
-    public void fabHide(){
+    public void fabHide() {
         fab.hide();
     }
 
-    public void fabShow(){
+    public void fabShow() {
         fab.show();
     }
 
@@ -156,7 +156,7 @@ public class PresentationActivity extends AppCompatActivity {
         }
     }
 
-    public void getPresentations(){
+    public void getPresentations() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup
@@ -202,10 +202,17 @@ public class PresentationActivity extends AppCompatActivity {
         }
     }
 
+    //request Presentations
     private void onRequestSuccess() {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
+    }
+
+    //request ClosePresentation
+    private void onRequestCloseSuccess(int position, Presentation presentation) {
+        presentationOpenFragment.removeItem(position);
+        presentationClosedFragment.addItemPosition(0, presentation);
     }
 
     private void onRequestFailure(int statusCode) {
@@ -245,20 +252,48 @@ public class PresentationActivity extends AppCompatActivity {
     }
 
     public void closePresentation(final int position, final Presentation presentation) {
-        //URL_POST_CLOSE_PRESENTATION = "controller/instruction/" + presentation.getInstruction_id() + "/presentation/" + presentation.getId() + "/close";
-        BossClient.post(URL_POST_CLOSE_PRESENTATION, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                presentation.setStatus(Presentation.FINISHED);
-                presentationOpenFragment.removeItem(position);
-                presentationClosedFragment.addItemPosition(0, presentation);
-            }
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplicationContext(), R.string.error_could_not_complete_your_request, Toast.LENGTH_LONG).show();
-            }
-        });
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<Presentation> request = service.ClosePresentation(auth_token_string, presentation.getId());
+
+            request.enqueue(new Callback<Presentation>() {
+                @Override
+                public void onResponse(Call<Presentation> call, Response<Presentation> response) {
+                    if (response.isSuccessful()) {
+                        //response.body retorna a apresentação editada
+                        onRequestCloseSuccess(position, response.body());
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Presentation> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getPresentations();
+                        }
+                    }).show();
+        }
     }
 
     @Override

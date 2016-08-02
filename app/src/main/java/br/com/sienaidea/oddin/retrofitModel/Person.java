@@ -5,9 +5,11 @@ import android.os.Parcelable;
 
 public class Person implements Parcelable {
     public static final String TAG = Person.class.getName();
+    public static final String NAME = "NAME";
 
     private int id;
     private String name;
+    private User user;
 
     public Person() {
     }
@@ -43,6 +45,14 @@ public class Person implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

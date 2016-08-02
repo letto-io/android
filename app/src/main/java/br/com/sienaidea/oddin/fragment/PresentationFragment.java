@@ -149,20 +149,21 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
 
     @Override
     public void onClickListener(int position) {
-        Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
+        Presentation presentation = mAdapterPresentation.getPresentation(position);
 
         Intent intent = new Intent(mContext, DoubtActivity.class);
         intent.putExtra(Presentation.TAG, presentation);
-        intent.putExtra(Discipline.NAME, mDiscipline);
+        //intent.putExtra(Discipline.NAME, mDiscipline);
         mContext.startActivity(intent);
     }
 
     @Override
     public void onLongPressClickListener(final int position) {
 
-        final Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
+        final Presentation presentation = mAdapterPresentation.getPresentation(position);
 
-        if (mDiscipline.getProfile() == 2 && mListPresentation.get(position).getStatus() == Presentation.OPEN) {
+        //TODO verificar o profile também
+        if (mListPresentation.get(position).getStatus() == Presentation.OPEN) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {

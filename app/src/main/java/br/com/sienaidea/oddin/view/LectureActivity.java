@@ -22,6 +22,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.LectureFragment;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
@@ -53,6 +54,11 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         mToolbar.setTitle("Disciplinas");
         setSupportActionBar(mToolbar);
 
+        //acessando o sharedPreferences para mostrar os dados do usuario no Drawer (name and email)
+        Preference preference = new Preference();
+        userName = preference.getUserName(getApplicationContext());
+        userEmail = preference.getUserEmail(getApplicationContext());
+
         mRootLayout = findViewById(R.id.root);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -70,18 +76,25 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
 
         if (savedInstanceState != null) {
             mListInstruction = savedInstanceState.getParcelableArrayList(Instruction.TAG);
+            userName = savedInstanceState.getString(Person.NAME);
             userEmail = savedInstanceState.getString(User.EMAIL);
         } else {
-            userEmail = getIntent().getStringExtra(User.EMAIL);
             getInstructions();
         }
 
-        userNameTextView.setText("User Name");
+        //verifica se existe realmente o nome e email já salvo e coloca no drawer
+        if (userName != null) {
+            userNameTextView.setText(userName);
+        } else {
+            userNameTextView.setText("user name");
+        }
         if (userEmail != null) {
             userEmailTextView.setText(userEmail);
         } else {
             userEmailTextView.setText("email@email.com");
         }
+
+
     }
 
     private void getInstructions() {
@@ -163,6 +176,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Instruction.TAG, (ArrayList<Instruction>) mListInstruction);
+        outState.putString(Person.NAME, userName);
         outState.putString(User.EMAIL, userEmail);
         super.onSaveInstanceState(outState);
     }

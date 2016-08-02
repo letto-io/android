@@ -108,10 +108,6 @@ public class HttpApi {
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 
-//        //Lectures
-//        @GET("lectures")
-//        Call<List<Lecture>> Lectures(@Header("x-session-token") String token);
-
         //Presentations
         @GET("instructions/{instruction_id}/presentations")
         Call<List<Presentation>> Presentations(@Header("x-session-token") String token,
@@ -122,6 +118,11 @@ public class HttpApi {
         Call<Presentation> NewPresentation(@Header("x-session-token") String token,
                                            @Path("instruction_id") String instruction_id,
                                            @Body Presentation presentation);
+
+        //Close Presentation
+        @POST("presentations/{presentation_id}/close")
+        Call<Presentation> ClosePresentation(@Header("x-session-token") String token,
+                                             @Path("presentation_id") int presentation_id);
 
 
         //FIM NEW BACK

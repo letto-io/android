@@ -49,7 +49,7 @@ public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentatio
         return mList.size();
     }
 
-    public Presentation getPresentationAdapter(int position) {
+    public Presentation getPresentation(int position) {
         return mList.get(position);
     }
 

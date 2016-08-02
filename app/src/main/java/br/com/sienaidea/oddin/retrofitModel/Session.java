@@ -9,14 +9,17 @@ import android.os.Parcelable;
 public class Session implements Parcelable {
     public static String TAG = Session.class.getName();
 
-    private String id, token, user_id, created_at, updated_at;
+    private int id, user_id;
+    private String token, created_at;
+    private Person person;
+    private User user;
 
     protected Session(Parcel in) {
-        id = in.readString();
+        id = in.readInt();
+        user_id = in.readInt();
         token = in.readString();
-        user_id = in.readString();
         created_at = in.readString();
-        updated_at = in.readString();
+        person = in.readParcelable(Person.class.getClassLoader());
     }
 
     public static final Creator<Session> CREATOR = new Creator<Session>() {
@@ -31,12 +34,20 @@ public class Session implements Parcelable {
         }
     };
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getToken() {
@@ -47,14 +58,6 @@ public class Session implements Parcelable {
         this.token = token;
     }
 
-    public String getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
-    }
-
     public String getCreated_at() {
         return created_at;
     }
@@ -63,12 +66,20 @@ public class Session implements Parcelable {
         this.created_at = created_at;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -78,10 +89,10 @@ public class Session implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
+        dest.writeInt(id);
+        dest.writeInt(user_id);
         dest.writeString(token);
-        dest.writeString(user_id);
         dest.writeString(created_at);
-        dest.writeString(updated_at);
+        dest.writeParcelable(person, flags);
     }
 }

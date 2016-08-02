@@ -194,7 +194,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
         } else {
             Intent intent = new Intent(SearchableActivity.this, DoubtActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
-            Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
+            Presentation presentation = mAdapterPresentation.getPresentation(position);
             intent.putExtra(Presentation.TAG, presentation);
             startActivity(intent);
         }

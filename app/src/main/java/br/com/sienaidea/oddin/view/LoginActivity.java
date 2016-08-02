@@ -114,11 +114,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void onLoginSuccess(Session session) {
+        //salvando as informações que irei utilizar durante o fluxo das telas no aparelho
         Preference preference = new Preference();
         preference.setToken(getApplicationContext(), session.getToken());
+        preference.setUserName(getApplicationContext(), session.getPerson().getName());
+        preference.setUserEmail(getApplicationContext(), session.getUser().getEmail());
 
         Intent intent = new Intent(LoginActivity.this, LectureActivity.class);
-        intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
         intent.putExtra(Session.TAG, session);
         startActivity(intent);
         finish();
