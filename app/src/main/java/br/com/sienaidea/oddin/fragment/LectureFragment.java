@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.view.LectureActivity;
 import br.com.sienaidea.oddin.R;
@@ -29,7 +30,7 @@ public class LectureFragment extends Fragment implements RecyclerViewOnClickList
     private AdapterLecture mAdapterLecture;
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Lecture> mList = new ArrayList<>();
+    private List<Instruction> mList = new ArrayList<>();
     private Context mContext;
 
     public static final String TAG = LectureFragment.class.getName();
@@ -90,9 +91,9 @@ public class LectureFragment extends Fragment implements RecyclerViewOnClickList
 
     @Override
     public void onClickListener(int position) {
-        Lecture lecture = mAdapterLecture.getLecture(position);
+        Instruction instruction = mAdapterLecture.getInstruction(position);
         Intent intent = new Intent(mContext, PresentationActivity.class);
-        intent.putExtra(Lecture.TAG, lecture);
+        intent.putExtra(Instruction.TAG, instruction);
         mContext.startActivity(intent);
     }
 

@@ -62,7 +62,7 @@ import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.model.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -930,7 +930,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
 
             Call<Void> call = service.postFileContribution(CookieUtil.getCookie(getApplicationContext()),
-                    String.valueOf(mPresentation.getInstruction_id()),
+                    String.valueOf(mPresentation.getId()), //instruction id e nao presentation id
                     String.valueOf(mPresentation.getId()),
                     String.valueOf(mDoubt.getId()),
                     body);

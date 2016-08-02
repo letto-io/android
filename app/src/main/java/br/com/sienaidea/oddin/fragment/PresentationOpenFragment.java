@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 
 public class PresentationOpenFragment extends PresentationFragment {
 

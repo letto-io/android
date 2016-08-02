@@ -13,7 +13,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 
 public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentation.MyViewHolder> {
     private List<Presentation> mList;
@@ -33,7 +33,7 @@ public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentatio
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         myViewHolder.tvTheme.setText(mList.get(position).getSubject());
-        myViewHolder.tvDate.setText(mList.get(position).getCreatedat());
+       // myViewHolder.tvDate.setText(mList.get(position).get);
 
         try {
             YoYo.with(Techniques.ZoomIn)

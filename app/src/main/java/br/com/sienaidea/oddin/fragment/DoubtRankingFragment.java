@@ -7,7 +7,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 
 public class DoubtRankingFragment extends DoubtFragment {
 
@@ -21,7 +21,7 @@ public class DoubtRankingFragment extends DoubtFragment {
         Bundle args = new Bundle();
         args.putParcelableArrayList(Doubt.NAME, (ArrayList<Doubt>) list);
         args.putParcelable(Discipline.NAME, discipline);
-        args.putParcelable(Presentation.NAME, presentation);
+        args.putParcelable(Presentation.TAG, presentation);
         fragment.setArguments(args);
 
         return fragment;

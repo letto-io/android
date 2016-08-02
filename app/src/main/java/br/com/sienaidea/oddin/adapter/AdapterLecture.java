@@ -13,13 +13,17 @@ import com.daimajia.androidanimations.library.YoYo;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
+import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHolder> {
-    private List<Lecture> mList;
+    private List<Instruction> mList;
+    private Context mContext;
     private LayoutInflater mLayoutInflater;
 
-    public AdapterLecture(Context context, List<Lecture> list) {
+    public AdapterLecture(Context context, List<Instruction> list) {
+        mContext = context;
         mList = list;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -32,7 +36,9 @@ public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHo
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
-        myViewHolder.tvNome.setText(mList.get(position).getName());
+        myViewHolder.tvName.setText(mList.get(position).getLecture().getName());
+        myViewHolder.tvClass.setText(mContext.getString(R.string.adapter_class, mList.get(position).getClass_number()));
+        myViewHolder.tvStartDate.setText(mContext.getString(R.string.adapter_start_date, mList.get(position).getStart_date()));
 
         try {
             YoYo.with(Techniques.ZoomIn)
@@ -48,16 +54,18 @@ public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHo
         return mList.size();
     }
 
-    public Lecture getLecture(int position) {
+    public Instruction getInstruction(int position) {
         return mList.get(position);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvNome;
+        public TextView tvName, tvClass, tvStartDate;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            tvNome = (TextView) itemView.findViewById(R.id.tv_name);
+            tvName = (TextView) itemView.findViewById(R.id.tv_name);
+            tvStartDate = (TextView) itemView.findViewById(R.id.tv_start_date);
+            tvClass = (TextView) itemView.findViewById(R.id.tv_class);
         }
     }
 }

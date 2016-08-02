@@ -21,10 +21,10 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.LectureFragment;
-import br.com.sienaidea.oddin.retrofitModel.Lecture;
-import br.com.sienaidea.oddin.retrofitModel.Session;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,10 +34,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LectureActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<Lecture> mList = new ArrayList<>();
+    private List<Instruction> mListInstruction = new ArrayList<>();
     private String userName, userEmail;
     private View mRootLayout;
-    private Session mSession;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private LectureFragment mLectureFragment;
@@ -70,13 +69,11 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         TextView userEmailTextView = (TextView) header.findViewById(R.id.user_email_drawer);
 
         if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList(Lecture.TAG);
+            mListInstruction = savedInstanceState.getParcelableArrayList(Instruction.TAG);
             userEmail = savedInstanceState.getString(User.EMAIL);
         } else {
             userEmail = getIntent().getStringExtra(User.EMAIL);
-            mSession = getIntent().getParcelableExtra(Session.TAG);
-
-            getLectures();
+            getInstructions();
         }
 
         userNameTextView.setText("User Name");
@@ -87,7 +84,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         }
     }
 
-    public void getLectures() {
+    private void getInstructions() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup
@@ -97,16 +94,19 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
                     .build();
 
             // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-            Call<List<Lecture>> request = service.Lectures(mSession.getToken());
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
 
-            request.enqueue(new Callback<List<Lecture>>() {
+            Call<List<Instruction>> request = service.Instructions(auth_token_string);
+
+            request.enqueue(new Callback<List<Instruction>>() {
                 @Override
-                public void onResponse(Call<List<Lecture>> call, Response<List<Lecture>> response) {
+                public void onResponse(Call<List<Instruction>> call, Response<List<Instruction>> response) {
                     if (response.isSuccessful()) {
-                        mList.clear();
-                        mList = response.body();
+                        mListInstruction.clear();
+                        mListInstruction = response.body();
                         onRequestSuccess();
                     } else {
                         onRequestFailure(response.code());
@@ -114,7 +114,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
                 }
 
                 @Override
-                public void onFailure(Call<List<Lecture>> call, Throwable t) {
+                public void onFailure(Call<List<Instruction>> call, Throwable t) {
                     onRequestFailure(401);
                 }
             });
@@ -124,7 +124,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getLectures();
+                            getInstructions();
                         }
                     }).show();
         }
@@ -156,13 +156,13 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         }
     }
 
-    public List<Lecture> getList() {
-        return mList;
+    public List<Instruction> getList() {
+        return mListInstruction;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Lecture.TAG, (ArrayList<Lecture>) mList);
+        outState.putParcelableArrayList(Instruction.TAG, (ArrayList<Instruction>) mListInstruction);
         outState.putString(User.EMAIL, userEmail);
         super.onSaveInstanceState(outState);
     }

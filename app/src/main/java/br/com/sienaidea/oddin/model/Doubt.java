@@ -3,6 +3,8 @@ package br.com.sienaidea.oddin.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import br.com.sienaidea.oddin.retrofitModel.Person;
+
 public class Doubt implements Parcelable {
 
     public static final String NAME = Doubt.class.getName();

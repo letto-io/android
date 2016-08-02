@@ -24,7 +24,7 @@ import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 
 public class SearchableActivity extends AppCompatActivity implements RecyclerViewOnClickListenerHack, View.OnClickListener {
@@ -87,7 +87,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
                     SearchableProvider.MODE);
             searchRecentSuggestions.saveRecentQuery(query, null);
 
-            mPresentation = intent.getParcelableExtra(Presentation.NAME);
+            mPresentation = intent.getParcelableExtra(Presentation.TAG);
             mDiscipline = intent.getParcelableExtra(Discipline.NAME);
 
             mListDoubt = intent.getParcelableArrayListExtra(Doubt.NAME);
@@ -189,13 +189,13 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
             Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
             intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
             intent.putExtra(Discipline.NAME, mDiscipline);
-            intent.putExtra(Presentation.NAME, mPresentation);
+            intent.putExtra(Presentation.TAG, mPresentation);
             startActivity(intent);
         } else {
             Intent intent = new Intent(SearchableActivity.this, DoubtActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
             Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
-            intent.putExtra(Presentation.NAME, presentation);
+            intent.putExtra(Presentation.TAG, presentation);
             startActivity(intent);
         }
     }

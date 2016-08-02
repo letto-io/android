@@ -32,8 +32,8 @@
     <string name="unauthorized">Email e/ou senha incorretos</string>
 
     <!-- Strings related to adapters -->
-    <string name="adapter_class">Turma </string>
-    <string name="adapter_start_date">Início: </string>
+    <string name="adapter_class">Turma %1$d</string>
+    <string name="adapter_start_date">Início %1$s </string>
     <string name="adapter_like"> curtida</string>
     <string name="adapter_likes"> curtidas</string>
 

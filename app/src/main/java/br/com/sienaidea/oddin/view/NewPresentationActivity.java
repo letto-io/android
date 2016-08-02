@@ -14,10 +14,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.server.HttpApi;
-import br.com.sienaidea.oddin.util.CookieUtil;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +28,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NewPresentationActivity extends AppCompatActivity {
     private EditText mEditTextTheme;
     private Presentation mPresentation;
-    private Discipline mDiscipline;
+    private Instruction mInstruction;
+
     private View mRootLayout;
     private TextInputLayout mTextInputLayoutPresentation;
 
@@ -43,10 +44,10 @@ public class NewPresentationActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mEditTextTheme.setText(savedInstanceState.getString("mEtTheme"));
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
+            mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
-                mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
+                mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
                 finish();
@@ -63,7 +64,7 @@ public class NewPresentationActivity extends AppCompatActivity {
     }
 
     private void newPresentation() {
-        if (!validate()){
+        if (!validate()) {
             return;
         }
 
@@ -76,32 +77,30 @@ public class NewPresentationActivity extends AppCompatActivity {
                     .build();
             HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-            mPresentation = new Presentation(mEditTextTheme.getText().toString());
+            mPresentation = new Presentation();
+            mPresentation.setSubject(mEditTextTheme.getText().toString());
 
-            Call<Presentation> call = service.postPresentation(CookieUtil.getCookie(getApplicationContext()),
-                    String.valueOf(mDiscipline.getInstruction_id()),
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<Presentation> call = service.NewPresentation(auth_token_string,
+                    String.valueOf(mInstruction.getId()),
                     mPresentation);
 
             call.enqueue(new Callback<Presentation>() {
                 @Override
                 public void onResponse(Call<Presentation> call, Response<Presentation> response) {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
-                        return;
+                    if (response.isSuccessful()) {
+                        mPresentation = response.body();
+                        onRequestSuccess();
+                    } else {
+                        onRequestFailure(response.code());
                     }
-
-                    mPresentation = response.body();
-
-                    Intent intentResult = new Intent();
-
-                    intentResult.putExtra(Presentation.NAME, mPresentation);
-                    setResult(RESULT_OK, intentResult);
-                    finish();
                 }
 
                 @Override
                 public void onFailure(Call<Presentation> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
+                    onRequestFailure(401);
                 }
             });
 
@@ -116,10 +115,22 @@ public class NewPresentationActivity extends AppCompatActivity {
         }
     }
 
+    private void onRequestSuccess() {
+        Intent intentResult = new Intent();
+        intentResult.putExtra(Presentation.TAG, mPresentation);
+        setResult(RESULT_OK, intentResult);
+        finish();
+    }
+
+    private void onRequestFailure(int statusCode) {
+        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
+        //TODO
+    }
+
     private boolean validate() {
         boolean valid = true;
 
-        if (TextUtils.isEmpty(mEditTextTheme.getText().toString())) {
+        if (TextUtils.isEmpty(mEditTextTheme.getText().toString().trim())) {
             mTextInputLayoutPresentation.setError(getResources().getString(R.string.error_field_required));
             valid = false;
         } else {
@@ -152,7 +163,7 @@ public class NewPresentationActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("mEtTheme", mEditTextTheme.toString());
-        outState.putParcelable(Discipline.NAME, mDiscipline);
+        outState.putParcelable(Instruction.TAG, mInstruction);
         super.onSaveInstanceState(outState);
     }
 }

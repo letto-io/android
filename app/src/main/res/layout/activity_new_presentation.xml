@@ -19,7 +19,7 @@
         android:layout_below="@+id/tb_new_presentation"
         android:padding="16dp"
         app:counterEnabled="true"
-        app:counterMaxLength="30">
+        app:counterMaxLength="100">
 
         <EditText
             android:id="@+id/input_theme"

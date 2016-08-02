@@ -19,8 +19,8 @@ import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Person;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Person;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.DateUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
@@ -51,7 +51,7 @@ public class NewDoubtActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.NAME) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.NAME);
-                URL_POST_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
+                //URL_POST_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
                 finish();
@@ -111,7 +111,7 @@ public class NewDoubtActivity extends AppCompatActivity {
 
                             Person mPerson = new Person();
                             mPerson.setName(response.getJSONObject("person").getString("name"));
-                            mPerson.setId(response.getString("person_id"));
+                            //mPerson.setId(response.getString("person_id"));
 
                             mDoubt.setPerson(mPerson);
 

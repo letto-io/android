@@ -45,7 +45,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.MaterialPresentationFragment;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Material;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -92,14 +92,14 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList("mList");
-            mPresentation = savedInstanceState.getParcelable(Presentation.NAME);
+            mPresentation = savedInstanceState.getParcelable(Presentation.TAG);
             mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
 
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.NAME) != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
-                mPresentation = getIntent().getParcelableExtra(Presentation.NAME);
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
+                mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
                 mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
-                URL_GET_MATERIAL = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/material";
+                //URL_GET_MATERIAL = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/material";
 
                 loadMaterial();
             } else {
@@ -490,7 +490,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("mList", (ArrayList<Material>) mList);
-        outState.putParcelable(Presentation.NAME, mPresentation);
+        outState.putParcelable(Presentation.TAG, mPresentation);
         outState.putParcelable(Discipline.NAME, mDiscipline);
         super.onSaveInstanceState(outState);
     }

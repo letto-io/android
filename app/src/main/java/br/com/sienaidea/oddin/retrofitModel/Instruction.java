@@ -9,15 +9,18 @@ import android.os.Parcelable;
 public class Instruction implements Parcelable {
     public static String TAG = Instruction.class.getName();
 
-    private int id, event_id, lecture_id;
+    private int id, class_number;
     private String start_date, end_date;
+    private Event event;
+    private Lecture lecture;
 
     protected Instruction(Parcel in) {
         id = in.readInt();
-        event_id = in.readInt();
-        lecture_id = in.readInt();
+        class_number = in.readInt();
         start_date = in.readString();
         end_date = in.readString();
+        event = in.readParcelable(Event.class.getClassLoader());
+        lecture = in.readParcelable(Lecture.class.getClassLoader());
     }
 
     public static final Creator<Instruction> CREATOR = new Creator<Instruction>() {
@@ -40,20 +43,12 @@ public class Instruction implements Parcelable {
         this.id = id;
     }
 
-    public int getEvent_id() {
-        return event_id;
+    public int getClass_number() {
+        return class_number;
     }
 
-    public void setEvent_id(int event_id) {
-        this.event_id = event_id;
-    }
-
-    public int getLecture_id() {
-        return lecture_id;
-    }
-
-    public void setLecture_id(int lecture_id) {
-        this.lecture_id = lecture_id;
+    public void setClass_number(int class_number) {
+        this.class_number = class_number;
     }
 
     public String getStart_date() {
@@ -72,6 +67,22 @@ public class Instruction implements Parcelable {
         this.end_date = end_date;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public Lecture getLecture() {
+        return lecture;
+    }
+
+    public void setLecture(Lecture lecture) {
+        this.lecture = lecture;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -80,9 +91,10 @@ public class Instruction implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(event_id);
-        dest.writeInt(lecture_id);
+        dest.writeInt(class_number);
         dest.writeString(start_date);
         dest.writeString(end_date);
+        dest.writeParcelable(event, flags);
+        dest.writeParcelable(lecture, flags);
     }
 }

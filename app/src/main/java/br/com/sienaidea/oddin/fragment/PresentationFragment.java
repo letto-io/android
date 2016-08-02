@@ -24,7 +24,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 import br.com.sienaidea.oddin.view.PresentationActivity;
 
@@ -51,7 +51,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         PresentationFragment fragment = new PresentationFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Presentation.NAME, (ArrayList<Presentation>) list);
+        args.putParcelableArrayList(Presentation.TAG, (ArrayList<Presentation>) list);
         args.putParcelable(Discipline.NAME, discipline);
         fragment.setArguments(args);
 
@@ -75,7 +75,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mListPresentation = getArguments().getParcelableArrayList(Presentation.NAME);
+        mListPresentation = getArguments().getParcelableArrayList(Presentation.TAG);
         mDiscipline = getArguments().getParcelable(Discipline.NAME);
 
         if (mDiscipline != null)
@@ -152,7 +152,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         Presentation presentation = mAdapterPresentation.getPresentationAdapter(position);
 
         Intent intent = new Intent(mContext, DoubtActivity.class);
-        intent.putExtra(Presentation.NAME, presentation);
+        intent.putExtra(Presentation.TAG, presentation);
         intent.putExtra(Discipline.NAME, mDiscipline);
         mContext.startActivity(intent);
     }

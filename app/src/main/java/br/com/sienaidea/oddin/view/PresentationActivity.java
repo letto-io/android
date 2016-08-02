@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.SearchRecentSuggestions;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -14,34 +15,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterViewPager;
-import br.com.sienaidea.oddin.fragment.PresentationFragment;
 import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
 import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.server.BossClient;
+import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
-import br.com.sienaidea.oddin.util.DateUtil;
+import br.com.sienaidea.oddin.util.DetectConnection;
 import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PresentationActivity extends AppCompatActivity {
     private static String TAB_POSITION = "TAB_POSITION";
@@ -49,8 +52,11 @@ public class PresentationActivity extends AppCompatActivity {
     private static String URL_POST_CLOSE_PRESENTATION;
     private static final int NEW_PRESENTATION_REQUEST = 0;
     private List<Presentation> mList = new ArrayList<>();
+    private List<Instruction> mListInstruction = new ArrayList<>();
     private Presentation mPresentation;
     private Discipline mDiscipline;
+    private Lecture mLecture;
+    private Instruction mInstruction;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private PresentationClosedFragment presentationClosedFragment;
@@ -60,6 +66,7 @@ public class PresentationActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private AdapterViewPager mAdapterViewPager;
     private int mSelectedTabPosition;
+    private View mRootLayout;
 
     private FloatingActionButton fab;
 
@@ -68,20 +75,21 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
 
+        mRootLayout = findViewById(R.id.root_presentation);
+
         mTabLayout = (TabLayout) findViewById(R.id.tab_presentation);
         mViewPager = (ViewPager) findViewById(R.id.vp_presentation);
 
         if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList("mList");
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
-            mPresentation = savedInstanceState.getParcelable(Presentation.NAME);
+            mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
+            mList = savedInstanceState.getParcelableArrayList(Presentation.TAG);
+            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
+
             setupViewPager(mViewPager);
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
-                mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
-                URL_GET_PRESENTATION = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation";
-
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
+                mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -90,7 +98,7 @@ public class PresentationActivity extends AppCompatActivity {
         }
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_presentation);
-        mToolbar.setTitle(mDiscipline.getNome());
+        mToolbar.setTitle(mInstruction.getLecture().getName());
         mToolbar.setSubtitle("Aulas");
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -98,18 +106,20 @@ public class PresentationActivity extends AppCompatActivity {
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fab_presentation);
+        fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
-                intent.putExtra(Discipline.NAME, mDiscipline);
+                intent.putExtra(Instruction.TAG, mInstruction);
                 startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
             }
         });
 
-        if (mDiscipline.getProfile() == 2) {
-            fab.setVisibility(View.VISIBLE);
-        }
+        //TODO validate profile here:
+//        if (mDiscipline.getProfile() == 2) {
+//            fab.setVisibility(View.VISIBLE);
+//        }
     }
 
     public void fabHide(){
@@ -139,54 +149,81 @@ public class PresentationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_PRESENTATION_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                Presentation presentation = data.getParcelableExtra(Presentation.NAME);
+                Presentation presentation = data.getParcelableExtra(Presentation.TAG);
                 presentationOpenFragment.addItemPosition(0, presentation);
                 Toast.makeText(this, R.string.toast_new_presentation_added, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public void getPresentations() {
-        BossClient.get(URL_GET_PRESENTATION, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONArray presentations = response.getJSONArray("presentations");
-                    Log.d("PRESENTATIONS", presentations.toString());
-                    mList.clear();
+    public void getPresentations(){
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-                    for (int i = 0; i < presentations.length(); i++) {
-                        String tempDateFormated = DateUtil.getDateFormat(presentations.getJSONObject(i).getString("createdat"));
-                        mPresentation = new Presentation();
-                        mPresentation.setId(presentations.getJSONObject(i).getInt("id"));
-                        mPresentation.setPersonName(presentations.getJSONObject(i).getJSONObject("person").getString("name"));
-                        mPresentation.setSubject(presentations.getJSONObject(i).getString("subject"));
-                        mPresentation.setStatus(presentations.getJSONObject(i).getInt("status"));
-                        mPresentation.setCreatedat(tempDateFormated);
-                        mPresentation.setInstruction_id(mDiscipline.getInstruction_id());
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-                        addList(mPresentation);
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<List<Presentation>> request = service.Presentations(auth_token_string, mInstruction.getId());
+
+            request.enqueue(new Callback<List<Presentation>>() {
+                @Override
+                public void onResponse(Call<List<Presentation>> call, Response<List<Presentation>> response) {
+                    if (response.isSuccessful()) {
+                        mList.clear();
+                        mList = response.body();
+                        onRequestSuccess();
+                    } else {
+                        onRequestFailure(response.code());
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-                mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
-                setupViewPager(mViewPager);
-                mViewPager.setCurrentItem(mSelectedTabPosition);
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                PresentationFragment presentationFragment = (PresentationFragment) mAdapterViewPager.getItem(mViewPager.getCurrentItem());
-                presentationFragment.swipeRefreshStop();
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Presentation>> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getPresentations();
+                        }
+                    }).show();
+        }
+    }
+
+    private void onRequestSuccess() {
+        mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
+        setupViewPager(mViewPager);
+        mViewPager.setCurrentItem(mSelectedTabPosition);
+    }
+
+    private void onRequestFailure(int statusCode) {
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private List<Presentation> getListOpen() {
         List<Presentation> listAux = new ArrayList<>();
         for (Presentation presentation : mList) {
-            if (presentation.getStatus() == 0) {
+            if (presentation.getStatus() == Presentation.OPEN) {
                 listAux.add(presentation);
             }
         }
@@ -196,7 +233,7 @@ public class PresentationActivity extends AppCompatActivity {
     private List<Presentation> getListClosed() {
         List<Presentation> listAux = new ArrayList<>();
         for (Presentation presentation : mList) {
-            if (presentation.getStatus() == 1) {
+            if (presentation.getStatus() == Presentation.FINISHED) {
                 listAux.add(presentation);
             }
         }
@@ -207,12 +244,8 @@ public class PresentationActivity extends AppCompatActivity {
         return mDiscipline;
     }
 
-    private void addList(Presentation presentation) {
-        mList.add(presentation);
-    }
-
     public void closePresentation(final int position, final Presentation presentation) {
-        URL_POST_CLOSE_PRESENTATION = "controller/instruction/" + presentation.getInstruction_id() + "/presentation/" + presentation.getId() + "/close";
+        //URL_POST_CLOSE_PRESENTATION = "controller/instruction/" + presentation.getInstruction_id() + "/presentation/" + presentation.getId() + "/close";
         BossClient.post(URL_POST_CLOSE_PRESENTATION, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -282,7 +315,7 @@ public class PresentationActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("mList", (ArrayList<Presentation>) mList);
+        outState.putParcelableArrayList(Presentation.TAG, (ArrayList<Presentation>) mList);
         outState.putParcelable(Discipline.NAME, mDiscipline);
         outState.putParcelable(Presentation.NAME, mPresentation);
         outState.putInt(TAB_POSITION, mTabLayout.getSelectedTabPosition());

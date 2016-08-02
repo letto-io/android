@@ -40,8 +40,8 @@ import br.com.sienaidea.oddin.fragment.DoubtFragment;
 import br.com.sienaidea.oddin.fragment.DoubtRankingFragment;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Person;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Person;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
@@ -100,7 +100,7 @@ public class DoubtActivity extends AppCompatActivity {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.NAME) != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.NAME);
                 mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
-                URL_GET_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
+                //URL_GET_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
                 getDoubts();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -188,7 +188,7 @@ public class DoubtActivity extends AppCompatActivity {
                         mDoubt.setPresentation_id(jsonArray.getJSONObject(i).getInt("presentationid"));
 
                         mPerson = new Person();
-                        mPerson.setId(jsonArray.getJSONObject(i).getJSONObject("person").getString("id"));
+                        //mPerson.setId(jsonArray.getJSONObject(i).getJSONObject("person").getString("id"));
                         mPerson.setName(jsonArray.getJSONObject(i).getJSONObject("person").getString("name"));
 
                         mDoubt.setPerson(mPerson);

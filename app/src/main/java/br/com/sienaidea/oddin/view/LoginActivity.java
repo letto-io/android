@@ -2,6 +2,8 @@ package br.com.sienaidea.oddin.view;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +19,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -111,6 +114,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void onLoginSuccess(Session session) {
+        Preference preference = new Preference();
+        preference.setToken(getApplicationContext(), session.getToken());
+
         Intent intent = new Intent(LoginActivity.this, LectureActivity.class);
         intent.putExtra(User.EMAIL, mEmailEditText.getText().toString());
         intent.putExtra(Session.TAG, session);

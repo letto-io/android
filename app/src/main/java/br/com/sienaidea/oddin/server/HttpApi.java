@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
-import br.com.sienaidea.oddin.retrofitModel.Lecture;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -39,6 +38,7 @@ public class HttpApi {
     //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //TESTE
     //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //PRODUÇÃO
     public static final String API_URL = "http://rws-edupanel.herokuapp.com/"; //NEW
+
     /**
      * Generic HttpBin.org Response Container
      */
@@ -108,9 +108,20 @@ public class HttpApi {
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 
-        //Lectures
-        @GET("lectures")
-        Call<List<Lecture>> Lectures(@Header("x-session-token") String token);
+//        //Lectures
+//        @GET("lectures")
+//        Call<List<Lecture>> Lectures(@Header("x-session-token") String token);
+
+        //Presentations
+        @GET("instructions/{instruction_id}/presentations")
+        Call<List<Presentation>> Presentations(@Header("x-session-token") String token,
+                                               @Path("instruction_id") int instruction_id);
+
+        //New Presentation
+        @POST("instructions/{instruction_id}/presentations")
+        Call<Presentation> NewPresentation(@Header("x-session-token") String token,
+                                           @Path("instruction_id") String instruction_id,
+                                           @Body Presentation presentation);
 
 
         //FIM NEW BACK

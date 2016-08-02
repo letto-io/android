@@ -142,7 +142,7 @@ public class MaterialDoubtDetailFragment extends Fragment implements RecyclerVie
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO: chamar metodo understand aqui: 
+                    // TODO: chamar metodo understand aqui:
                     //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
                     Log.d(TAG, "isUnderstand");
                 }

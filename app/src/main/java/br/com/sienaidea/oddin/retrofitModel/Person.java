@@ -1,23 +1,26 @@
-package br.com.sienaidea.oddin.model;
+package br.com.sienaidea.oddin.retrofitModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Person implements Parcelable {
-    private String id, name;
+    public static final String TAG = Person.class.getName();
+
+    private int id;
+    private String name;
 
     public Person() {
     }
 
-    protected Person(Parcel parcel) {
-        setId(parcel.readString());
-        setName(parcel.readString());
+    protected Person(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
     }
 
     public static final Creator<Person> CREATOR = new Creator<Person>() {
         @Override
-        public Person createFromParcel(Parcel source) {
-            return new Person(source);
+        public Person createFromParcel(Parcel in) {
+            return new Person(in);
         }
 
         @Override
@@ -26,11 +29,11 @@ public class Person implements Parcelable {
         }
     };
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -49,7 +52,7 @@ public class Person implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getId());
-        dest.writeString(getName());
+        dest.writeInt(id);
+        dest.writeString(name);
     }
 }

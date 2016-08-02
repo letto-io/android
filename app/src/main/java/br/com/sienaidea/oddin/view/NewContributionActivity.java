@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -57,7 +57,7 @@ public class NewContributionActivity extends AppCompatActivity {
                 mDoubt = getIntent().getParcelableExtra(Doubt.NAME);
                 mPresentation = getIntent().getParcelableExtra(Presentation.NAME);
 
-                URL_POST_CONTRIBUTION = "controller/instruction/"+mPresentation.getInstruction_id()+"/presentation/"+mPresentation.getId()+"/doubt/"+mDoubt.getId()+"/contribution";
+                //URL_POST_CONTRIBUTION = "controller/instruction/"+mPresentation.getInstruction_id()+"/presentation/"+mPresentation.getId()+"/doubt/"+mDoubt.getId()+"/contribution";
 
                 if (mDoubt == null || mPresentation == null) {
                     Toast.makeText(getApplicationContext(), "Falha ao iniciar!", Toast.LENGTH_SHORT).show();
@@ -114,7 +114,7 @@ public class NewContributionActivity extends AppCompatActivity {
 
 
         Call<Void> call = service.postTextContributionMultiPart(CookieUtil.getCookie(getApplicationContext()),
-                String.valueOf(mPresentation.getInstruction_id()),
+                String.valueOf(mPresentation.getId()), //instruction id e não presentation id
                 String.valueOf(mPresentation.getId()),
                 String.valueOf(mDoubt.getId()),
                 textBody);

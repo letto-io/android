@@ -29,7 +29,7 @@ import br.com.sienaidea.oddin.adapter.AdapterDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 
@@ -58,7 +58,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         Bundle args = new Bundle();
         args.putParcelableArrayList(Doubt.NAME, (ArrayList<Doubt>) list);
         args.putParcelable(Discipline.NAME, discipline);
-        args.putParcelable(Presentation.NAME, presentation);
+        args.putParcelable(Presentation.TAG, presentation);
         fragment.setArguments(args);
 
         return fragment;
@@ -102,7 +102,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
         mList = getArguments().getParcelableArrayList(Doubt.NAME);
         mDiscipline = getArguments().getParcelable(Discipline.NAME);
-        mPresentation = getArguments().getParcelable(Presentation.NAME);
+        mPresentation = getArguments().getParcelable(Presentation.TAG);
 
         if (mList != null) {
             mAdapterDoubt = new AdapterDoubt(mContext, mList, mDiscipline.getProfile());
@@ -239,7 +239,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
             Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
             intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
             intent.putExtra(Discipline.NAME, mDiscipline);
-            intent.putExtra(Presentation.NAME, mPresentation);
+            intent.putExtra(Presentation.TAG, mPresentation);
             startActivity(intent);
         }
     }
