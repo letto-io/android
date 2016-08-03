@@ -20,8 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +27,16 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterViewPager;
 import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Lecture;
-import br.com.sienaidea.oddin.server.BossClient;
+import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import cz.msebera.android.httpclient.Header;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,6 +54,7 @@ public class PresentationActivity extends AppCompatActivity {
     private Discipline mDiscipline;
     private Lecture mLecture;
     private Instruction mInstruction;
+    private Profile mProfile;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private PresentationClosedFragment presentationClosedFragment;
@@ -90,6 +88,7 @@ public class PresentationActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
+                getProfile();
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -106,20 +105,6 @@ public class PresentationActivity extends AppCompatActivity {
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fab_presentation);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
-                intent.putExtra(Instruction.TAG, mInstruction);
-                startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
-            }
-        });
-
-        //TODO validate profile here:
-//        if (mDiscipline.getProfile() == 2) {
-//            fab.setVisibility(View.VISIBLE);
-//        }
     }
 
     public void fabHide() {
@@ -128,6 +113,20 @@ public class PresentationActivity extends AppCompatActivity {
 
     public void fabShow() {
         fab.show();
+    }
+
+    private void setupPermission() {
+        if (mProfile.getProfile() == Constants.INSTRUCTOR) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
+                    intent.putExtra(Instruction.TAG, mInstruction);
+                    startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
+                }
+            });
+        }
     }
 
     private void setupViewPager(final ViewPager viewPager) {
@@ -251,6 +250,52 @@ public class PresentationActivity extends AppCompatActivity {
         return mDiscipline;
     }
 
+    private void getProfile() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<Profile> request = service.Profile(auth_token_string, mInstruction.getId());
+
+            request.enqueue(new Callback<Profile>() {
+                @Override
+                public void onResponse(Call<Profile> call, Response<Profile> response) {
+                    if (response.isSuccessful()) {
+                        mProfile = response.body();
+                        setupPermission();
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Profile> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getPresentations();
+                        }
+                    }).show();
+        }
+    }
+
+
     public void closePresentation(final int position, final Presentation presentation) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
@@ -317,7 +362,7 @@ public class PresentationActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.action_attachment) {
-            Intent intent = new Intent(this, DisciplineDetailsActivity.class);
+            Intent intent = new Intent(this, LectureDetailsActivity.class);
             intent.putExtra(Discipline.NAME, mDiscipline);
             startActivity(intent);
         } else if (id == R.id.action_participants) {

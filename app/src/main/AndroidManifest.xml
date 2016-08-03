@@ -26,12 +26,15 @@
             android:authorities="br.com.sienaidea.oddin.provider.SearchableProvider" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".view.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".view.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".view.PresentationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -60,7 +63,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".view.DisciplineDetailsActivity"
+            android:name=".view.LectureDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.PresentationDetailsActivity"

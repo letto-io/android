@@ -63,7 +63,7 @@ import retrofit2.Retrofit;
 
 import static br.com.sienaidea.oddin.R.string.toast_fails_to_start;
 
-public class DisciplineDetailsActivity extends AppCompatActivity {
+public class LectureDetailsActivity extends AppCompatActivity {
     private static String URL_GET_MATERIAL;
     private static int REQUEST_CODE_MATERIAL = 2;
     private static final int REQUEST_PERMISSIONS_UPLOAD = 21;
@@ -85,7 +85,7 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_discipline_details);
+        setContentView(R.layout.activity_lecture_details);
 
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList("mList");
@@ -118,23 +118,23 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //se uma das duas permissões não estiverem liberadas
-                if (ContextCompat.checkSelfPermission(DisciplineDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(DisciplineDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(LectureDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(LectureDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                     //verifica se já foi recusado a permissão de escrita
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(DisciplineDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(LectureDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         callDialog("É preciso a permission WRITE_EXTERNAL_STORAGE para SALVAR o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
                         return;
                     }
 
                     //verifica se já foi recusado a permissão de leitura
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(DisciplineDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(LectureDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         callDialog("É preciso a permission READ_EXTERNAL_STORAGE para LER o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
                         return;
                     }
 
                     //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
-                    ActivityCompat.requestPermissions(DisciplineDetailsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+                    ActivityCompat.requestPermissions(LectureDetailsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
 
                 } else {
                     openFileManager();
@@ -243,7 +243,7 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
             //String size = Long.toString(returnCursor.getLong(sizeIndex));
         }
 
-        final EditText inputName = new EditText(DisciplineDetailsActivity.this);
+        final EditText inputName = new EditText(LectureDetailsActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         inputName.setLayoutParams(lp);
@@ -253,7 +253,7 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
         //android: inputType = " textNoSuggestions "
 
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(DisciplineDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+                new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Novo Material");
         //builder.setMessage(returnUri);
         builder.setView(inputName);
@@ -567,7 +567,7 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
                         fileOutputStream.close();
 
                         AlertDialog.Builder builder =
-                                new AlertDialog.Builder(DisciplineDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+                                new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
                         builder.setMessage("Material salvo em: " + file.getAbsolutePath());
                         builder.setPositiveButton("OK", null);
                         builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
@@ -606,12 +606,12 @@ public class DisciplineDetailsActivity extends AppCompatActivity {
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(DisciplineDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
         builder.setMessage(message);
         builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ActivityCompat.requestPermissions(DisciplineDetailsActivity.this, permissions, requestCode);
+                ActivityCompat.requestPermissions(LectureDetailsActivity.this, permissions, requestCode);
             }
         });
         builder.setNegativeButton(R.string.dialog_cancel, null);

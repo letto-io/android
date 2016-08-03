@@ -11,6 +11,7 @@ import java.util.Map;
 
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -100,26 +101,31 @@ public class HttpApi {
         */
 
         //NEW BACK
-        //Session
+        //Session Ok
         @POST("session")
         Call<Session> Login(@Body User user);
 
-        //Instructions
+        //Profile
+        @GET("instructions/{instruction_id}/profile")
+        Call<Profile> Profile(@Header("x-session-token") String token,
+                              @Path("instruction_id") int instruction_id);
+
+        //Instructions OK
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 
-        //Presentations
+        //Presentations OK
         @GET("instructions/{instruction_id}/presentations")
         Call<List<Presentation>> Presentations(@Header("x-session-token") String token,
                                                @Path("instruction_id") int instruction_id);
 
-        //New Presentation
+        //New Presentation OK
         @POST("instructions/{instruction_id}/presentations")
         Call<Presentation> NewPresentation(@Header("x-session-token") String token,
                                            @Path("instruction_id") String instruction_id,
                                            @Body Presentation presentation);
 
-        //Close Presentation
+        //Close Presentation OK
         @POST("presentations/{presentation_id}/close")
         Call<Presentation> ClosePresentation(@Header("x-session-token") String token,
                                              @Path("presentation_id") int presentation_id);

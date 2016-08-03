@@ -7,5 +7,7 @@ public class Constants {
     public static String MIME_TYPE_AUDIO = "audio/3gpp";
     public static String MIME_TYPE_TEXT = "text/plain";
 
+    public static int INSTRUCTOR = 1;
+
     public static String BASE_URL = "http://rws-edupanel.herokuapp.com/";
 }
