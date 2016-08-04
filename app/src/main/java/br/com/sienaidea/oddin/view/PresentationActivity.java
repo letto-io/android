@@ -49,7 +49,6 @@ public class PresentationActivity extends AppCompatActivity {
     private List<Presentation> mList = new ArrayList<>();
     private Presentation mPresentation;
     private Discipline mDiscipline;
-    private Lecture mLecture;
     private Instruction mInstruction;
     private Profile mProfile;
 
@@ -70,6 +69,9 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
 
+        Preference preference = new Preference();
+        mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
+
         mRootLayout = findViewById(R.id.root_presentation);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_presentation);
@@ -85,7 +87,9 @@ public class PresentationActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-                getProfile();
+                if (mProfile.getProfile() != -1) {
+                    getProfile();
+                }
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -113,6 +117,9 @@ public class PresentationActivity extends AppCompatActivity {
     }
 
     private void setupPermission() {
+        Preference preference = new Preference();
+        preference.setUserProfile(getApplicationContext(), mProfile.getProfile());
+
         if (mProfile.getProfile() == Constants.INSTRUCTOR) {
             fab.setVisibility(View.VISIBLE);
             fab.setOnClickListener(new View.OnClickListener() {

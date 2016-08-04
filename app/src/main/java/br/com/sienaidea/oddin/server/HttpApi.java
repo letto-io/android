@@ -116,10 +116,16 @@ public class HttpApi {
         Call<List<Person>> Participants(@Header("x-session-token") String token,
                                         @Path("instruction_id") int instruction_id);
 
-        //Questions
+        //Questions OK
         @GET("presentations/{presentation_id}/questions")
         Call<List<Question>> Questions(@Header("x-session-token") String token,
                                        @Path("presentation_id") int presentation_id);
+
+        //New Questions
+        @POST("presentations/{presentation_id}/questions")
+        Call<Question> NewQuestion(@Header("x-session-token") String token,
+                                   @Path("presentation_id") int presentation_id,
+                                   @Body Question question);
 
 
         //FIM NEW BACK

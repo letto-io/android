@@ -65,9 +65,9 @@ public class Preference {
         return settings.getString(USER_EMAIL, "");
     }
 
-    public String getUserProfile(Context context) {
+    public int getUserProfile(Context context) {
         //Restaura as preferencias gravadas
         SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
-        return settings.getString(USER_PROFILE, "");
+        return settings.getInt(USER_PROFILE, -1);
     }
 }
