@@ -253,41 +253,4 @@ public class HttpApi {
         });
     }
 
-    public List<Person> getInstructionParticipants(Context context, Instruction instruction) {
-        // Retrofit setup
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // Service setup
-        HttpBinService service = retrofit.create(HttpBinService.class);
-
-        Call<List<Person>> call = service.Participants(getToken(context), instruction.getId());
-
-        // Asynchronously execute HTTP request
-        call.enqueue(new Callback<List<Person>>() {
-            /**
-             * onResponse is called when any kind of response has been received.
-             */
-            @Override
-            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
-                // isSuccess is true if response code => 200 and <= 300
-                if (response.isSuccessful()) {
-                    persons.clear();
-                    persons = response.body();
-                }
-            }
-
-            /**
-             * onFailure gets called when the HTTP request didn't get through.
-             * For instance if the URL is invalid / host not reachable
-             */
-            @Override
-            public void onFailure(Call<List<Person>> call, Throwable t) {
-                onRequestFailure();
-            }
-        });
-        return persons;
-    }
 }
