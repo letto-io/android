@@ -45,11 +45,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PresentationActivity extends AppCompatActivity {
     private static String TAB_POSITION = "TAB_POSITION";
-    private static String URL_GET_PRESENTATION;
-    private static String URL_POST_CLOSE_PRESENTATION;
     private static final int NEW_PRESENTATION_REQUEST = 0;
     private List<Presentation> mList = new ArrayList<>();
-    private List<Instruction> mListInstruction = new ArrayList<>();
     private Presentation mPresentation;
     private Discipline mDiscipline;
     private Lecture mLecture;
@@ -363,11 +360,12 @@ public class PresentationActivity extends AppCompatActivity {
             finish();
         } else if (id == R.id.action_attachment) {
             Intent intent = new Intent(this, LectureDetailsActivity.class);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Instruction.TAG, mInstruction);
+            intent.putExtra(Profile.TAG, mProfile);
             startActivity(intent);
         } else if (id == R.id.action_participants) {
             Intent intent = new Intent(this, ParticipantsActivity.class);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
         } else if (id == R.id.action_remove_sugestions) {
             SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,

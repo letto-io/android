@@ -910,7 +910,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private void uploadFile(final int requestCode, String mimeType) {
 
         if (requestCode == ACTION_GET_CONTENT_REQUEST || requestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
-            mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
+            //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
         }
 
         if (mTempFile != null) {

@@ -17,7 +17,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterParticipant;
-import br.com.sienaidea.oddin.model.Participant;
+import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.view.ParticipantsActivity;
 
 public class ParticipantsFragment extends Fragment {
@@ -27,7 +27,7 @@ public class ParticipantsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
 
-    private List<Participant> mList;
+    private List<Person> mList;
     private AdapterParticipant mAdapter;
     private Context mContext;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -41,12 +41,12 @@ public class ParticipantsFragment extends Fragment {
         super.onAttach(context);
     }
 
-    public static ParticipantsFragment newInstance(List<Participant> list) {
+    public static ParticipantsFragment newInstance(List<Person> list) {
 
         ParticipantsFragment fragment = new ParticipantsFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Participant.NAME, (ArrayList<Participant>) list);
+        args.putParcelableArrayList(Person.TAG, (ArrayList<Person>) list);
         fragment.setArguments(args);
 
         return fragment;
@@ -65,7 +65,7 @@ public class ParticipantsFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mList = getArguments().getParcelableArrayList(Participant.NAME);
+        mList = getArguments().getParcelableArrayList(Person.TAG);
 
         if (mList != null) {
             mAdapter = new AdapterParticipant(mContext, mList);

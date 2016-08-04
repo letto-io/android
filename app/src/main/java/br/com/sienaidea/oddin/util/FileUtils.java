@@ -4,9 +4,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 
+import android.provider.OpenableColumns;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -23,6 +25,67 @@ import java.io.InputStream;
 import br.com.sienaidea.oddin.R;
 
 public class FileUtils {
+
+    //OK
+    public static String getFileName(Context context, Uri uri){
+        Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
+
+        if (returnCursor == null) {
+            return uri.getLastPathSegment();
+        } else {
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            returnCursor.moveToFirst();
+            return returnCursor.getString(nameIndex);
+            //String size = Long.toString(returnCursor.getLong(sizeIndex));
+        }
+    }
+
+    //OK
+    public static String getMimeType(Context context, Uri uri) {
+        return context.getContentResolver().getType(uri);
+    }
+
+    //OK
+    public static InputStream getInputstream(Context context, Uri uri){
+        try {
+            return context.getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    //atual
+    public static File createTempFile(Uri returnUri, String fileName, Context context) {
+        File root = Environment.getExternalStorageDirectory();
+
+        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
+        if (!dirOddin.exists()) {
+            dirOddin.mkdir();
+        }
+
+        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
+        if (!dirDiscipline.exists()) {
+            dirDiscipline.mkdir();
+        }
+
+        final File file = new File(dirDiscipline.getAbsolutePath(), fileName);
+        try {
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(readBytes(getInputstream(context, returnUri)));
+            fileOutputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return file;
+    }
+
+
 
     public static byte[] readBytes(final InputStream inputStream) throws IOException {
         // this dynamically extends to take the bytes you read
@@ -83,21 +146,7 @@ public class FileUtils {
         return videoBytes;
     }
 
-    public static File createTempFile(Uri returnUri, String fileName, Context context, ContentResolver contentResolver) {
-        try {
-            InputStream inputStream = context.getContentResolver().openInputStream(returnUri);
-            byte[] bytes = FileUtils.readBytes(inputStream);
 
-            File tempFile = new File(context.getCacheDir(), fileName);
-            FileOutputStream fos = new FileOutputStream(tempFile);
-            fos.write(bytes);
-            return tempFile;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
@@ -222,4 +271,37 @@ public class FileUtils {
             return null;
         }
     }
+
+    //funcionava na classe lecture details
+//    private File createTempFile() {
+//
+//        File root = Environment.getExternalStorageDirectory();
+//
+//        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
+//        if (!dirOddin.exists()) {
+//            dirOddin.mkdir();
+//        }
+//
+//        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
+//        if (!dirDiscipline.exists()) {
+//            dirDiscipline.mkdir();
+//        }
+//
+//        //final File file = new File(dirDiscipline.getAbsolutePath(), mFileName);
+//        try {
+//
+//            FileOutputStream fileOutputStream = new FileOutputStream(file);
+//            fileOutputStream.write(mBytes);
+//            fileOutputStream.close();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//
+//        return file;
+//
+//
+//
+//    }
 }

@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -7,14 +8,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +20,18 @@ import br.com.sienaidea.oddin.adapter.AdapterViewPager;
 import br.com.sienaidea.oddin.fragment.ParticipantsFragment;
 import br.com.sienaidea.oddin.fragment.ParticipantsOfflineFragment;
 import br.com.sienaidea.oddin.fragment.ParticipantsOnlineFragment;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Participant;
-import br.com.sienaidea.oddin.server.BossClient;
-import br.com.sienaidea.oddin.util.CookieUtil;
-import cz.msebera.android.httpclient.Header;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Person;
+import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ParticipantsActivity extends AppCompatActivity {
-    private static String URL_GET_PARTICIPANTS;
     private static String TAB_POSITION = "TAB_POSITION";
-
-    private List<Participant> mList = new ArrayList<>();
-    private Discipline mDiscipline;
-    private Participant mParticipant;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ParticipantsFragment mParticipantsFragment;
@@ -48,6 +43,9 @@ public class ParticipantsActivity extends AppCompatActivity {
     private AdapterViewPager mAdapterViewPager;
     private int mSelectedTabPosition;
 
+    private Instruction mInstruction;
+    private List<Person> mList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,15 +55,13 @@ public class ParticipantsActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.vp_participants);
 
         if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList("mList");
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
+            mList = savedInstanceState.getParcelableArrayList(Person.TAG);
+            mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
             setupViewPager(mViewPager);
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
-                mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
-                URL_GET_PARTICIPANTS = "controller/instruction/" + mDiscipline.getInstruction_id() + "/participants";
-
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
+                mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
                 getParticipants();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_LONG).show();
@@ -74,7 +70,7 @@ public class ParticipantsActivity extends AppCompatActivity {
         }
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_participants);
-        mToolbar.setTitle(mDiscipline.getNome());
+        mToolbar.setTitle(mInstruction.getLecture().getName());
         mToolbar.setSubtitle("Participantes");
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -100,71 +96,89 @@ public class ParticipantsActivity extends AppCompatActivity {
     }
 
     public void getParticipants() {
-        BossClient.get(URL_GET_PARTICIPANTS, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Call<List<Person>> call = service.Participants(getToken(getApplicationContext()), mInstruction.getId());
+
+        // Asynchronously execute HTTP request
+        call.enqueue(new Callback<List<Person>>() {
+            /**
+             * onResponse is called when any kind of response has been received.
+             */
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                try {
-                    JSONArray participants = response.getJSONArray("participants");
-
-                    mList.clear();
-
-                    for (int i = 0; i < participants.length(); i++) {
-                        mParticipant = new Participant();
-
-                        mParticipant.setName(participants.getJSONObject(i).getString("name"));
-                        mParticipant.setProfile(participants.getJSONObject(i).getInt("profile"));
-                        mParticipant.setOnline(participants.getJSONObject(i).getBoolean("online"));
-
-                        addItemList(mParticipant);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
+                // isSuccess is true if response code => 200 and <= 300
+                if (response.isSuccessful()) {
+                    onRequestSuccess(response.body());
                 }
-
-                mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
-                setupViewPager(mViewPager);
-                mViewPager.setCurrentItem(mSelectedTabPosition);
             }
-
+            /**
+             * onFailure gets called when the HTTP request didn't get through.
+             * For instance if the URL is invalid / host not reachable
+             */
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+            public void onFailure(Call<List<Person>> call, Throwable t) {
+                onRequestFailure();
             }
         });
     }
 
-    private void addItemList(Participant participant) {
-        mList.add(participant);
-    }
-
-    private List<Participant> getListParticipants() {
+    private List<Person> getListParticipants() {
         return mList;
     }
 
-    private List<Participant> getListParticipantsOnline() {
-        List<Participant> listAux = new ArrayList<>();
+    private List<Person> getListParticipantsOnline() {
+        List<Person> listAux = new ArrayList<>();
 
-        for (Participant participant : mList) {
-            if (participant.isOnline()) {
-                listAux.add(participant);
-            }
-        }
+        // TODO: 04/08/2016
+
+//        for (Participant participant : mList) {
+//            if (participant.isOnline()) {
+//                listAux.add(participant);
+//            }
+//        }
 
         return listAux;
     }
 
-    private List<Participant> getListParticipantsOffline() {
-        List<Participant> listAux = new ArrayList<>();
+    private List<Person> getListParticipantsOffline() {
+        List<Person> listAux = new ArrayList<>();
 
-        for (Participant participant : mList) {
-            if (!participant.isOnline()) {
-                listAux.add(participant);
-            }
-        }
+        // TODO: 04/08/2016
+
+//        for (Participant participant : mList) {
+//            if (!participant.isOnline()) {
+//                listAux.add(participant);
+//            }
+//        }
 
         return listAux;
+    }
+
+    private String getToken(Context context) {
+        Preference preference = new Preference();
+        return preference.getToken(context);
+    }
+
+    private void onRequestSuccess(List<Person> list) {
+        mList.clear();
+        mList = list;
+
+        mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
+        setupViewPager(mViewPager);
+        mViewPager.setCurrentItem(mSelectedTabPosition);
+    }
+
+    private static void onRequestFailure() {
+        // TODO: 03/08/2016
+        Log.d("API >>", "onRequestFailure");
     }
 
     @Override
@@ -178,8 +192,8 @@ public class ParticipantsActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(Discipline.NAME, mDiscipline);
-        outState.putParcelableArrayList("mList", (ArrayList<Participant>) mList);
+        outState.putParcelable(Instruction.TAG, mInstruction);
+        outState.putParcelableArrayList(Person.TAG, (ArrayList<Person>) mList);
         outState.putInt(TAB_POSITION, mTabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
     }

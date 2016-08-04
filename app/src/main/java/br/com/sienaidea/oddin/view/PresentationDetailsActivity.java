@@ -271,7 +271,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
     private void uploadFile() {
 
-        mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
+        //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
 
         if (mTempFile != null) {
             // Retrofit setup

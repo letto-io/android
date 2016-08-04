@@ -11,13 +11,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Participant;
+import br.com.sienaidea.oddin.retrofitModel.Person;
 
 public class AdapterParticipant extends RecyclerView.Adapter<AdapterParticipant.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
-    private List<Participant> mList;
+    private List<Person> mList;
 
-    public AdapterParticipant(Context context, List<Participant> list) {
+    public AdapterParticipant(Context context, List<Person> list) {
         this.mList = list;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -30,12 +30,14 @@ public class AdapterParticipant extends RecyclerView.Adapter<AdapterParticipant.
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Participant participant = mList.get(position);
-        holder.getName().setText(participant.getName());
+        Person person = mList.get(position);
+        holder.getName().setText(person.getName());
 
-        if (participant.isOnline()) {
-            holder.ivParticipantOnline.setVisibility(View.VISIBLE);
-        }
+        // TODO: 04/08/2016
+
+//        if (participant.isOnline()) {
+//            holder.ivParticipantOnline.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Override

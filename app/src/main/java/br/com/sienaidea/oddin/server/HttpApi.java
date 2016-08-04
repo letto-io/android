@@ -1,15 +1,20 @@
 package br.com.sienaidea.oddin.server;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Session;
@@ -36,9 +41,10 @@ import retrofit2.http.Query;
 
 public class HttpApi {
 
-    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //TESTE
-    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //PRODUÇÃO
-    public static final String API_URL = "http://rws-edupanel.herokuapp.com/"; //NEW
+    Context mContext;
+    private List<Person> persons = new ArrayList<>();
+
+    public static final String API_URL = "http://rws-edupanel.herokuapp.com/";
 
     /**
      * Generic HttpBin.org Response Container
@@ -67,45 +73,12 @@ public class HttpApi {
      * HttpBin.org service definition
      */
     public interface HttpBinService {
-        @GET("/get")
-        Call<HttpBinResponse> get();
-
-        // request /get?testArg=...
-        @GET("/get")
-        Call<HttpBinResponse> getWithArg(
-                @Query("testArg") String arg
-        );
-
-        // POST form encoded with form field params
-        @FormUrlEncoded
-        @POST("/post")
-        Call<HttpBinResponse> postWithFormParams(
-                @Field("field1") String field1
-        );
-
-        /* POST form encoded with form field params
-        @POST("/post")
-        Call<HttpBinResponse> postWithJson(
-                @Body LoginData loginData
-        );*/
-
-        /* POST form encoded with form field params FUNCIONOU OK
-        @POST("/controller/login")
-        Call<Void> postWithJsonLogin(@Body User user);*/
-
-         /*FUNCIONOU COM VOID
-        @POST("controller/instruction/{instruction_id}/presentation")
-        Call<Void> postWithJsonPresentation(@Header("Cookie") String cookie,
-                                            @Path("instruction_id") String instruction_id,
-                                            @Body PresentationRetrofit presentation);
-        */
-
         //NEW BACK
-        //Session Ok
+        //Session OK
         @POST("session")
         Call<Session> Login(@Body User user);
 
-        //Profile
+        //Profile OK
         @GET("instructions/{instruction_id}/profile")
         Call<Profile> Profile(@Header("x-session-token") String token,
                               @Path("instruction_id") int instruction_id);
@@ -113,6 +86,13 @@ public class HttpApi {
         //Instructions OK
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
+
+        //new Instruction Material (Bruno disse que ainda não esta funcionando)
+        @Multipart
+        @POST("instructions/{instruction_id}/materials/new")
+        Call<Void> createInstructionMaterial(@Header("x-session-token") String token,
+                                             @Path("instruction_id") int instruction_id,
+                                             @Part MultipartBody.Part file);
 
         //Presentations OK
         @GET("instructions/{instruction_id}/presentations")
@@ -130,19 +110,14 @@ public class HttpApi {
         Call<Presentation> ClosePresentation(@Header("x-session-token") String token,
                                              @Path("presentation_id") int presentation_id);
 
+        //Participants
+        @GET("instructions/{instruction_id}/participants")
+        Call<List<Person>> Participants(@Header("x-session-token") String token,
+                                        @Path("instruction_id") int instruction_id);
+
 
         //FIM NEW BACK
 
-
-        //Login
-        @POST("/controller/login")
-        Call<Void> postLogin(@Body User user);
-
-        //new Presentation OK
-        @POST("controller/instruction/{instruction_id}/presentation")
-        Call<Presentation> postPresentation(@Header("Cookie") String cookie,
-                                            @Path("instruction_id") String instruction_id,
-                                            @Body Presentation presentation);
 
         //change Status Doubt TESTAR
         @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/change-status")
@@ -167,12 +142,6 @@ public class HttpApi {
                                 @Path("instruction_id") String instruction_id,
                                 @Part MultipartBody.Part file);
 
-        //new Material Discipline TESTE
-        @Multipart
-        @POST("controller/instruction/{instruction_id}/material")
-        Call<Void> postMaterialDisciplineTeste(@Header("Cookie") String cookie,
-                                               @Path("instruction_id") String instruction_id,
-                                               @Part MultipartBody.Part file);
 
         //getMaterial Presentation TESTAR
         @GET("controller/instruction/{instruction_id}/presentation/{presentation_id}/material")
@@ -228,7 +197,63 @@ public class HttpApi {
 
     }
 
-    public static void testApiRequest(String instruction_id, File file, Context context) {
+    private static String getToken(Context context) {
+        Preference preference = new Preference();
+        return preference.getToken(context);
+    }
+
+    private static void onRequestSuccess() {
+        // TODO: 03/08/2016
+        Log.d("API >>", "onRequestSuccess");
+    }
+
+    private static void onRequestFailure() {
+        // TODO: 03/08/2016
+        Log.d("API >>", "onRequestFailure");
+    }
+
+    public static void newMaterial(Context context, Instruction instruction, File file, String mimeType) {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .build();
+
+        // Service setup
+        HttpBinService service = retrofit.create(HttpBinService.class);
+
+        // Prepare the HTTP request
+        RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        Call<Void> call = service.createInstructionMaterial(getToken(context), instruction.getId(), body);
+
+        // Asynchronously execute HTTP request
+        call.enqueue(new Callback<Void>() {
+            /**
+             * onResponse is called when any kind of response has been received.
+             */
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                // isSuccess is true if response code => 200 and <= 300
+                if (response.isSuccessful()) {
+                    onRequestSuccess();
+                }
+            }
+
+            /**
+             * onFailure gets called when the HTTP request didn't get through.
+             * For instance if the URL is invalid / host not reachable
+             */
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                onRequestFailure();
+            }
+        });
+    }
+
+    public List<Person> getInstructionParticipants(Context context, Instruction instruction) {
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
@@ -238,35 +263,20 @@ public class HttpApi {
         // Service setup
         HttpBinService service = retrofit.create(HttpBinService.class);
 
-        // Prepare the HTTP request
-        RequestBody requestFile = RequestBody.create(MediaType.parse("application/pdf"), file);
-
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-
-        Call<Void> call = service.postMaterial(CookieUtil.getCookie(context), instruction_id, body);
+        Call<List<Person>> call = service.Participants(getToken(context), instruction.getId());
 
         // Asynchronously execute HTTP request
-        call.enqueue(new Callback<Void>() {
+        call.enqueue(new Callback<List<Person>>() {
             /**
              * onResponse is called when any kind of response has been received.
              */
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                // http response status code + headers
-                System.out.println("Response status code: " + response.code());
-
+            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
                 // isSuccess is true if response code => 200 and <= 300
-                if (!response.isSuccessful()) {
-                    // print response body if unsuccessful
-                    try {
-                        System.out.println(response.errorBody().string());
-                    } catch (IOException e) {
-                        // do nothing
-                    }
-                    return;
+                if (response.isSuccessful()) {
+                    persons.clear();
+                    persons = response.body();
                 }
-
             }
 
             /**
@@ -274,10 +284,10 @@ public class HttpApi {
              * For instance if the URL is invalid / host not reachable
              */
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                System.out.println("onFailure");
-                System.out.println(t.getMessage());
+            public void onFailure(Call<List<Person>> call, Throwable t) {
+                onRequestFailure();
             }
         });
+        return persons;
     }
 }
