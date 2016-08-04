@@ -17,6 +17,7 @@ import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.util.CookieUtil;
@@ -110,16 +111,21 @@ public class HttpApi {
         Call<Presentation> ClosePresentation(@Header("x-session-token") String token,
                                              @Path("presentation_id") int presentation_id);
 
-        //Participants
+        //Participants OK
         @GET("instructions/{instruction_id}/participants")
         Call<List<Person>> Participants(@Header("x-session-token") String token,
                                         @Path("instruction_id") int instruction_id);
+
+        //Questions
+        @GET("presentations/{presentation_id}/questions")
+        Call<List<Question>> Questions(@Header("x-session-token") String token,
+                                       @Path("presentation_id") int presentation_id);
 
 
         //FIM NEW BACK
 
 
-        //change Status Doubt TESTAR
+        //change Status Question TESTAR
         @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/change-status")
         Call<Void> changeStatusDoubt(@Header("Cookie") String cookie,
                                      @Path("instruction_id") String instruction_id,
@@ -127,12 +133,12 @@ public class HttpApi {
                                      @Path("doubt_id") String doubt_id,
                                      @Body String json);
 
-        /*new Doubt
+        /*new Question
         @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt")
-        Call<Doubt> postDoubt(@Header("Cookie") String cookie,
+        Call<Question> postDoubt(@Header("Cookie") String cookie,
                               @Path("instruction_id") String instruction_id,
                               @Path("presentation_id") String presentation_id,
-                              @Body Doubt doubt);
+                              @Body Question doubt);
         */
 
         //new Material Discipline OK

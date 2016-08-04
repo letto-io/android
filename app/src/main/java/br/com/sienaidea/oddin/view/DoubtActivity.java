@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.SearchRecentSuggestions;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -43,8 +45,10 @@ import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DateUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
@@ -66,7 +70,7 @@ public class DoubtActivity extends AppCompatActivity {
     private Person mPerson;
     private Presentation mPresentation;
     private Discipline mDiscipline;
-    private List<Doubt> mList = new ArrayList<>();
+    //private List<Doubt> mList = new ArrayList<>();
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private DoubtFragment mDoubtFragment;
@@ -77,6 +81,9 @@ public class DoubtActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private AdapterViewPager mAdapterViewPager;
+
+    private View mRootLayout;
+    private List<Question> mList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +96,8 @@ public class DoubtActivity extends AppCompatActivity {
         mTabLayout.setTabTextColors(ContextCompat.getColorStateList(this, R.xml.selector));
         mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.colorAccent));
 
+        mRootLayout = findViewById(R.id.root_question);
+
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList(Doubt.ARRAYLIST);
             mPresentation = savedInstanceState.getParcelable(Presentation.NAME);
@@ -97,11 +106,10 @@ public class DoubtActivity extends AppCompatActivity {
             mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
             setupViewPager(mViewPager);
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.NAME) != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
-                mPresentation = getIntent().getParcelableExtra(Presentation.NAME);
-                mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null ) {
+                mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
                 //URL_GET_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
-                getDoubts();
+                getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
                 finish();
@@ -110,13 +118,14 @@ public class DoubtActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_doubt);
         mToolbar.setTitle(mPresentation.getSubject());
-        mToolbar.setSubtitle(mDiscipline.getNome());
+        //mToolbar.setSubtitle(mDiscipline.getNome());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,27 +135,27 @@ public class DoubtActivity extends AppCompatActivity {
             }
         });
 
-        if (!(mDiscipline.getProfile() == Discipline.TEACHER)) {
-            fab.setVisibility(View.VISIBLE);
-//            if (!(mPresentation.getStatus() == Presentation.FINISHED)) {
-//                fab.setVisibility(View.VISIBLE);
-//            }
-        }
+//        if (!(mDiscipline.getProfile() == Discipline.TEACHER)) {
+//            fab.setVisibility(View.VISIBLE);
+////            if (!(mPresentation.getStatus() == Presentation.FINISHED)) {
+////                fab.setVisibility(View.VISIBLE);
+////            }
+//        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        mDoubtFragment = DoubtFragment.newInstance(getListDoubt(), mDiscipline, mPresentation);
+        mDoubtFragment = DoubtFragment.newInstance(getListQuestions(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtFragment, DoubtFragment.ALL);
 
-        mDoubtOpenFragment = DoubtOpenFragment.newInstance(getListOpen(), mDiscipline, mPresentation);
+        mDoubtOpenFragment = DoubtOpenFragment.newInstance(getListOpen(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtOpenFragment, DoubtOpenFragment.OPEN);
 
-        mDoubtClosedFragment = DoubtClosedFragment.newInstance(getListClose(), mDiscipline, mPresentation);
+        mDoubtClosedFragment = DoubtClosedFragment.newInstance(getListClose(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtClosedFragment, DoubtClosedFragment.CLOSED);
 
-        mDoubtRankingFragment = DoubtRankingFragment.newInstance(getListDoubt(), mDiscipline, mPresentation);
+        mDoubtRankingFragment = DoubtRankingFragment.newInstance(getListQuestions(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtRankingFragment, DoubtRankingFragment.RANKING);
 
         viewPager.setAdapter(mAdapterViewPager);
@@ -154,62 +163,69 @@ public class DoubtActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
-    public void getDoubts() {
-        BossClient.get(URL_GET_DOUBTS, null, CookieUtil.getCookie(getApplicationContext()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject doubts = response.getJSONObject("doubts");
-                    Log.d("DOUBTS", doubts.toString());
+    public void getQuestions(){
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-                    Iterator keys = doubts.keys();
+            // Service setup
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-                    JSONArray jsonArray = new JSONArray();
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
 
-                    while (keys.hasNext()) {
-                        String key = (String) keys.next();
-                        jsonArray.put(doubts.get(key));
+            Call<List<Question>> request = service.Questions(auth_token_string, mPresentation.getId());
+
+            request.enqueue(new Callback<List<Question>>() {
+                @Override
+                public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
+                    if (response.isSuccessful()) {
+                        mList.clear();
+                        mList = response.body();
+                        onRequestSuccess();
+                    } else {
+                        onRequestFailure(response.code());
                     }
-
-                    mList.clear();
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        String tempTimeFormat = DateUtil.getTimeFormat(jsonArray.getJSONObject(i).getString("createdat"));
-                        mDoubt = new Doubt();
-                        mDoubt.setId(jsonArray.getJSONObject(i).getInt("id"));
-                        mDoubt.setLike(jsonArray.getJSONObject(i).getBoolean("like"));
-                        mDoubt.setLikes(jsonArray.getJSONObject(i).getInt("likes"));
-                        mDoubt.setContributions(jsonArray.getJSONObject(i).getInt("contributions"));
-                        mDoubt.setCreatedat(jsonArray.getJSONObject(i).getString("createdat"));
-                        mDoubt.setTime(tempTimeFormat);
-                        mDoubt.setAnonymous(jsonArray.getJSONObject(i).getBoolean("anonymous"));
-                        mDoubt.setText(jsonArray.getJSONObject(i).getString("text"));
-                        mDoubt.setStatus(jsonArray.getJSONObject(i).getInt("status"));
-                        mDoubt.setPresentation_id(jsonArray.getJSONObject(i).getInt("presentationid"));
-
-                        mPerson = new Person();
-                        //mPerson.setId(jsonArray.getJSONObject(i).getJSONObject("person").getString("id"));
-                        mPerson.setName(jsonArray.getJSONObject(i).getJSONObject("person").getString("name"));
-
-                        mDoubt.setPerson(mPerson);
-
-                        addList(mDoubt);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
 
-                mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
-                setupViewPager(mViewPager);
-                mViewPager.setCurrentItem(mSelectedTabPosition);
-            }
+                @Override
+                public void onFailure(Call<List<Question>> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                //doubtFragment.swipeRefreshStop();
-            }
-        });
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getQuestions();
+                        }
+                    }).show();
+        }
+
+    }
+
+    private void onRequestSuccess() {
+        mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
+        setupViewPager(mViewPager);
+        mViewPager.setCurrentItem(mSelectedTabPosition);
+    }
+
+    private void onRequestFailure(int statusCode) {
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     public void like(final int position, Doubt doubt) {
@@ -304,29 +320,29 @@ public class DoubtActivity extends AppCompatActivity {
 
                 DoubtFragment fragment = (DoubtFragment) mAdapterViewPager.getItem(mViewPager.getCurrentItem());
 
-                if (fragment instanceof DoubtOpenFragment) {
-                    doubt.setStatus(status);
-                    fragment.removeItem(position);
-                    mDoubtClosedFragment.addItemPosition(0, doubt);
-                    mDoubtFragment.notifyDataSetChanged();
-                } else if (fragment instanceof DoubtClosedFragment) {
-                    doubt.setStatus(status);
-                    mDoubtOpenFragment.addItemPosition(0, doubt);
-                    fragment.removeItem(position);
-                    mDoubtFragment.notifyDataSetChanged();
-                } else {
-
-                    fragment.notifyLock(position, status);
-                    mDoubtRankingFragment.notifyDataSetChanged();
-
-                    if (status == Doubt.CLOSED) {
-                        doubt.setStatus(status);
-                        mDoubtClosedFragment.addItemPosition(0, doubt);
-                    } else {
-                        mDoubtClosedFragment.removeItem(doubt);
-                    }
-
-                }
+//                if (fragment instanceof DoubtOpenFragment) {
+//                    doubt.setStatus(status);
+//                    fragment.removeItem(position);
+//                    mDoubtClosedFragment.addItemPosition(0, doubt);
+//                    mDoubtFragment.notifyDataSetChanged();
+//                } else if (fragment instanceof DoubtClosedFragment) {
+//                    doubt.setStatus(status);
+//                    mDoubtOpenFragment.addItemPosition(0, doubt);
+//                    fragment.removeItem(position);
+//                    mDoubtFragment.notifyDataSetChanged();
+//                } else {
+//
+//                    fragment.notifyLock(position, status);
+//                    mDoubtRankingFragment.notifyDataSetChanged();
+//
+//                    if (status == Doubt.CLOSED) {
+//                        doubt.setStatus(status);
+//                        mDoubtClosedFragment.addItemPosition(0, doubt);
+//                    } else {
+//                        mDoubtClosedFragment.removeItem(doubt);
+//                    }
+//
+//                }
             }
 
             @Override
@@ -366,7 +382,7 @@ public class DoubtActivity extends AppCompatActivity {
                         return;
                     }
                     mDoubtFragment.notifyLock(position, status);
-                    getDoubts();
+                    getQuestions();
                 }
 
                 @Override
@@ -380,34 +396,34 @@ public class DoubtActivity extends AppCompatActivity {
         }
     }
 
-    private List<Doubt> getListDoubt() {
+    private List<Question> getListQuestions() {
         return mList;
     }
 
-    private List<Doubt> getListOpen() {
-        List<Doubt> listAux = new ArrayList<>();
+    private List<Question> getListOpen() {
+        List<Question> listAux = new ArrayList<>();
 
-        for (Doubt doubt : mList) {
-            if ((doubt.getStatus() == 0) || (doubt.getStatus() == 1)) {
-                listAux.add(doubt);
-            }
-        }
+        // TODO: 04/08/2016
+
+//        for (Doubt doubt : mList) {
+//            if ((doubt.getStatus() == 0) || (doubt.getStatus() == 1)) {
+//                listAux.add(doubt);
+//            }
+//        }
         return listAux;
     }
 
-    public List<Doubt> getListClose() {
-        List<Doubt> listaAux = new ArrayList<>();
+    public List<Question> getListClose() {
+        List<Question> listaAux = new ArrayList<>();
 
-        for (Doubt doubt : mList) {
-            if (doubt.getStatus() == 2) {
-                listaAux.add(doubt);
-            }
-        }
+        // TODO: 04/08/2016
+
+//        for (Doubt doubt : mList) {
+//            if (doubt.getStatus() == 2) {
+//                listaAux.add(doubt);
+//            }
+//        }
         return listaAux;
-    }
-
-    private void addList(Doubt doubt) {
-        mList.add(doubt);
     }
 
     public Discipline getDiscipline() {
@@ -454,7 +470,7 @@ public class DoubtActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Doubt.ARRAYLIST, (ArrayList<Doubt>) mList);
+        outState.putParcelableArrayList(Question.TAG, (ArrayList<Question>) mList);
         outState.putParcelable(Presentation.NAME, mPresentation);
         outState.putParcelable(Discipline.NAME, mDiscipline);
         outState.putParcelable(Doubt.NAME, mDoubt);
@@ -466,11 +482,11 @@ public class DoubtActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_DOUBT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                Doubt doubt = data.getParcelableExtra(Doubt.NAME);
+                Question question = data.getParcelableExtra(Question.TAG);
 
                 Toast.makeText(getApplication(), "Nova dúvida adicionada...", Toast.LENGTH_SHORT).show();
-                mDoubtFragment.addItemPosition(0, doubt);
-                mDoubtOpenFragment.addItemPosition(0, doubt);
+                mDoubtFragment.addItemPosition(0, question);
+                mDoubtOpenFragment.addItemPosition(0, question);
             }
         }
     }
@@ -479,7 +495,7 @@ public class DoubtActivity extends AppCompatActivity {
     public void startActivity(Intent intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            intent.putParcelableArrayListExtra(Doubt.NAME, (ArrayList<Doubt>) mList);
+            intent.putParcelableArrayListExtra(Question.TAG, (ArrayList<Question>) mList);
             intent.putExtra(Presentation.NAME, mPresentation);
             intent.putExtra(Discipline.NAME, mDiscipline);
         }

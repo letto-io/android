@@ -122,21 +122,21 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     */
 
     public void filterDoubts(String query) {
-        isDoubt = true;
-        mListAuxDoubt.clear();
-
-        for (Doubt doubt : mListDoubt) {
-            if (doubt.getText().toLowerCase().contains(query.toLowerCase())) {
-                mListAuxDoubt.add(doubt);
-            }
-        }
-
-        if (mListAuxDoubt.isEmpty()){
-            Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
-        }
-
-        mAdapterDoubt = new AdapterDoubt(this, mListAuxDoubt, mDiscipline.getProfile());
-        mRecyclerView.setAdapter(mAdapterDoubt);
+//        isDoubt = true;
+//        mListAuxDoubt.clear();
+//
+//        for (Doubt doubt : mListDoubt) {
+//            if (doubt.getText().toLowerCase().contains(query.toLowerCase())) {
+//                mListAuxDoubt.add(doubt);
+//            }
+//        }
+//
+//        if (mListAuxDoubt.isEmpty()){
+//            Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        mAdapterDoubt = new AdapterDoubt(this, mListAuxDoubt, mDiscipline.getProfile());
+//        mRecyclerView.setAdapter(mAdapterDoubt);
     }
 
     public void filterPresentations(String query) {

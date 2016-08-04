@@ -15,19 +15,19 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Doubt;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 
 public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder> {
 
     private LayoutInflater mLayoutInflater;
-    private List<Doubt> mList;
-    private int mProfile;
+    private List<Question> mList;
+    //private int mProfile;
     private Context mContext;
 
-    public AdapterDoubt(Context c, List<Doubt> doubtList, int profile) {
-        mContext = c;
-        mProfile = profile;
+    public AdapterDoubt(Context context, List<Question> doubtList) {
+        mContext = context;
         mList = doubtList;
-        mLayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -38,35 +38,35 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
-        Doubt mDoubt = mList.get(position);
+        Question mQuestion = mList.get(position);
 
-        myViewHolder.tvPersonName.setText(mDoubt.getPerson().getName());
-        myViewHolder.tvText.setText(mDoubt.getText());
-        myViewHolder.tvTime.setText(mDoubt.getTime());
+        myViewHolder.tvPersonName.setText(mQuestion.getPerson().getName());
+        myViewHolder.tvText.setText(mQuestion.getText());
+        myViewHolder.tvTime.setText(mQuestion.getCreated_at());
 
-        myViewHolder.tvLike.setText(mDoubt.getLikes() + "");
+        myViewHolder.tvLike.setText(mQuestion.getUpvotes() + "");
 
-        if (mProfile == 2) {
-            myViewHolder.ivLock.setVisibility(View.VISIBLE);
-            //myViewHolder.tvLike.setClickable(false);
-            myViewHolder.tvLike.setEnabled(false);
-            //myViewHolder.tvUnderstand.setVisibility(View.GONE);
-        } else {
-            myViewHolder.ivLock.setVisibility(View.GONE);
-            if (mDoubt.getStatus() == 2) {
-                myViewHolder.ivClosed.setVisibility(View.VISIBLE);
-            }
-        }
+//        if (mProfile == 2) {
+//            myViewHolder.ivLock.setVisibility(View.VISIBLE);
+//            //myViewHolder.tvLike.setClickable(false);
+//            myViewHolder.tvLike.setEnabled(false);
+//            //myViewHolder.tvUnderstand.setVisibility(View.GONE);
+//        } else {
+//            myViewHolder.ivLock.setVisibility(View.GONE);
+////            if (mQuestion.getStatus() == 2) {
+////                myViewHolder.ivClosed.setVisibility(View.VISIBLE);
+////            }
+//        }
 
-        if (mDoubt.getContributions() > 0) {
+        if (mQuestion.getAnswers().isEmpty()) {
             myViewHolder.ivComment.setVisibility(View.VISIBLE);
         } else myViewHolder.ivLock.setEnabled(false);
 
-        if (mDoubt.getStatus() == 2) {
-            myViewHolder.ivLock.setImageResource(R.drawable.ic_lock_outline);
-        }
+//        if (mQuestion.getStatus() == 2) {
+//            myViewHolder.ivLock.setImageResource(R.drawable.ic_lock_outline);
+//        }
 
-        if (mDoubt.isLike()) {
+        if (mQuestion.getMy_vote() != 0) {
             Drawable mDrawable = colorize(R.drawable.ic_chevron_up_white, R.color.colorAccent);
             myViewHolder.tvLike.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
         }
@@ -85,49 +85,49 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
         return mList.size();
     }
 
-    public Doubt getDoubtAdapter(int position) {
+    public Question getDoubtAdapter(int position) {
         return mList.get(position);
     }
 
-    public void updateList(List<Doubt> list) {
+    public void updateList(List<Question> list) {
         mList = list;
         notifyDataSetChanged();
     }
 
-    public void addItemPosition(int position, Doubt doubt) {
-        mList.add(position, doubt);
+    public void addItemPosition(int position, Question question) {
+        mList.add(position, question);
         notifyItemInserted(position);
     }
 
-    public void addItem(Doubt doubt) {
-        mList.add(doubt);
+    public void addItem(Question question) {
+        mList.add(question);
     }
 
     public void like(int position) {
-        mList.get(position).setLike(true);
-        mList.get(position).like();
-        notifyItemChanged(position);
+//        mList.get(position).setLike(true);
+//        mList.get(position).like();
+//        notifyItemChanged(position);
     }
 
     public void unLike(int position) {
-        mList.get(position).setLike(false);
-        mList.get(position).removeLike();
-        notifyItemChanged(position);
+//        mList.get(position).setLike(false);
+//        mList.get(position).removeLike();
+//        notifyItemChanged(position);
     }
 
     public void understand(int position) {
-        mList.get(position).setUnderstand(true);
-        notifyItemChanged(position);
+//        mList.get(position).setUnderstand(true);
+//        notifyItemChanged(position);
     }
 
     public void removeUnderstand(int position) {
-        mList.get(position).setUnderstand(false);
-        notifyItemChanged(position);
+//        mList.get(position).setUnderstand(false);
+//        notifyItemChanged(position);
     }
 
     public void changeStatus(int position, int status) {
-        mList.get(position).setStatus(status);
-        notifyItemChanged(position);
+//        mList.get(position).setStatus(status);
+//        notifyItemChanged(position);
     }
 
     public void removeItem(int position) {
@@ -135,7 +135,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
         notifyItemRemoved(position);
     }
 
-    public void notifyItemChanged(Doubt doubt){
+    public void notifyItemChanged(Doubt doubt) {
         notifyItemChanged(mList.indexOf(doubt));
     }
 

@@ -27,17 +27,16 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
-import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 
 public class DoubtFragment extends Fragment implements RecyclerViewOnClickListenerHack, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Doubt> mList;
-    private Discipline mDiscipline;
+    private List<Question> mList;
     private Presentation mPresentation;
     private AdapterDoubt mAdapterDoubt;
     private Context mContext;
@@ -51,13 +50,12 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
     private static String UNDERSTAND = "UNDERSTAND";
     private static String LOCK = "LOCK";
 
-    public static DoubtFragment newInstance(List<Doubt> list, Discipline discipline, Presentation presentation) {
+    public static DoubtFragment newInstance(List<Question> list, Presentation presentation) {
 
         DoubtFragment fragment = new DoubtFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Doubt.NAME, (ArrayList<Doubt>) list);
-        args.putParcelable(Discipline.NAME, discipline);
+        args.putParcelableArrayList(Question.TAG, (ArrayList<Question>) list);
         args.putParcelable(Presentation.TAG, presentation);
         fragment.setArguments(args);
 
@@ -89,7 +87,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((DoubtActivity) getActivity()).getDoubts();
+                ((DoubtActivity) getActivity()).getQuestions();
             }
         });
 
@@ -100,12 +98,11 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mList = getArguments().getParcelableArrayList(Doubt.NAME);
-        mDiscipline = getArguments().getParcelable(Discipline.NAME);
+        mList = getArguments().getParcelableArrayList(Question.TAG);
         mPresentation = getArguments().getParcelable(Presentation.TAG);
 
         if (mList != null) {
-            mAdapterDoubt = new AdapterDoubt(mContext, mList, mDiscipline.getProfile());
+            mAdapterDoubt = new AdapterDoubt(mContext, mList);
             mAdapterDoubt.updateList(mList);
             mRecyclerView.setAdapter(mAdapterDoubt);
             if (mList.isEmpty())
@@ -144,14 +141,14 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         else setEmpty(false);
     }
 
-    public void addItemPosition(int position, Doubt doubt) {
-        mAdapterDoubt.addItemPosition(position, doubt);
+    public void addItemPosition(int position, Question question) {
+        mAdapterDoubt.addItemPosition(position, question);
         mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, position);
         checkState();
     }
 
-    public void addItem(Doubt doubt) {
-        mAdapterDoubt.addItem(doubt);
+    public void addItem(Question question) {
+        mAdapterDoubt.addItem(question);
         checkState();
     }
 
@@ -191,57 +188,57 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
     @Override
     public void onClickListener(View view, final int position, String option) {
-        final Doubt doubt = mAdapterDoubt.getDoubtAdapter(position);
-        if (option != null) {
-            if (option.equals(LIKE) && mDiscipline.getProfile() == 0) {
-                if (mList.get(position).isLike()) {
-                    ((DoubtActivity) getActivity()).removeLike(position, doubt);
-                } else {
-                    ((DoubtActivity) getActivity()).like(position, doubt);
-                }
-            } else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
-                if (mList.get(position).isUnderstand()) {
-                    ((DoubtActivity) getActivity()).removeUnderstand(position, doubt);
-                } else {
-                    ((DoubtActivity) getActivity()).understand(position, doubt);
-                }
-            } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-
-                if (mList.get(position).getStatus() == 0) {
-                    if (mList.get(position).getContributions() > 0) {
-                        builder.setNegativeButton(R.string.dialog_cancel, null);
-                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ((DoubtActivity) getActivity()).changeStatus(position, doubt, 2);
-                            }
-                        });
-                        builder.setMessage(R.string.dialog_close_doubt);
-                        builder.show();
-                    } else {
-                        Toast.makeText(mContext, "Não permitido fechar dúvida sem contribuição!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    builder.setNegativeButton(R.string.dialog_cancel, null);
-                    builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ((DoubtActivity) getActivity()).changeStatus(position, doubt, 0);
-                        }
-                    });
-                    builder.setMessage(R.string.dialog_open_doubt);
-                    builder.show();
-                }
-            }
-        } else {
-            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
-            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
-            intent.putExtra(Discipline.NAME, mDiscipline);
-            intent.putExtra(Presentation.TAG, mPresentation);
-            startActivity(intent);
-        }
+//        final Doubt doubt = mAdapterDoubt.getDoubtAdapter(position);
+//        if (option != null) {
+//            if (option.equals(LIKE) && mDiscipline.getProfile() == 0) {
+//                if (mList.get(position).isLike()) {
+//                    ((DoubtActivity) getActivity()).removeLike(position, doubt);
+//                } else {
+//                    ((DoubtActivity) getActivity()).like(position, doubt);
+//                }
+//            } else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
+//                if (mList.get(position).isUnderstand()) {
+//                    ((DoubtActivity) getActivity()).removeUnderstand(position, doubt);
+//                } else {
+//                    ((DoubtActivity) getActivity()).understand(position, doubt);
+//                }
+//            } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+//
+//                if (mList.get(position).getStatus() == 0) {
+//                    if (mList.get(position).getContributions() > 0) {
+//                        builder.setNegativeButton(R.string.dialog_cancel, null);
+//                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ((DoubtActivity) getActivity()).changeStatus(position, doubt, 2);
+//                            }
+//                        });
+//                        builder.setMessage(R.string.dialog_close_doubt);
+//                        builder.show();
+//                    } else {
+//                        Toast.makeText(mContext, "Não permitido fechar dúvida sem contribuição!", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    builder.setNegativeButton(R.string.dialog_cancel, null);
+//                    builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            ((DoubtActivity) getActivity()).changeStatus(position, doubt, 0);
+//                        }
+//                    });
+//                    builder.setMessage(R.string.dialog_open_doubt);
+//                    builder.show();
+//                }
+//            }
+//        } else {
+//            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
+//            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
+//            intent.putExtra(Discipline.NAME, mDiscipline);
+//            intent.putExtra(Presentation.TAG, mPresentation);
+//            startActivity(intent);
+//        }
     }
 
     @Override
