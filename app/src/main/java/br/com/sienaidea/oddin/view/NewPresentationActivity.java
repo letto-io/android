@@ -116,6 +116,7 @@ public class NewPresentationActivity extends AppCompatActivity {
     }
 
     private void onRequestSuccess() {
+        Toast.makeText(getApplication(), "Enviado...", Toast.LENGTH_LONG).show();
         Intent intentResult = new Intent();
         intentResult.putExtra(Presentation.TAG, mPresentation);
         setResult(RESULT_OK, intentResult);

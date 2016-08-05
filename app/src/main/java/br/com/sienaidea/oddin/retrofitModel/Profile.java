@@ -12,6 +12,9 @@ public class Profile implements Parcelable {
     private int profile;
     private Person person;
 
+    public Profile() {
+    }
+
     protected Profile(Parcel in) {
         profile = in.readInt();
         person = in.readParcelable(Person.class.getClassLoader());

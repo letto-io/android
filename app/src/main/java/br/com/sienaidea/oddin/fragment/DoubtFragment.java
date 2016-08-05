@@ -110,6 +110,10 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         }
     }
 
+    public void notifyItemChanged(Question question) {
+        mAdapterDoubt.notifyItemChanged(question);
+    }
+
     public void swipeRefreshStop() {
         mSwipeRefreshLayout.setRefreshing(false);
     }
@@ -121,9 +125,6 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         checkState();
     }
 
-    public void notifyItemChanged(Doubt doubt) {
-        mAdapterDoubt.notifyItemChanged(doubt);
-    }
 
     private void setEmpty(boolean isEmpty) {
         if (isEmpty) {
@@ -188,15 +189,12 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
     @Override
     public void onClickListener(View view, final int position, String option) {
-//        final Doubt doubt = mAdapterDoubt.getDoubtAdapter(position);
-//        if (option != null) {
-//            if (option.equals(LIKE) && mDiscipline.getProfile() == 0) {
-//                if (mList.get(position).isLike()) {
-//                    ((DoubtActivity) getActivity()).removeLike(position, doubt);
-//                } else {
-//                    ((DoubtActivity) getActivity()).like(position, doubt);
-//                }
-//            } else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
+        final Question question = mAdapterDoubt.getDoubtAdapter(position);
+        if (option != null) {
+            if (option.equals(LIKE)) {
+                ((DoubtActivity) getActivity()).voteQuestion(position, question);
+            }
+//            else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
 //                if (mList.get(position).isUnderstand()) {
 //                    ((DoubtActivity) getActivity()).removeUnderstand(position, doubt);
 //                } else {
@@ -232,13 +230,14 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 //                    builder.show();
 //                }
 //            }
-//        } else {
+        } else {
+            // TODO: 05/08/2016 chamar a doubt details
 //            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
 //            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
 //            intent.putExtra(Discipline.NAME, mDiscipline);
 //            intent.putExtra(Presentation.TAG, mPresentation);
 //            startActivity(intent);
-//        }
+        }
     }
 
     @Override
@@ -254,8 +253,8 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         private GestureDetector mGestureDetector;
         private RecyclerViewOnClickListenerHack mRecyclerViewOnClickListenerHack;
 
-        public RecyclerViewTouchListener(Context c, final RecyclerView recyclerView, RecyclerViewOnClickListenerHack rvoclh) {
-            mContext = c;
+        public RecyclerViewTouchListener(Context context, final RecyclerView recyclerView, RecyclerViewOnClickListenerHack rvoclh) {
+            mContext = context;
             mRecyclerViewOnClickListenerHack = rvoclh;
 
             mGestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {

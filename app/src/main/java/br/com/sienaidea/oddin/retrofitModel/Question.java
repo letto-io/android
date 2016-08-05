@@ -3,32 +3,31 @@ package br.com.sienaidea.oddin.retrofitModel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
-
 /**
  * Created by Siena Idea on 04/08/2016.
  */
 public class Question implements Parcelable {
     public static final String TAG = Question.class.getName();
 
-    private int id, upvotes, downvotes, my_vote;
+    private int id, upvotes, my_vote;
     private String text, created_at;
-    private boolean anonymous;
+    private boolean anonymous, answer;
     private Presentation presentation;
     private Person person;
-    private List<Answer> answers;
+
+    public Question() {
+    }
 
     protected Question(Parcel in) {
         id = in.readInt();
         upvotes = in.readInt();
-        downvotes = in.readInt();
         my_vote = in.readInt();
         text = in.readString();
         created_at = in.readString();
         anonymous = in.readByte() != 0;
+        answer = in.readByte() != 0;
         presentation = in.readParcelable(Presentation.class.getClassLoader());
         person = in.readParcelable(Person.class.getClassLoader());
-        answers = in.createTypedArrayList(Answer.CREATOR);
     }
 
     public static final Creator<Question> CREATOR = new Creator<Question>() {
@@ -57,14 +56,6 @@ public class Question implements Parcelable {
 
     public void setUpvotes(int upvotes) {
         this.upvotes = upvotes;
-    }
-
-    public int getDownvotes() {
-        return downvotes;
-    }
-
-    public void setDownvotes(int downvotes) {
-        this.downvotes = downvotes;
     }
 
     public int getMy_vote() {
@@ -99,6 +90,14 @@ public class Question implements Parcelable {
         this.anonymous = anonymous;
     }
 
+    public boolean isAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(boolean answer) {
+        this.answer = answer;
+    }
+
     public Presentation getPresentation() {
         return presentation;
     }
@@ -115,14 +114,6 @@ public class Question implements Parcelable {
         this.person = person;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -132,13 +123,12 @@ public class Question implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeInt(upvotes);
-        dest.writeInt(downvotes);
         dest.writeInt(my_vote);
         dest.writeString(text);
         dest.writeString(created_at);
         dest.writeByte((byte) (anonymous ? 1 : 0));
+        dest.writeByte((byte) (answer ? 1 : 0));
         dest.writeParcelable(presentation, flags);
         dest.writeParcelable(person, flags);
-        dest.writeTypedList(answers);
     }
 }

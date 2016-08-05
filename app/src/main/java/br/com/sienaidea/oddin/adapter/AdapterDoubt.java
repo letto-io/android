@@ -58,7 +58,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 ////            }
 //        }
 
-        if (mQuestion.getAnswers().isEmpty()) {
+        if (mQuestion.isAnswer()) {
             myViewHolder.ivComment.setVisibility(View.VISIBLE);
         } else myViewHolder.ivLock.setEnabled(false);
 
@@ -135,7 +135,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
         notifyItemRemoved(position);
     }
 
-    public void notifyItemChanged(Doubt doubt) {
+    public void notifyItemChanged(Question doubt) {
         notifyItemChanged(mList.indexOf(doubt));
     }
 

@@ -2,25 +2,22 @@ package br.com.sienaidea.oddin.server;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -28,7 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -38,7 +34,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public class HttpApi {
 
@@ -121,12 +116,21 @@ public class HttpApi {
         Call<List<Question>> Questions(@Header("x-session-token") String token,
                                        @Path("presentation_id") int presentation_id);
 
-        //New Questions
+        //New Question OK
         @POST("presentations/{presentation_id}/questions")
         Call<Question> NewQuestion(@Header("x-session-token") String token,
                                    @Path("presentation_id") int presentation_id,
                                    @Body Question question);
 
+        //UpVote Question OK
+        @POST("questions/{question_id}/upvote")
+        Call<ResponseVote> UpVoteQuestion(@Header("x-session-token") String token,
+                                          @Path("question_id") int question_id);
+
+        //DownVote Question
+        @POST("questions/{question_id}/downvote")
+        Call<ResponseVote> DownVoteQuestion(@Header("x-session-token") String token,
+                                            @Path("question_id") int question_id);
 
         //FIM NEW BACK
 

@@ -9,14 +9,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,14 +22,11 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -40,17 +35,19 @@ import br.com.sienaidea.oddin.fragment.DoubtClosedFragment;
 import br.com.sienaidea.oddin.fragment.DoubtOpenFragment;
 import br.com.sienaidea.oddin.fragment.DoubtFragment;
 import br.com.sienaidea.oddin.fragment.DoubtRankingFragment;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
+import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
-import br.com.sienaidea.oddin.util.DateUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
@@ -84,11 +81,15 @@ public class DoubtActivity extends AppCompatActivity {
 
     private View mRootLayout;
     private List<Question> mList = new ArrayList<>();
+    private Profile mProfile = new Profile();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doubt);
+
+        Preference preference = new Preference();
+        mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_doubts);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -106,9 +107,11 @@ public class DoubtActivity extends AppCompatActivity {
             mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
             setupViewPager(mViewPager);
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null ) {
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
-                //URL_GET_DOUBTS = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/doubt";
+//                if (mProfile.getProfile() == -1) {
+//                    onRequestFailure(401);
+//                }
                 getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -125,22 +128,19 @@ public class DoubtActivity extends AppCompatActivity {
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplication(), NewDoubtActivity.class);
-                intent.putExtra(Presentation.NAME, mPresentation);
-                startActivityForResult(intent, NEW_DOUBT_REQUEST);
+        if (mProfile.getProfile() != Constants.INSTRUCTOR) {
+            if (mPresentation.getStatus() != Presentation.FINISHED) {
+                fab.setVisibility(View.VISIBLE);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplication(), NewDoubtActivity.class);
+                        intent.putExtra(Presentation.NAME, mPresentation);
+                        startActivityForResult(intent, NEW_DOUBT_REQUEST);
+                    }
+                });
             }
-        });
-
-//        if (!(mDiscipline.getProfile() == Discipline.TEACHER)) {
-//            fab.setVisibility(View.VISIBLE);
-////            if (!(mPresentation.getStatus() == Presentation.FINISHED)) {
-////                fab.setVisibility(View.VISIBLE);
-////            }
-//        }
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -163,7 +163,7 @@ public class DoubtActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
-    public void getQuestions(){
+    public void getQuestions() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup
@@ -228,38 +228,77 @@ public class DoubtActivity extends AppCompatActivity {
         }
     }
 
-    public void like(final int position, Doubt doubt) {
-        URL_POST_LIKE = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/like";
+    public void voteQuestion(final int position, final Question question) {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        BossClient.post(URL_POST_LIKE, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mDoubtFragment.notifyLike(position, true);
+            // Service setup
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseVote> request;
+
+            if (question.getMy_vote() != 0) {
+                request = service.DownVoteQuestion(auth_token_string, question.getId());
+            } else {
+                request = service.UpVoteQuestion(auth_token_string, question.getId());
             }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                if (statusCode == 401) {
-                    Toast.makeText(getApplication(), "Você não pode ranquear sua propria dúvida!", Toast.LENGTH_SHORT).show();
+            request.enqueue(new Callback<ResponseVote>() {
+                @Override
+                public void onResponse(Call<ResponseVote> call, Response<ResponseVote> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().isUp()) {
+                            question.setMy_vote(1);
+                            question.setUpvotes(question.getUpvotes() + 1);
+                        } else {
+                            question.setMy_vote(0);
+                            question.setUpvotes(question.getUpvotes() - 1);
+                        }
+                        mDoubtFragment.notifyItemChanged(question);
+                    } else {
+                        onRequestFailure(response.code());
+                    }
                 }
-            }
-        });
+
+                @Override
+                public void onFailure(Call<ResponseVote> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getQuestions();
+                        }
+                    }).show();
+        }
     }
 
-    public void removeLike(final int position, Doubt doubt) {
-        URL_DELETE_LIKE = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/like";
-
-        BossClient.delete(URL_DELETE_LIKE, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mDoubtFragment.notifyLike(position, false);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplication(), "Não foi possível completar sua requisição", Toast.LENGTH_SHORT).show();
-            }
-        });
+    public void removeLike(final int position, Question doubt) {
+//        URL_DELETE_LIKE = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/like";
+//
+//        BossClient.delete(URL_DELETE_LIKE, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+//                mDoubtFragment.notifyLike(position, false);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//                Toast.makeText(getApplication(), "Não foi possível completar sua requisição", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     public void understand(final int position, Doubt doubt) {
@@ -403,27 +442,23 @@ public class DoubtActivity extends AppCompatActivity {
     private List<Question> getListOpen() {
         List<Question> listAux = new ArrayList<>();
 
-        // TODO: 04/08/2016
-
-//        for (Doubt doubt : mList) {
-//            if ((doubt.getStatus() == 0) || (doubt.getStatus() == 1)) {
-//                listAux.add(doubt);
-//            }
-//        }
+        for (Question question : mList) {
+            if (!question.isAnswer()) {
+                listAux.add(question);
+            }
+        }
         return listAux;
     }
 
-    public List<Question> getListClose() {
-        List<Question> listaAux = new ArrayList<>();
+    private List<Question> getListClose() {
+        List<Question> listAux = new ArrayList<>();
 
-        // TODO: 04/08/2016
-
-//        for (Doubt doubt : mList) {
-//            if (doubt.getStatus() == 2) {
-//                listaAux.add(doubt);
-//            }
-//        }
-        return listaAux;
+        for (Question question : mList) {
+            if (question.isAnswer()) {
+                listAux.add(question);
+            }
+        }
+        return listAux;
     }
 
     public Discipline getDiscipline() {
@@ -483,8 +518,6 @@ public class DoubtActivity extends AppCompatActivity {
         if (requestCode == NEW_DOUBT_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 Question question = data.getParcelableExtra(Question.TAG);
-
-                Toast.makeText(getApplication(), "Nova dúvida adicionada...", Toast.LENGTH_SHORT).show();
                 mDoubtFragment.addItemPosition(0, question);
                 mDoubtOpenFragment.addItemPosition(0, question);
             }

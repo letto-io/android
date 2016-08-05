@@ -50,7 +50,7 @@ public class PresentationActivity extends AppCompatActivity {
     private Presentation mPresentation;
     private Discipline mDiscipline;
     private Instruction mInstruction;
-    private Profile mProfile;
+    private Profile mProfile = new Profile();
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private PresentationClosedFragment presentationClosedFragment;

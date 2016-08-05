@@ -14,7 +14,7 @@ public class Presentation implements Parcelable {
     public static final int FINISHED = 1;
 
     private int id, status;
-    private String subject;
+    private String subject, created_at;
     private Instruction instruction;
     private Person person;
 
@@ -25,6 +25,7 @@ public class Presentation implements Parcelable {
         id = in.readInt();
         status = in.readInt();
         subject = in.readString();
+        created_at = in.readString();
         instruction = in.readParcelable(Instruction.class.getClassLoader());
         person = in.readParcelable(Person.class.getClassLoader());
     }
@@ -65,6 +66,14 @@ public class Presentation implements Parcelable {
         this.subject = subject;
     }
 
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
     public Instruction getInstruction() {
         return instruction;
     }
@@ -81,7 +90,6 @@ public class Presentation implements Parcelable {
         this.person = person;
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -92,6 +100,7 @@ public class Presentation implements Parcelable {
         dest.writeInt(id);
         dest.writeInt(status);
         dest.writeString(subject);
+        dest.writeString(created_at);
         dest.writeParcelable(instruction, flags);
         dest.writeParcelable(person, flags);
     }

@@ -33,7 +33,7 @@ public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentatio
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         myViewHolder.tvTheme.setText(mList.get(position).getSubject());
-       // myViewHolder.tvDate.setText(mList.get(position).get);
+        myViewHolder.tvDate.setText(mList.get(position).getCreated_at());
 
         try {
             YoYo.with(Techniques.ZoomIn)
