@@ -20,12 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,22 +30,15 @@ import br.com.sienaidea.oddin.fragment.DoubtOpenFragment;
 import br.com.sienaidea.oddin.fragment.DoubtFragment;
 import br.com.sienaidea.oddin.fragment.DoubtRankingFragment;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.retrofitModel.Person;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
-import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.entity.StringEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,15 +46,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DoubtActivity extends AppCompatActivity {
-    private static String URL_GET_DOUBTS, URL_POST_LIKE, URL_DELETE_LIKE, URL_POST_UNDERSTAND, URL_REMOVE_UNDERSTAND, URL_POST_CHANGE_STATUS;
     private static String TAB_POSITION = "TAB_POSITION";
     static final int NEW_DOUBT_REQUEST = 1;
     private int mSelectedTabPosition;
-    private Doubt mDoubt;
-    private Person mPerson;
     private Presentation mPresentation;
-    private Discipline mDiscipline;
-    //private List<Doubt> mList = new ArrayList<>();
+    private Instruction mInstruction;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private DoubtFragment mDoubtFragment;
@@ -100,15 +83,15 @@ public class DoubtActivity extends AppCompatActivity {
         mRootLayout = findViewById(R.id.root_question);
 
         if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList(Doubt.ARRAYLIST);
+            mList = savedInstanceState.getParcelableArrayList(Question.TAG);
             mPresentation = savedInstanceState.getParcelable(Presentation.NAME);
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
-            mDoubt = savedInstanceState.getParcelable(Doubt.NAME);
+            mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
             setupViewPager(mViewPager);
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
+                mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
 //                if (mProfile.getProfile() == -1) {
 //                    onRequestFailure(401);
 //                }
@@ -121,7 +104,7 @@ public class DoubtActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_doubt);
         mToolbar.setTitle(mPresentation.getSubject());
-        //mToolbar.setSubtitle(mDiscipline.getNome());
+        mToolbar.setSubtitle(mInstruction.getLecture().getName());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -135,7 +118,7 @@ public class DoubtActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getApplication(), NewDoubtActivity.class);
-                        intent.putExtra(Presentation.NAME, mPresentation);
+                        intent.putExtra(Presentation.TAG, mPresentation);
                         startActivityForResult(intent, NEW_DOUBT_REQUEST);
                     }
                 });
@@ -228,7 +211,7 @@ public class DoubtActivity extends AppCompatActivity {
         }
     }
 
-    public void voteQuestion(final int position, final Question question) {
+    public void voteQuestion(final Question question) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup
@@ -245,7 +228,7 @@ public class DoubtActivity extends AppCompatActivity {
 
             Call<ResponseVote> request;
 
-            if (question.getMy_vote() != 0) {
+            if (question.getMy_vote() > 0) {
                 request = service.DownVoteQuestion(auth_token_string, question.getId());
             } else {
                 request = service.UpVoteQuestion(auth_token_string, question.getId());
@@ -262,7 +245,7 @@ public class DoubtActivity extends AppCompatActivity {
                             question.setMy_vote(0);
                             question.setUpvotes(question.getUpvotes() - 1);
                         }
-                        mDoubtFragment.notifyItemChanged(question);
+                        fragmentNotifyItemChanged(question);
                     } else {
                         onRequestFailure(response.code());
                     }
@@ -285,153 +268,20 @@ public class DoubtActivity extends AppCompatActivity {
         }
     }
 
-    public void removeLike(final int position, Question doubt) {
-//        URL_DELETE_LIKE = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/like";
-//
-//        BossClient.delete(URL_DELETE_LIKE, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                mDoubtFragment.notifyLike(position, false);
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                Toast.makeText(getApplication(), "Não foi possível completar sua requisição", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-    }
-
-    public void understand(final int position, Doubt doubt) {
-        URL_POST_UNDERSTAND = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/understand";
-
-        BossClient.post(URL_POST_UNDERSTAND, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mDoubtFragment.notifyUnderstand(position, true);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                switch (statusCode) {
-                    case 401:
-                        Toast.makeText(getApplication(), "401 - Inautorizado", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        Toast.makeText(getApplication(), "Não foi possível completar sua requisição", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    public void removeUnderstand(final int position, Doubt doubt) {
-        URL_REMOVE_UNDERSTAND = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/understand";
-
-        BossClient.post(URL_REMOVE_UNDERSTAND, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mDoubtFragment.notifyUnderstand(position, false);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplication(), R.string.error_could_not_complete_your_request, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void changeStatus(final int position, final Doubt doubt, final int status) {
-        URL_POST_CHANGE_STATUS = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + doubt.getPresentation_id() + "/doubt/" + doubt.getId() + "/change-status";
-
-        HttpEntity entity = null;
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("status", status);
-
-            entity = new StringEntity(jsonObject.toString(), "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        BossClient.post(getApplicationContext(), URL_POST_CHANGE_STATUS, entity, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                DoubtFragment fragment = (DoubtFragment) mAdapterViewPager.getItem(mViewPager.getCurrentItem());
-
-//                if (fragment instanceof DoubtOpenFragment) {
-//                    doubt.setStatus(status);
-//                    fragment.removeItem(position);
-//                    mDoubtClosedFragment.addItemPosition(0, doubt);
-//                    mDoubtFragment.notifyDataSetChanged();
-//                } else if (fragment instanceof DoubtClosedFragment) {
-//                    doubt.setStatus(status);
-//                    mDoubtOpenFragment.addItemPosition(0, doubt);
-//                    fragment.removeItem(position);
-//                    mDoubtFragment.notifyDataSetChanged();
-//                } else {
-//
-//                    fragment.notifyLock(position, status);
-//                    mDoubtRankingFragment.notifyDataSetChanged();
-//
-//                    if (status == Doubt.CLOSED) {
-//                        doubt.setStatus(status);
-//                        mDoubtClosedFragment.addItemPosition(0, doubt);
-//                    } else {
-//                        mDoubtClosedFragment.removeItem(doubt);
-//                    }
-//
-//                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplication(), "Não foi possivel completar sua requisição", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public void changeStatusDoubt(final int position, Doubt doubt, final int status) {
-        DetectConnection mDetectConnection = new DetectConnection(getApplicationContext());
-
-        if (mDetectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
-            JSONArray json = new JSONArray();
-            json.put(status);
-
-            Gson gson = new Gson();
-
-            Call<Void> call = service.changeStatusDoubt(CookieUtil.getCookie(getApplicationContext()),
-                    String.valueOf(mDiscipline.getInstruction_id()),
-                    String.valueOf(mPresentation.getId()),
-                    String.valueOf(doubt.getId()),
-                    gson.toJson(json));
-
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    mDoubtFragment.notifyLock(position, status);
-                    getQuestions();
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        } else {
-            Toast.makeText(getApplicationContext(), "Sem Internet!", Toast.LENGTH_LONG).show();
+    private void fragmentNotifyItemChanged(Question question) {
+        switch (mViewPager.getCurrentItem()) {
+            case 0:
+                mDoubtFragment.notifyItemChanged(question);
+                break;
+            case 1:
+                mDoubtOpenFragment.notifyItemChanged(question);
+                break;
+            case 2:
+                mDoubtClosedFragment.notifyItemChanged(question);
+                break;
+            case 3:
+                mDoubtRankingFragment.notifyItemChanged(question);
+                break;
         }
     }
 
@@ -461,10 +311,6 @@ public class DoubtActivity extends AppCompatActivity {
         return listAux;
     }
 
-    public Discipline getDiscipline() {
-        return mDiscipline;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_act_doubts, menu);
@@ -487,8 +333,8 @@ public class DoubtActivity extends AppCompatActivity {
             finish();
         } else if (id == R.id.action_attachment) {
             Intent intent = new Intent(this, PresentationDetailsActivity.class);
-            intent.putExtra(Presentation.NAME, mPresentation);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Presentation.TAG, mPresentation);
+            intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
         } else if (id == R.id.action_remove_sugestions) {
             SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
@@ -506,9 +352,8 @@ public class DoubtActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Question.TAG, (ArrayList<Question>) mList);
-        outState.putParcelable(Presentation.NAME, mPresentation);
-        outState.putParcelable(Discipline.NAME, mDiscipline);
-        outState.putParcelable(Doubt.NAME, mDoubt);
+        outState.putParcelable(Presentation.TAG, mPresentation);
+        outState.putParcelable(Instruction.TAG, mInstruction);
 
         super.onSaveInstanceState(outState);
     }
@@ -520,6 +365,8 @@ public class DoubtActivity extends AppCompatActivity {
                 Question question = data.getParcelableExtra(Question.TAG);
                 mDoubtFragment.addItemPosition(0, question);
                 mDoubtOpenFragment.addItemPosition(0, question);
+                // TODO: 09/08/2016 fazer o ranking
+                //mDoubtRankingFragment.addItem(question);
             }
         }
     }
@@ -529,8 +376,8 @@ public class DoubtActivity extends AppCompatActivity {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putParcelableArrayListExtra(Question.TAG, (ArrayList<Question>) mList);
-            intent.putExtra(Presentation.NAME, mPresentation);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Presentation.TAG, mPresentation);
+            intent.putExtra(Instruction.TAG, mInstruction);
         }
         super.startActivity(intent);
     }

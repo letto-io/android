@@ -44,7 +44,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.sienaidea.oddin.DAO.MaterialDAO;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.MaterialDisciplineFragment;
 import br.com.sienaidea.oddin.model.Constants;
@@ -255,8 +254,8 @@ public class LectureDetailsActivity extends AppCompatActivity {
     }
 
     private void uploadFile() {
-        MaterialDAO materialDAO = new MaterialDAO(getApplicationContext(), mInstruction, returnUri, mFileName);
-        materialDAO.createInstructionMaterial();
+//        MaterialDAO materialDAO = new MaterialDAO(getApplicationContext(), mInstruction, returnUri, mFileName);
+//        materialDAO.createInstructionMaterial();
     }
 
 //    private void uploadtesteFile() {

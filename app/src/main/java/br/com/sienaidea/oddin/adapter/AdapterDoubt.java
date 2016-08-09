@@ -66,10 +66,10 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 //            myViewHolder.ivLock.setImageResource(R.drawable.ic_lock_outline);
 //        }
 
-        if (mQuestion.getMy_vote() != 0) {
-            Drawable mDrawable = colorize(R.drawable.ic_chevron_up_white, R.color.colorAccent);
-            myViewHolder.tvLike.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
-        }
+//        if (mQuestion.getMy_vote() != 0) {
+//            Drawable mDrawable = colorize(R.drawable.ic_chevron_up_white, R.color.colorAccent);
+//            myViewHolder.tvLike.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
+//        }
 
         /*
         if (mDoubt.isUnderstand()) {

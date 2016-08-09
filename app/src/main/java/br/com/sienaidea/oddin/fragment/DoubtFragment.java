@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -189,17 +190,12 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
     @Override
     public void onClickListener(View view, final int position, String option) {
+        Log.d("DEBUG >>>", "OnClickDuvida");
         final Question question = mAdapterDoubt.getDoubtAdapter(position);
         if (option != null) {
             if (option.equals(LIKE)) {
-                ((DoubtActivity) getActivity()).voteQuestion(position, question);
+                ((DoubtActivity) getActivity()).voteQuestion(question);
             }
-//            else if (option.equals(UNDERSTAND) && mDiscipline.getProfile() == 0) {
-//                if (mList.get(position).isUnderstand()) {
-//                    ((DoubtActivity) getActivity()).removeUnderstand(position, doubt);
-//                } else {
-//                    ((DoubtActivity) getActivity()).understand(position, doubt);
-//                }
 //            } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
 //
 //                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);

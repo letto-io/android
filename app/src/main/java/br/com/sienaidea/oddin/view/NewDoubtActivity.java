@@ -56,6 +56,7 @@ public class NewDoubtActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_doubt);
         mToolbar.setTitle("Nova dúvida");
+        mToolbar.setSubtitle(mPresentation.getSubject());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -28,11 +28,9 @@ import br.com.sienaidea.oddin.adapter.AdapterViewPager;
 import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
-import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
@@ -47,8 +45,6 @@ public class PresentationActivity extends AppCompatActivity {
     private static String TAB_POSITION = "TAB_POSITION";
     private static final int NEW_PRESENTATION_REQUEST = 0;
     private List<Presentation> mList = new ArrayList<>();
-    private Presentation mPresentation;
-    private Discipline mDiscipline;
     private Instruction mInstruction;
     private Profile mProfile = new Profile();
 
@@ -79,9 +75,8 @@ public class PresentationActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
-            mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
             mList = savedInstanceState.getParcelableArrayList(Presentation.TAG);
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
+            mViewPager.setCurrentItem(savedInstanceState.getInt(TAB_POSITION));
 
             setupViewPager(mViewPager);
         } else {
@@ -136,8 +131,8 @@ public class PresentationActivity extends AppCompatActivity {
     private void setupViewPager(final ViewPager viewPager) {
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        presentationOpenFragment = PresentationOpenFragment.newInstance(getListOpen(), mDiscipline);
-        presentationClosedFragment = PresentationClosedFragment.newInstance(getListClosed(), mDiscipline);
+        presentationOpenFragment = PresentationOpenFragment.newInstance(getListOpen(), mInstruction);
+        presentationClosedFragment = PresentationClosedFragment.newInstance(getListClosed(), mInstruction);
 
         mAdapterViewPager.addFragment(presentationOpenFragment, PresentationOpenFragment.OPEN);
         mAdapterViewPager.addFragment(presentationClosedFragment, PresentationClosedFragment.CLOSED);
@@ -248,10 +243,6 @@ public class PresentationActivity extends AppCompatActivity {
             }
         }
         return listAux;
-    }
-
-    public Discipline getDiscipline() {
-        return mDiscipline;
     }
 
     private void getProfile() {
@@ -392,17 +383,17 @@ public class PresentationActivity extends AppCompatActivity {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putParcelableArrayListExtra(Presentation.ARRAYLIST, (ArrayList<Presentation>) mList);
-            intent.putExtra(Presentation.NAME, mPresentation);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Instruction.TAG, mInstruction);
+            //intent.putExtra(Presentation.TAG, mPresentation);
+            //intent.putExtra(Discipline.NAME, mDiscipline);
         }
         super.startActivity(intent);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Presentation.TAG, (ArrayList<Presentation>) mList);
-        outState.putParcelable(Discipline.NAME, mDiscipline);
-        outState.putParcelable(Presentation.NAME, mPresentation);
+        outState.putParcelableArrayList(Presentation.ARRAYLIST, (ArrayList<Presentation>) mList);
+        outState.putParcelable(Instruction.TAG, mInstruction);
         outState.putInt(TAB_POSITION, mTabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
     }

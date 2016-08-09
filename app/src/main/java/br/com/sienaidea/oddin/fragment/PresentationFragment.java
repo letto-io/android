@@ -24,6 +24,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Discipline;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 import br.com.sienaidea.oddin.view.PresentationActivity;
@@ -34,7 +35,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
     private List<Presentation> mListPresentation;
     private AdapterPresentation mAdapterPresentation;
     private Context mContext;
-    private Discipline mDiscipline;
+    private Instruction mInstruction;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -46,13 +47,13 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         super.onAttach(context);
     }
 
-    public static PresentationFragment newInstance(List<Presentation> list, Discipline discipline) {
+    public static PresentationFragment newInstance(List<Presentation> list, Instruction instruction) {
 
         PresentationFragment fragment = new PresentationFragment();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(Presentation.TAG, (ArrayList<Presentation>) list);
-        args.putParcelable(Discipline.NAME, discipline);
+        args.putParcelable(Instruction.TAG, instruction);
         fragment.setArguments(args);
 
         return fragment;
@@ -60,9 +61,6 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        Log.d("FRAGMENT PRESENTATION", "onCreate");
-
         View view = inflater.inflate(R.layout.fragment, container, false);
 
         mEmptyView = (TextView) view.findViewById(R.id.empty_view);
@@ -76,22 +74,20 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         mRecyclerView.setLayoutManager(llm);
 
         mListPresentation = getArguments().getParcelableArrayList(Presentation.TAG);
-        mDiscipline = getArguments().getParcelable(Discipline.NAME);
+        mInstruction = getArguments().getParcelable(Instruction.TAG);
 
-        if (mDiscipline != null)
-            if (mDiscipline.getProfile() == 2) {
-                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        if (dy > 0) {
-                            ((PresentationActivity) getActivity()).fabHide();
-                        } else {
-                            ((PresentationActivity) getActivity()).fabShow();
-                        }
-                    }
-                });
+        // TODO: 09/08/2016 verificar o profile pra depois fazer o scroll
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    ((PresentationActivity) getActivity()).fabHide();
+                } else {
+                    ((PresentationActivity) getActivity()).fabShow();
+                }
             }
+        });
 
         if (mListPresentation != null) {
             mAdapterPresentation = new AdapterPresentation(mContext, mListPresentation);
@@ -152,8 +148,8 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         Presentation presentation = mAdapterPresentation.getPresentation(position);
 
         Intent intent = new Intent(mContext, DoubtActivity.class);
+        intent.putExtra(Instruction.TAG, mInstruction);
         intent.putExtra(Presentation.TAG, presentation);
-        //intent.putExtra(Discipline.NAME, mDiscipline);
         mContext.startActivity(intent);
     }
 
