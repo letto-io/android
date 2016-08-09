@@ -4,11 +4,10 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.OpenableColumns;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,43 +25,34 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.MaterialDisciplineFragment;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
+import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
 import cz.msebera.android.httpclient.Header;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static br.com.sienaidea.oddin.R.string.toast_fails_to_start;
 
@@ -90,6 +80,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private FloatingActionButton mFab;
     private Instruction mInstruction;
     private Profile mProfile;
+    private View mRootLayout;
 
 
     @Override
@@ -98,6 +89,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lecture_details);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mRootLayout = findViewById(R.id.root_lecture_detail);
 
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList("mList");
@@ -109,7 +101,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 mProfile = getIntent().getParcelableExtra(Profile.TAG);
                 setupFab();
                 //URL_GET_MATERIAL = "controller/instruction/" + mDiscipline.getInstruction_id() + "/material";
-                getMaterial();
+                getMaterials();
 
             } else {
                 Toast.makeText(this, toast_fails_to_start, Toast.LENGTH_LONG).show();
@@ -371,52 +363,118 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
 
     public void loadMaterial() {
-        BossClient.get(URL_GET_MATERIAL, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                try {
-                    JSONArray materials = response.getJSONArray("materials");
-                    Log.d("MATERIALS", materials.toString());
-
-                    mList.clear();
-
-                    for (int i = 0; i < materials.length(); i++) {
-                        material = new Material();
-
-                        material.setId(materials.getJSONObject(i).getInt("id"));
-                        material.setName(materials.getJSONObject(i).getString("name"));
-                        material.setMime(materials.getJSONObject(i).getString("mime"));
-
-                        addListItem(material);
-                    }
-
-                    mMaterialDisciplineFragment = (MaterialDisciplineFragment) fragmentManager.findFragmentByTag(MaterialDisciplineFragment.TAG);
-                    if (mMaterialDisciplineFragment != null) {
-                        mMaterialDisciplineFragment.notifyDataSetChanged();
-                    } else {
-                        mMaterialDisciplineFragment = MaterialDisciplineFragment.newInstance(getListMaterial());
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.add(R.id.rl_fragment_discipline_details, mMaterialDisciplineFragment, MaterialDisciplineFragment.TAG);
-                        fragmentTransaction.commit();
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                //mMaterialDisciplineFragment.swipeRefreshStop();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
+//        BossClient.get(URL_GET_MATERIAL, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//                try {
+//                    JSONArray materials = response.getJSONArray("materials");
+//                    Log.d("MATERIALS", materials.toString());
+//
+//                    mList.clear();
+//
+//                    for (int i = 0; i < materials.length(); i++) {
+//                        material = new Material();
+//
+//                        material.setId(materials.getJSONObject(i).getInt("id"));
+//                        material.setName(materials.getJSONObject(i).getString("name"));
+//                        material.setMime(materials.getJSONObject(i).getString("mime"));
+//
+//                        addListItem(material);
+//                    }
+//
+//                    mMaterialDisciplineFragment = (MaterialDisciplineFragment) fragmentManager.findFragmentByTag(MaterialDisciplineFragment.TAG);
+//                    if (mMaterialDisciplineFragment != null) {
+//                        mMaterialDisciplineFragment.notifyDataSetChanged();
+//                    } else {
+//                        mMaterialDisciplineFragment = MaterialDisciplineFragment.newInstance(getListMaterial());
+//                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                        fragmentTransaction.add(R.id.rl_fragment_discipline_details, mMaterialDisciplineFragment, MaterialDisciplineFragment.TAG);
+//                        fragmentTransaction.commit();
+//                    }
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                //mMaterialDisciplineFragment.swipeRefreshStop();
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//            }
+//        });
     }
 
-    public void getMaterial() {
-        // TODO: 03/08/2016
+    public void getMaterials() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<List<Material>> request = service.InstructionMaterials(auth_token_string, mInstruction.getId());
+
+            request.enqueue(new Callback<List<Material>>() {
+                @Override
+                public void onResponse(Call<List<Material>> call, Response<List<Material>> response) {
+                    if (response.isSuccessful()) {
+                        mList.clear();
+                        mList = response.body();
+                        onRequestSuccess();
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Material>> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getMaterials();
+                        }
+                    }).show();
+        }
+    }
+
+    private void onRequestSuccess() {
+        mMaterialDisciplineFragment = (MaterialDisciplineFragment) fragmentManager.findFragmentByTag(MaterialDisciplineFragment.TAG);
+        if (mMaterialDisciplineFragment != null) {
+            mMaterialDisciplineFragment.notifyDataSetChanged();
+        } else {
+            mMaterialDisciplineFragment = MaterialDisciplineFragment.newInstance(getListMaterial());
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.rl_fragment_discipline_details, mMaterialDisciplineFragment, MaterialDisciplineFragment.TAG);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private void onRequestFailure(int statusCode) {
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     public void attemptGetMaterialContent(int position, Material material) {
@@ -494,7 +552,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                         });
                         builder.show();
 
-                        material.setDownloaded(true);
+                        //material.setDownloaded(true);
                         mMaterialDisciplineFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
 
                     } catch (IOException e) {

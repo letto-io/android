@@ -12,7 +12,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 
 public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
@@ -57,7 +57,7 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
     }
 
     public void downloadFinished(int position, Uri uri) {
-        mList.get(position).setUri(uri);
+        //mList.get(position).setUri(uri);
         notifyItemChanged(position);
     }
 

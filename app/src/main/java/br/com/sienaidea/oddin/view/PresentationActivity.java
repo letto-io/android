@@ -73,6 +73,8 @@ public class PresentationActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.tab_presentation);
         mViewPager = (ViewPager) findViewById(R.id.vp_presentation);
 
+        fab = (FloatingActionButton) findViewById(R.id.fab_presentation);
+
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mList = savedInstanceState.getParcelableArrayList(Presentation.TAG);
@@ -82,9 +84,10 @@ public class PresentationActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-                if (mProfile.getProfile() != -1) {
-                    getProfile();
-                }
+//                if (mProfile.getProfile() == -1) {
+//                    getProfile();
+//                } else setupFab();
+                getProfile();
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -99,8 +102,20 @@ public class PresentationActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
 
-        fab = (FloatingActionButton) findViewById(R.id.fab_presentation);
+    private void setupFab() {
+        if (mProfile.getProfile() == Constants.INSTRUCTOR) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
+                    intent.putExtra(Instruction.TAG, mInstruction);
+                    startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
+                }
+            });
+        }else fab.setVisibility(View.GONE);
     }
 
     public void fabHide() {
@@ -115,17 +130,7 @@ public class PresentationActivity extends AppCompatActivity {
         Preference preference = new Preference();
         preference.setUserProfile(getApplicationContext(), mProfile.getProfile());
 
-        if (mProfile.getProfile() == Constants.INSTRUCTOR) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getApplication(), NewPresentationActivity.class);
-                    intent.putExtra(Instruction.TAG, mInstruction);
-                    startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
-                }
-            });
-        }
+        setupFab();
     }
 
     private void setupViewPager(final ViewPager viewPager) {

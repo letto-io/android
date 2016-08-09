@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
@@ -82,6 +83,11 @@ public class HttpApi {
         //Instructions OK
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
+
+        //Instruction Materials OK
+        @GET("instructions/{instruction_id}/materials")
+        Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
+                                                  @Path("instruction_id") int instruction_id);
 
         //new Instruction Material (Bruno disse que ainda não esta funcionando)
         @Multipart

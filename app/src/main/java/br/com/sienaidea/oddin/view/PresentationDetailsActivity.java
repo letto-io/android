@@ -44,7 +44,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.MaterialPresentationFragment;
 import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
@@ -340,7 +340,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                     mList.clear();
 
                     for (int i = 0; i < materials.length(); i++) {
-                        material = new Material();
+                       // material = new Material();
 
                         material.setId(materials.getJSONObject(i).getInt("id"));
                         material.setName(materials.getJSONObject(i).getString("name"));
@@ -452,7 +452,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                         });
                         builder.show();
 
-                        material.setDownloaded(true);
+                        //material.setDownloaded(true);
                         mMaterialPresentationFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
 
                     } catch (IOException e) {

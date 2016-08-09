@@ -60,7 +60,7 @@ import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Contribution;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.server.BossClient;
@@ -550,7 +550,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
                         Fragment fragment = mAdapterViewPager.getItem(mViewPager.getCurrentItem());
 
-                        material.setDownloaded(true);
+                        //material.setDownloaded(true);
 
                         if (fragment instanceof AudioDoubtDetailFragment) {
                             mAudioDoubtDetailFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));

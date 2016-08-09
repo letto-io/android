@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
@@ -52,73 +52,73 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
         //holder.getName().setText(material.getName());
 
 
-        if (material.isDownloaded()) {
-            myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
-            myViewHolder.iv_player.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                            myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
-                            return;
-                        } else {
-                            if (oneTimeOnly != 0) {
-                                myViewHolder.iv_player.setImageResource(R.drawable.ic_pause);
-                                mediaPlayer.start();
-                                return;
-                            }
-                        }
-
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(mContext, material.getUri());
-                        myViewHolder.seekBar.setClickable(false);
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                Log.d("onCompletion", "onCompletion");
-                                myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
-                                mediaPlayer.seekTo(0);
-                                oneTimeOnly = 0;
-                            }
-                        });
-
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                                myViewHolder.iv_player.setImageResource(R.drawable.ic_pause);
-                            }
-                        });
-
-                        Runnable UpdateSongTime = new Runnable() {
-                            public void run() {
-                                myViewHolder.seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                                SeekHandler.postDelayed(this, 100);
-                            }
-                        };
-
-                        finalTime = mediaPlayer.getDuration();
-                        startTime = mediaPlayer.getCurrentPosition();
-
-                        if (oneTimeOnly == 0) {
-                            myViewHolder.seekBar.setMax(finalTime);
-                            oneTimeOnly = 1;
-                        }
-
-                        //myViewHolder.seekBar.setMax(finalTime);
-                        myViewHolder.seekBar.setProgress(startTime);
-
-                        SeekHandler.postDelayed(UpdateSongTime, 100);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            myViewHolder.seekBar.setEnabled(true);
-        }
+//        if (material.isDownloaded()) {
+//            myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
+//            myViewHolder.iv_player.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    try {
+//                        if (mediaPlayer.isPlaying()) {
+//                            mediaPlayer.pause();
+//                            myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
+//                            return;
+//                        } else {
+//                            if (oneTimeOnly != 0) {
+//                                myViewHolder.iv_player.setImageResource(R.drawable.ic_pause);
+//                                mediaPlayer.start();
+//                                return;
+//                            }
+//                        }
+//
+//                        mediaPlayer.reset();
+//                        mediaPlayer.setDataSource(mContext, material.getUri());
+//                        myViewHolder.seekBar.setClickable(false);
+//                        mediaPlayer.prepare();
+//                        mediaPlayer.start();
+//                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                            @Override
+//                            public void onCompletion(MediaPlayer mp) {
+//                                Log.d("onCompletion", "onCompletion");
+//                                myViewHolder.iv_player.setImageResource(R.drawable.ic_play);
+//                                mediaPlayer.seekTo(0);
+//                                oneTimeOnly = 0;
+//                            }
+//                        });
+//
+//                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//                            @Override
+//                            public void onPrepared(MediaPlayer mp) {
+//                                myViewHolder.iv_player.setImageResource(R.drawable.ic_pause);
+//                            }
+//                        });
+//
+//                        Runnable UpdateSongTime = new Runnable() {
+//                            public void run() {
+//                                myViewHolder.seekBar.setProgress(mediaPlayer.getCurrentPosition());
+//                                SeekHandler.postDelayed(this, 100);
+//                            }
+//                        };
+//
+//                        finalTime = mediaPlayer.getDuration();
+//                        startTime = mediaPlayer.getCurrentPosition();
+//
+//                        if (oneTimeOnly == 0) {
+//                            myViewHolder.seekBar.setMax(finalTime);
+//                            oneTimeOnly = 1;
+//                        }
+//
+//                        //myViewHolder.seekBar.setMax(finalTime);
+//                        myViewHolder.seekBar.setProgress(startTime);
+//
+//                        SeekHandler.postDelayed(UpdateSongTime, 100);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            myViewHolder.seekBar.setEnabled(true);
+//        }
 
         if (mProfile == 2) {
             myViewHolder.iv_understand.setVisibility(View.GONE);
@@ -131,8 +131,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
     }
 
     public void downloadFinished(int position, Uri uri) {
-        mList.get(position).setDownloaded(true);
-        mList.get(position).setUri(uri);
+//        mList.get(position).setDownloaded(true);
+//        mList.get(position).setUri(uri);
         notifyItemChanged(position);
     }
 

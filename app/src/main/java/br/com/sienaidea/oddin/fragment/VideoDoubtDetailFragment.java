@@ -28,7 +28,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterialDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerMaterial;
-import br.com.sienaidea.oddin.model.Material;
+import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
@@ -161,28 +161,28 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         } else {
             final MaterialDoubt material = (MaterialDoubt) mAdapter.getMaterial(position);
 
-            if (!material.isDownloaded()) {
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-                builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
-                builder.setNegativeButton(R.string.dialog_cancel, null);
-                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-                    }
-                });
-                builder.show();
-            } else {
-                Intent newIntent = new Intent();
-                newIntent.setDataAndType(material.getUri(), material.getMime());
-                newIntent.setAction(Intent.ACTION_VIEW);
-                try {
-                    startActivity(newIntent);
-                } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(mContext, "No handler for this type of file.", Toast.LENGTH_SHORT).show();
-                }
-            }
+//            if (!material.isDownloaded()) {
+//                AlertDialog.Builder builder =
+//                        new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+//                builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
+//                builder.setNegativeButton(R.string.dialog_cancel, null);
+//                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
+//                    }
+//                });
+//                builder.show();
+//            } else {
+//                Intent newIntent = new Intent();
+//                newIntent.setDataAndType(material.getUri(), material.getMime());
+//                newIntent.setAction(Intent.ACTION_VIEW);
+//                try {
+//                    startActivity(newIntent);
+//                } catch (android.content.ActivityNotFoundException e) {
+//                    Toast.makeText(mContext, "No handler for this type of file.", Toast.LENGTH_SHORT).show();
+//                }
+//            }
         }
     }
 

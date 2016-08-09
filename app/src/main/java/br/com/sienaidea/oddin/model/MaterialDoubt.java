@@ -3,6 +3,8 @@ package br.com.sienaidea.oddin.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import br.com.sienaidea.oddin.retrofitModel.Material;
+
 public class MaterialDoubt extends Material implements Parcelable {
     private int contribution_id;
 
