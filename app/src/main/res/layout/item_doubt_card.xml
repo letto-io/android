@@ -28,7 +28,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:singleLine="true"
-            android:text="[Person Name]"
+            android:text="Anônimo"
             android:textColor="@color/colorPrimaryText"
             android:textSize="18sp" />
 

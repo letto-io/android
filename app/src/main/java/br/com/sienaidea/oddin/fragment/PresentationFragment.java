@@ -23,9 +23,11 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 import br.com.sienaidea.oddin.view.PresentationActivity;
 
@@ -158,20 +160,21 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
 
         final Presentation presentation = mAdapterPresentation.getPresentation(position);
 
-        //TODO verificar o profile também
         if (mListPresentation.get(position).getStatus() == Presentation.OPEN) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ((PresentationActivity) getActivity()).closePresentation(position, presentation);
-                }
-            });
-            builder.setNegativeButton(R.string.dialog_cancel, null);
-            builder.setTitle(presentation.getSubject());
-            builder.setMessage(R.string.dialog_close_presentation);
-            builder.show();
+            Preference preference = new Preference();
+            if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ((PresentationActivity) getActivity()).closePresentation(position, presentation);
+                    }
+                });
+                builder.setNegativeButton(R.string.dialog_cancel, null);
+                builder.setTitle(presentation.getSubject());
+                builder.setMessage(R.string.dialog_close_presentation);
+                builder.show();
+            }
         }
     }
 

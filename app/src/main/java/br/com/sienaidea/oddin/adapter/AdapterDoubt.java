@@ -14,8 +14,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder> {
@@ -41,11 +43,19 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         Question mQuestion = mList.get(position);
 
-        myViewHolder.tvPersonName.setText(mQuestion.getPerson().getName());
+        if (!mQuestion.isAnonymous()){
+            myViewHolder.tvPersonName.setText(mQuestion.getPerson().getName());
+        }
         myViewHolder.tvText.setText(mQuestion.getText());
         myViewHolder.tvTime.setText(DateUtil.getTimeUFCFormat(mQuestion.getCreated_at()));
 
         myViewHolder.tvLike.setText(mQuestion.getUpvotes() + "");
+
+        Preference preference = new Preference();
+        if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
+            myViewHolder.tvLike.setEnabled(false);
+            myViewHolder.tvLike.setClickable(false);
+        }
 
 //        if (mProfile == 2) {
 //            myViewHolder.ivLock.setVisibility(View.VISIBLE);

@@ -21,6 +21,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -138,7 +140,7 @@ public class DoubtActivity extends AppCompatActivity {
         mDoubtClosedFragment = DoubtClosedFragment.newInstance(getListClose(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtClosedFragment, DoubtClosedFragment.CLOSED);
 
-        mDoubtRankingFragment = DoubtRankingFragment.newInstance(getListQuestions(), mPresentation);
+        mDoubtRankingFragment = DoubtRankingFragment.newInstance(getListRanking(), mPresentation);
         mAdapterViewPager.addFragment(mDoubtRankingFragment, DoubtRankingFragment.RANKING);
 
         viewPager.setAdapter(mAdapterViewPager);
@@ -228,7 +230,7 @@ public class DoubtActivity extends AppCompatActivity {
 
             Call<ResponseVote> request;
 
-            if (question.getMy_vote() > 0) {
+            if (question.getMy_vote() != 0) {
                 request = service.DownVoteQuestion(auth_token_string, question.getId());
             } else {
                 request = service.UpVoteQuestion(auth_token_string, question.getId());
@@ -308,6 +310,19 @@ public class DoubtActivity extends AppCompatActivity {
                 listAux.add(question);
             }
         }
+        return listAux;
+    }
+
+    private List<Question> getListRanking() {
+        List<Question> listAux = mList;
+
+        Collections.sort(listAux, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Question q1 = (Question) o1;
+                Question q2 = (Question) o2;
+                return q1.getUpvotes() > q2.getUpvotes() ? -1 : (q1.getUpvotes() < q2.getUpvotes() ? +1 : 0);
+            }
+        });
         return listAux;
     }
 
