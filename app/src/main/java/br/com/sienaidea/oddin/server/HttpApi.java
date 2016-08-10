@@ -41,7 +41,7 @@ public class HttpApi {
     Context mContext;
     private List<Person> persons = new ArrayList<>();
 
-    public static final String API_URL = "http://rws-edupanel.herokuapp.com/";
+    public static final String API_URL = "http://ws-edupanel.herokuapp.com/";
 
     /**
      * Generic HttpBin.org Response Container

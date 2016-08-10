@@ -14,6 +14,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentation.MyViewHolder> {
     private List<Presentation> mList;
@@ -33,7 +34,7 @@ public class AdapterPresentation extends RecyclerView.Adapter<AdapterPresentatio
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         myViewHolder.tvTheme.setText(mList.get(position).getSubject());
-        myViewHolder.tvDate.setText(mList.get(position).getCreated_at());
+        myViewHolder.tvDate.setText(DateUtil.getDateUFCFormat(mList.get(position).getCreated_at()));
 
         try {
             YoYo.with(Techniques.ZoomIn)

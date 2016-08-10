@@ -16,6 +16,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder> {
 
@@ -42,7 +43,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 
         myViewHolder.tvPersonName.setText(mQuestion.getPerson().getName());
         myViewHolder.tvText.setText(mQuestion.getText());
-        myViewHolder.tvTime.setText(mQuestion.getCreated_at());
+        myViewHolder.tvTime.setText(DateUtil.getTimeUFCFormat(mQuestion.getCreated_at()));
 
         myViewHolder.tvLike.setText(mQuestion.getUpvotes() + "");
 

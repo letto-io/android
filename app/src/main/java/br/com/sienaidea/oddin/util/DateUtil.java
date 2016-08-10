@@ -1,5 +1,7 @@
 package br.com.sienaidea.oddin.util;
 
+import android.text.format.DateFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,21 +38,58 @@ public class DateUtil {
     */
 
 
+    //OK
     public static String getDateFormat(String datestr) {
         Date date = String2Date(datestr);
         return getDateString(date);
     }
 
+    //OK
+    public static String getDateUFCFormat(String datestr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date d = null;
+        try {
+            d = sdf.parse(datestr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String formattedTime = output.format(d);
+        return DateUtil.getDateFormat(formattedTime);
+    }
+
+    //OK
+    public static String getTimeUFCFormat(String datestr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date d = null;
+        try {
+            d = sdf.parse(datestr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String formattedTime = output.format(d);
+        return DateUtil.getTimeFormat(formattedTime);
+    }
+
+    //OK
+    public static String getDateStringDDMMYYYY(String datestr) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MMM/yyyy");
+        Date date = null;
+        try {
+            date = inputFormat.parse(datestr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String outputDateStr = outputFormat.format(date);
+        return getDateString(date);
+    }
+
+    //OK
     public static String getTimeFormat(String datestr) {
         Date date = String2Date(datestr);
         return getTimeString(date);
-    }
-
-
-
-    public static String getDateTimeString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(date);
     }
 
     public static String getDateString(Date date) {
@@ -63,6 +102,7 @@ public class DateUtil {
         return sdf.format(date);
     }
 
+    //OK
     public static Date String2Date(String datestr) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;

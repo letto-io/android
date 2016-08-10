@@ -38,7 +38,7 @@ public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHo
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
         myViewHolder.tvName.setText(mList.get(position).getLecture().getName());
         myViewHolder.tvClass.setText(mContext.getString(R.string.adapter_class, mList.get(position).getClass_number()));
-        myViewHolder.tvStartDate.setText(mContext.getString(R.string.adapter_start_date, mList.get(position).getStart_date()));
+        myViewHolder.tvStartDate.setText(mContext.getString(R.string.adapter_start_date, DateUtil.getDateStringDDMMYYYY(mList.get(position).getStart_date())));
 
         try {
             YoYo.with(Techniques.ZoomIn)
