@@ -391,7 +391,7 @@ public class DoubtActivity extends AppCompatActivity {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putParcelableArrayListExtra(Question.TAG, (ArrayList<Question>) mList);
-            intent.putExtra(Presentation.TAG, mPresentation);
+            //intent.putExtra(Presentation.TAG, mPresentation);
             intent.putExtra(Instruction.TAG, mInstruction);
         }
         super.startActivity(intent);

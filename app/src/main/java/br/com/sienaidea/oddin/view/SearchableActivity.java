@@ -24,12 +24,14 @@ import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Discipline;
 import br.com.sienaidea.oddin.model.Doubt;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.provider.SearchableProvider;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 
 public class SearchableActivity extends AppCompatActivity implements RecyclerViewOnClickListenerHack, View.OnClickListener {
-    private List<Doubt> mListDoubt = new ArrayList<>();
-    private List<Doubt> mListAuxDoubt = new ArrayList<>();
+    private List<Question> mListDoubt = new ArrayList<>();
+    private List<Question> mListAuxDoubt = new ArrayList<>();
     private AdapterDoubt mAdapterDoubt;
 
     private boolean isDoubt = false;
@@ -38,8 +40,10 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     private List<Presentation> mListAuxPresentation = new ArrayList<>();
     private AdapterPresentation mAdapterPresentation;
 
-    private Discipline mDiscipline;
-    private Presentation mPresentation;
+    private Instruction mInstruction;
+
+    //private Discipline mDiscipline;
+    //private Presentation mPresentation;
 
     private Toolbar mToolbar;
 
@@ -87,12 +91,14 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
                     SearchableProvider.MODE);
             searchRecentSuggestions.saveRecentQuery(query, null);
 
-            mPresentation = intent.getParcelableExtra(Presentation.TAG);
-            mDiscipline = intent.getParcelableExtra(Discipline.NAME);
+            //mPresentation = intent.getParcelableExtra(Presentation.TAG);
+            // mDiscipline = intent.getParcelableExtra(Discipline.NAME);
 
-            mListDoubt = intent.getParcelableArrayListExtra(Doubt.NAME);
+            mInstruction = intent.getParcelableExtra(Instruction.TAG);
+
+            mListDoubt = intent.getParcelableArrayListExtra(Question.TAG);
             if (mListDoubt != null) {
-                mToolbar.setSubtitle(mPresentation.getSubject());
+                mToolbar.setSubtitle(mInstruction.getLecture().getName());
                 if (!mListDoubt.isEmpty()) {
                     filterDoubts(query);
                 } else {
@@ -101,7 +107,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
             } else {
                 mListPresentation = intent.getParcelableArrayListExtra(Presentation.ARRAYLIST);
                 if (mListPresentation != null) {
-                    mToolbar.setSubtitle(mDiscipline.getNome());
+                    mToolbar.setSubtitle(mInstruction.getLecture().getName());
                     if (!mListPresentation.isEmpty()) {
                         filterPresentations(query);
                     }
@@ -122,21 +128,21 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     */
 
     public void filterDoubts(String query) {
-//        isDoubt = true;
-//        mListAuxDoubt.clear();
-//
-//        for (Doubt doubt : mListDoubt) {
-//            if (doubt.getText().toLowerCase().contains(query.toLowerCase())) {
-//                mListAuxDoubt.add(doubt);
-//            }
-//        }
-//
-//        if (mListAuxDoubt.isEmpty()){
-//            Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        mAdapterDoubt = new AdapterDoubt(this, mListAuxDoubt, mDiscipline.getProfile());
-//        mRecyclerView.setAdapter(mAdapterDoubt);
+        isDoubt = true;
+        mListAuxDoubt.clear();
+
+        for (Question question : mListDoubt) {
+            if (question.getText().toLowerCase().contains(query.toLowerCase())) {
+                mListAuxDoubt.add(question);
+            }
+        }
+
+        if (mListAuxDoubt.isEmpty()){
+            Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
+        }
+
+        mAdapterDoubt = new AdapterDoubt(this, mListAuxDoubt);
+        mRecyclerView.setAdapter(mAdapterDoubt);
     }
 
     public void filterPresentations(String query) {
@@ -186,14 +192,14 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     @Override
     public void onClickListener(View view, int position) {
         if (isDoubt) {
-            Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
-            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
-            intent.putExtra(Discipline.NAME, mDiscipline);
-            intent.putExtra(Presentation.TAG, mPresentation);
-            startActivity(intent);
+//            Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
+//            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
+//            intent.putExtra(Discipline.NAME, mDiscipline);
+//            intent.putExtra(Presentation.TAG, mPresentation);
+//            startActivity(intent);
         } else {
             Intent intent = new Intent(SearchableActivity.this, DoubtActivity.class);
-            intent.putExtra(Discipline.NAME, mDiscipline);
+            intent.putExtra(Instruction.TAG, mInstruction);
             Presentation presentation = mAdapterPresentation.getPresentation(position);
             intent.putExtra(Presentation.TAG, presentation);
             startActivity(intent);
