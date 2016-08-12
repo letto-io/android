@@ -81,7 +81,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((LectureDetailsActivity) getActivity()).loadMaterial();
+                ((LectureDetailsActivity) getActivity()).getMaterials();
             }
         });
 

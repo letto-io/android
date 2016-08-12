@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             mTextInputLayoutEmail.setError(null);
 
-            if (password.isEmpty() || password.length() < 8) {
+            if (password.isEmpty() || password.length() < 3) {
                 mTextInputLayoutPassword.setError(getResources().getString(R.string.error_invalid_password));
                 valid = false;
             } else {

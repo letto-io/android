@@ -232,11 +232,11 @@ public class PresentationActivity extends AppCompatActivity {
 
     private List<Presentation> getListOpen() {
         List<Presentation> listAux = new ArrayList<>();
-        for (Presentation presentation : mList) {
-            if (presentation.getStatus() == Presentation.OPEN) {
-                listAux.add(presentation);
-            }
-        }
+//        for (Presentation presentation : mList) {
+//            if (presentation.getStatus() == Presentation.OPEN) {
+//                listAux.add(presentation);
+//            }
+//        }
         return listAux;
     }
 

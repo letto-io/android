@@ -7,35 +7,12 @@ public class Material implements Parcelable {
     public static String TAG = Material.class.getName();
 
     private int id, attachable_id;
-    private String name, mime, attachable_type, uploaded_at;
+    private String name, mime, attachable_type, uploaded_at, url;
     private boolean checked;
     Person person;
 
     public Material() {
     }
-
-    protected Material(Parcel in) {
-        id = in.readInt();
-        attachable_id = in.readInt();
-        name = in.readString();
-        mime = in.readString();
-        attachable_type = in.readString();
-        uploaded_at = in.readString();
-        checked = in.readByte() != 0;
-        person = in.readParcelable(Person.class.getClassLoader());
-    }
-
-    public static final Creator<Material> CREATOR = new Creator<Material>() {
-        @Override
-        public Material createFromParcel(Parcel in) {
-            return new Material(in);
-        }
-
-        @Override
-        public Material[] newArray(int size) {
-            return new Material[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -85,6 +62,14 @@ public class Material implements Parcelable {
         this.uploaded_at = uploaded_at;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public boolean isChecked() {
         return checked;
     }
@@ -101,6 +86,30 @@ public class Material implements Parcelable {
         this.person = person;
     }
 
+    protected Material(Parcel in) {
+        id = in.readInt();
+        attachable_id = in.readInt();
+        name = in.readString();
+        mime = in.readString();
+        attachable_type = in.readString();
+        uploaded_at = in.readString();
+        url = in.readString();
+        checked = in.readByte() != 0;
+        person = in.readParcelable(Person.class.getClassLoader());
+    }
+
+    public static final Creator<Material> CREATOR = new Creator<Material>() {
+        @Override
+        public Material createFromParcel(Parcel in) {
+            return new Material(in);
+        }
+
+        @Override
+        public Material[] newArray(int size) {
+            return new Material[size];
+        }
+    };
+
     @Override
     public int describeContents() {
         return 0;
@@ -114,6 +123,7 @@ public class Material implements Parcelable {
         dest.writeString(mime);
         dest.writeString(attachable_type);
         dest.writeString(uploaded_at);
+        dest.writeString(url);
         dest.writeByte((byte) (checked ? 1 : 0));
         dest.writeParcelable(person, flags);
     }

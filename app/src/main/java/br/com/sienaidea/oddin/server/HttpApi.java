@@ -16,6 +16,8 @@ import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
+import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
@@ -33,6 +35,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
@@ -41,7 +44,8 @@ public class HttpApi {
     Context mContext;
     private List<Person> persons = new ArrayList<>();
 
-    public static final String API_URL = "http://ws-edupanel.herokuapp.com/";
+    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     /**
      * Generic HttpBin.org Response Container
@@ -89,12 +93,27 @@ public class HttpApi {
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
 
-        //new Instruction Material (Bruno disse que ainda não esta funcionando)
+        //Get Credentials Instruction Material OK
+        @GET("instructions/{instruction_id}/materials/new")
+        Call<ResponseCredentialsMaterial> createInstructionMaterial(@Header("x-session-token") String token,
+                                                                    @Path("instruction_id") int instruction_id);
+
+        //Send File to Amazon OK
         @Multipart
-        @POST("instructions/{instruction_id}/materials/new")
-        Call<Void> createInstructionMaterial(@Header("x-session-token") String token,
-                                             @Path("instruction_id") int instruction_id,
-                                             @Part MultipartBody.Part file);
+        @POST("./")
+        Call<Void> sendMaterial(@Part("key") RequestBody key,
+                                @Part("policy") RequestBody policy,
+                                @Part("x-amz-credential") RequestBody x_amz_credential,
+                                @Part("x-amz-algorithm") RequestBody x_amz_algorithm,
+                                @Part("x-amz-date") RequestBody x_amz_date,
+                                @Part("x-amz-signature") RequestBody x_amz_signature,
+                                @Part MultipartBody.Part file);
+
+        //Cofirm Material upload
+        @PUT("materials/{material_id}")
+        Call<ResponseConfirmMaterial> confirmMaterial(@Header("x-session-token") String token,
+                                                      @Path("material_id") int material_id,
+                                                      @Body Material material);
 
         //Presentations OK
         @GET("instructions/{instruction_id}/presentations")
@@ -133,7 +152,7 @@ public class HttpApi {
         Call<ResponseVote> UpVoteQuestion(@Header("x-session-token") String token,
                                           @Path("question_id") int question_id);
 
-        //DownVote Question
+        //DownVote Question OK
         @POST("questions/{question_id}/downvote")
         Call<ResponseVote> DownVoteQuestion(@Header("x-session-token") String token,
                                             @Path("question_id") int question_id);
@@ -218,61 +237,4 @@ public class HttpApi {
                                          @Path("material_id") String material_id);
 
     }
-
-    private static String getToken(Context context) {
-        Preference preference = new Preference();
-        return preference.getToken(context);
-    }
-
-    private static void onRequestSuccess() {
-        // TODO: 03/08/2016
-        Log.d("API >>", "onRequestSuccess");
-    }
-
-    private static void onRequestFailure() {
-        // TODO: 03/08/2016
-        Log.d("API >>", "onRequestFailure");
-    }
-
-    public static void newMaterial(Context context, Instruction instruction, File file, String mimeType) {
-        // Retrofit setup
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .build();
-
-        // Service setup
-        HttpBinService service = retrofit.create(HttpBinService.class);
-
-        // Prepare the HTTP request
-        RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
-
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-
-        Call<Void> call = service.createInstructionMaterial(getToken(context), instruction.getId(), body);
-
-        // Asynchronously execute HTTP request
-        call.enqueue(new Callback<Void>() {
-            /**
-             * onResponse is called when any kind of response has been received.
-             */
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                // isSuccess is true if response code => 200 and <= 300
-                if (response.isSuccessful()) {
-                    onRequestSuccess();
-                }
-            }
-
-            /**
-             * onFailure gets called when the HTTP request didn't get through.
-             * For instance if the URL is invalid / host not reachable
-             */
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                onRequestFailure();
-            }
-        });
-    }
-
 }

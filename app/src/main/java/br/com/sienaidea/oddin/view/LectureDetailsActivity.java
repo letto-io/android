@@ -29,8 +29,10 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,8 @@ import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
+import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
+import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
@@ -48,6 +52,9 @@ import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
 import cz.msebera.android.httpclient.Header;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,7 +70,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_DOWNLOAD = 12;
 
     private List<Material> mList = new ArrayList<>();
-    private Material material;
     //private Discipline mDiscipline;
 
     private File mTempFile;
@@ -81,6 +87,8 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private Instruction mInstruction;
     private Profile mProfile;
     private View mRootLayout;
+    private ResponseCredentialsMaterial mCredentialsMaterial;
+    private Material mMaterial;
 
 
     @Override
@@ -100,9 +108,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
                 mProfile = getIntent().getParcelableExtra(Profile.TAG);
                 setupFab();
-                //URL_GET_MATERIAL = "controller/instruction/" + mDiscipline.getInstruction_id() + "/material";
                 getMaterials();
-
             } else {
                 Toast.makeText(this, toast_fails_to_start, Toast.LENGTH_LONG).show();
                 finish();
@@ -169,10 +175,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 for (int i = 0; i < permissions.length; i++) {
 
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     } else if (permissions[i].equalsIgnoreCase(Manifest.permission.WRITE_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     }
 
@@ -204,6 +210,18 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 * and size.
                 */
                 returnUri = result.getData();
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(returnUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mBytes = FileUtils.readBytes(inputStream);
+                    Log.d("DEBUG", "proxima linha após a Thread");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 attemptUploadMateril();
             }
@@ -239,82 +257,169 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
-                uploadFile();
+                getCredentials();
             }
         });
         builder.show();
     }
 
-    private void uploadFile() {
-//        MaterialDAO materialDAO = new MaterialDAO(getApplicationContext(), mInstruction, returnUri, mFileName);
-//        materialDAO.createInstructionMaterial();
+    private void getCredentials() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseCredentialsMaterial> request = service.createInstructionMaterial(auth_token_string, mInstruction.getId());
+
+            request.enqueue(new Callback<ResponseCredentialsMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseCredentialsMaterial> call, Response<ResponseCredentialsMaterial> response) {
+                    if (response.isSuccessful()) {
+                        mCredentialsMaterial = response.body();
+                        uploadFile();
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getCredentials();
+                        }
+                    }).show();
+        }
     }
 
-//    private void uploadtesteFile() {
-//
-//        mTempFile = createTempFile();
-//
-//        if (mTempFile != null) {
-//            // Retrofit setup
-//            Retrofit retrofit = new Retrofit.Builder()
-//                    .baseUrl(HttpApi.API_URL)
-//                    .build();
-//            //.addConverterFactory(GsonConverterFactory.create())
-//
-//
-//            // Service setup
-//            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-//
-//            MediaType MEDIA_TYPE = MediaType.parse(mimeType);
-//            //File file = new File(returnUri.getPath());
-//            //RequestBody requestBody = RequestBody.create(MEDIA_TYPE, file);
-//
-//            RequestBody requestBody = RequestBody.create(MEDIA_TYPE, mTempFile);
-//
-//            // MultipartBody.Part is used to send also the actual file name
-//            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestBody);
-//
-//
-//            Call<Void> call = service.postMaterialDisciplineTeste(CookieUtil.getCookie(getApplicationContext()),
-//                    String.valueOf(mDiscipline.getInstruction_id()),
-//                    body);
-//
-//            // Asynchronously execute HTTP request
-//            call.enqueue(new Callback<Void>() {
-//                /**
-//                 * onResponse is called when any kind of response has been received.
-//                 */
-//                @Override
-//                public void onResponse(Call<Void> call, Response<Void> response) {
-//                    // http response status code + headers
-//                    //System.out.println("Response status code: " + response.code());
-//
-//                    // isSuccess is true if response code => 200 and <= 300
-//                    if (!response.isSuccessful()) {
-//                        // print response body if unsuccessful
-//                        Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição no servidor, tente novamente!", Toast.LENGTH_LONG).show();
-//                        Log.d("RESPONSE", response.message());
-//                        Log.d("RESPONSE", String.valueOf(response.code()));
-//                        Log.d("RESPONSE", response.errorBody().toString());
-//                        return;
-//                    }
-//                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
-//                    loadMaterial();//SUBSTITUIT PELO RESULT
-//                }
-//
-//                /**
-//                 * onFailure gets called when the HTTP request didn't get through.
-//                 * For instance if the URL is invalid / host not reachable
-//                 */
-//                @Override
-//                public void onFailure(Call<Void> call, Throwable t) {
-//                    Toast.makeText(getApplicationContext(), "Não foi possível enviar ao servidor!", Toast.LENGTH_LONG).show();
-//                }
-//            });
-//        } else {
-//            Toast.makeText(getApplicationContext(), "Não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
-//        }
-//    }
+    private void uploadFile() {
+        mTempFile = createTempFile();
+
+        if (mTempFile != null) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(mCredentialsMaterial.getUrl())
+                    .build();
+            //.addConverterFactory(GsonConverterFactory.create())
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            // Prepare the HTTP request
+            RequestBody requestFile = RequestBody.create(MediaType.parse(FileUtils.getMimeType(getApplicationContext(), returnUri)), mTempFile);
+
+            // MultipartBody.Part is used to send also the actual file name
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
+
+
+            mMaterial.setName(mTempFile.getName());
+            mMaterial.setId(mCredentialsMaterial.getId());
+            mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
+
+            // add another part within the multipart request
+            String keyString = "8a5d46f9-d83d-4acb-8ea0-f7f70b013ec6/${filename}";
+            String policyString = "eyJleHBpcmF0aW9uIjoiMjAxNi0wOC0xMlQxNDo1NzowOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJvc2puZXhmZXZsZmx2aCJ9LFsic3RhcnRzLXdpdGgiLCIka2V5IiwiOGE1ZDQ2ZjktZDgzZC00YWNiLThlYTAtZjdmNzBiMDEzZWM2LyJdLHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFJNFVUTEE1Q1BSSk9PRzRRLzIwMTYwODEyL3VzLXdlc3QtMi9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWFsZ29yaXRobSI6IkFXUzQtSE1BQy1TSEEyNTYifSx7IngtYW16LWRhdGUiOiIyMDE2MDgxMlQxMzU3MDlaIn1dfQ==";
+            String x_amz_credentialString = "AKIAI4UTLA5CPRJOOG4Q/20160812/us-west-2/s3/aws4_request";
+            String x_amz_algorithmString = "AWS4-HMAC-SHA256";
+            String x_amz_dateString = "20160812T135709Z";
+            String x_amz_signatureString = "2e7788fb2e650dc10fdb7eedffe28c6058e5acfdeda3362139f44f8f677a914a";
+
+            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), keyString);
+            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), policyString);
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_credentialString);
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_algorithmString);
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_dateString);
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_signatureString);
+
+            Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
+
+            // Asynchronously execute HTTP request
+            call.enqueue(new Callback<Void>() {
+                /**
+                 * onResponse is called when any kind of response has been received.
+                 */
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    // http response status code + headers
+                    //System.out.println("Response status code: " + response.code());
+
+                    // isSuccess is true if response code => 200 and <= 300
+                    if (!response.isSuccessful()) {
+                        // print response body if unsuccessful
+                        Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
+                    confirmUpload();
+                }
+
+                /**
+                 * onFailure gets called when the HTTP request didn't get through.
+                 * For instance if the URL is invalid / host not reachable
+                 */
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void confirmUpload() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<ResponseConfirmMaterial> call = service.confirmMaterial(auth_token_string, mMaterial.getId(), mMaterial);
+
+        // Asynchronously execute HTTP request
+        call.enqueue(new Callback<ResponseConfirmMaterial>() {
+            /**
+             * onResponse is called when any kind of response has been received.
+             */
+            @Override
+            public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                if (response.isSuccessful()) {
+
+                }
+            }
+
+            /**
+             * onFailure gets called when the HTTP request didn't get through.
+             * For instance if the URL is invalid / host not reachable
+             */
+            @Override
+            public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     private File createTempFile() {
 
@@ -359,52 +464,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
         */
 
 
-    }
-
-
-    public void loadMaterial() {
-//        BossClient.get(URL_GET_MATERIAL, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                super.onSuccess(statusCode, headers, response);
-//                try {
-//                    JSONArray materials = response.getJSONArray("materials");
-//                    Log.d("MATERIALS", materials.toString());
-//
-//                    mList.clear();
-//
-//                    for (int i = 0; i < materials.length(); i++) {
-//                        material = new Material();
-//
-//                        material.setId(materials.getJSONObject(i).getInt("id"));
-//                        material.setName(materials.getJSONObject(i).getString("name"));
-//                        material.setMime(materials.getJSONObject(i).getString("mime"));
-//
-//                        addListItem(material);
-//                    }
-//
-//                    mMaterialDisciplineFragment = (MaterialDisciplineFragment) fragmentManager.findFragmentByTag(MaterialDisciplineFragment.TAG);
-//                    if (mMaterialDisciplineFragment != null) {
-//                        mMaterialDisciplineFragment.notifyDataSetChanged();
-//                    } else {
-//                        mMaterialDisciplineFragment = MaterialDisciplineFragment.newInstance(getListMaterial());
-//                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                        fragmentTransaction.add(R.id.rl_fragment_discipline_details, mMaterialDisciplineFragment, MaterialDisciplineFragment.TAG);
-//                        fragmentTransaction.commit();
-//                    }
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                //mMaterialDisciplineFragment.swipeRefreshStop();
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                super.onFailure(statusCode, headers, throwable, errorResponse);
-//            }
-//        });
     }
 
     public void getMaterials() {
@@ -503,73 +562,73 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
         } else {
             //e por fim, caso já tenha permiçoes, faça download
-            getMaterialContent(mPositionFragment, mMaterialFragment);
+            //getMaterialContent(mPositionFragment, mMaterialFragment);
         }
 
     }
 
-    private void getMaterialContent(final int position, final Material material) {
-        BossClient.get(URL_GET_MATERIAL + "/" + material.getId(), null, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                if (FileUtils.isExternalStorageWritable()) {
-                    File root = Environment.getExternalStorageDirectory();
-
-                    File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-                    if (!dirOddin.exists()) {
-                        dirOddin.mkdir();
-                    }
-
-                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mInstruction.getLecture().getName().trim());
-                    if (!dirDiscipline.exists()) {
-                        dirDiscipline.mkdir();
-                    }
-
-                    final File file = new File(dirDiscipline.getAbsolutePath(), material.getName().trim());
-                    try {
-
-                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-                        fileOutputStream.write(responseBody);
-                        fileOutputStream.close();
-
-                        AlertDialog.Builder builder =
-                                new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-                        builder.setMessage("Material salvo em: " + file.getAbsolutePath());
-                        builder.setPositiveButton("OK", null);
-                        builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent newIntent = new Intent();
-                                newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), material.getMime());
-                                newIntent.setAction(Intent.ACTION_VIEW);
-                                try {
-                                    startActivity(newIntent);
-                                } catch (android.content.ActivityNotFoundException e) {
-                                    Toast.makeText(getApplicationContext(), "Nenhum manipulador para este tipo de arquivo.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        builder.show();
-
-                        //material.setDownloaded(true);
-                        mMaterialDisciplineFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplicationContext(), "Não foi possível fazer a requisição no servidor, tente novamente.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
+//    private void getMaterialContent(final int position, final Material material) {
+//        BossClient.get(URL_GET_MATERIAL + "/" + material.getId(), null, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+//
+//                if (FileUtils.isExternalStorageWritable()) {
+//                    File root = Environment.getExternalStorageDirectory();
+//
+//                    File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
+//                    if (!dirOddin.exists()) {
+//                        dirOddin.mkdir();
+//                    }
+//
+//                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mInstruction.getLecture().getName().trim());
+//                    if (!dirDiscipline.exists()) {
+//                        dirDiscipline.mkdir();
+//                    }
+//
+//                    final File file = new File(dirDiscipline.getAbsolutePath(), material.getName().trim());
+//                    try {
+//
+//                        FileOutputStream fileOutputStream = new FileOutputStream(file);
+//                        fileOutputStream.write(responseBody);
+//                        fileOutputStream.close();
+//
+//                        AlertDialog.Builder builder =
+//                                new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+//                        builder.setMessage("Material salvo em: " + file.getAbsolutePath());
+//                        builder.setPositiveButton("OK", null);
+//                        builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                Intent newIntent = new Intent();
+//                                newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), material.getMime());
+//                                newIntent.setAction(Intent.ACTION_VIEW);
+//                                try {
+//                                    startActivity(newIntent);
+//                                } catch (android.content.ActivityNotFoundException e) {
+//                                    Toast.makeText(getApplicationContext(), "Nenhum manipulador para este tipo de arquivo.", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        });
+//                        builder.show();
+//
+//                        //material.setDownloaded(true);
+//                        mMaterialDisciplineFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//                Toast.makeText(getApplicationContext(), "Não foi possível fazer a requisição no servidor, tente novamente.", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//
+//    }
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
 
