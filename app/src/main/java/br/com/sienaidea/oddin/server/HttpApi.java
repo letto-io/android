@@ -29,6 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -75,9 +76,13 @@ public class HttpApi {
      */
     public interface HttpBinService {
         //NEW BACK
-        //Session OK
+        //Create Session OK
         @POST("session")
         Call<Session> Login(@Body User user);
+
+        //Delete Session
+        @DELETE("session")
+        Call<Void> Logoff(@Header("x-session-token") String token);
 
         //Profile OK
         @GET("instructions/{instruction_id}/profile")
@@ -109,11 +114,16 @@ public class HttpApi {
                                 @Part("x-amz-signature") RequestBody x_amz_signature,
                                 @Part MultipartBody.Part file);
 
-        //Cofirm Material upload
+        //Cofirm Material upload (está retornando 500 - mandei email para o Bruno)
         @PUT("materials/{material_id}")
         Call<ResponseConfirmMaterial> confirmMaterial(@Header("x-session-token") String token,
                                                       @Path("material_id") int material_id,
                                                       @Body Material material);
+
+        //Get Material OK
+        @GET("materials/{material_id}")
+        Call<ResponseConfirmMaterial> getMaterial(@Header("x-session-token") String token,
+                                                  @Path("material_id") int material_id);
 
         //Presentations OK
         @GET("instructions/{instruction_id}/presentations")

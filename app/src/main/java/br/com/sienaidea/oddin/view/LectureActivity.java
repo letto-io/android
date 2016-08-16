@@ -198,12 +198,40 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.action_logout) {
-            //TODO clear session
-            startActivity(new Intent(LectureActivity.this, LoginActivity.class));
-            finish();
+            logoff();
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logoff() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .build();
+
+        // Service setup
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<Void> request = service.Logoff(auth_token_string);
+
+        request.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Preference preference = new Preference();
+                preference.clear(getApplicationContext());
+                startActivity(new Intent(LectureActivity.this, LoginActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 }

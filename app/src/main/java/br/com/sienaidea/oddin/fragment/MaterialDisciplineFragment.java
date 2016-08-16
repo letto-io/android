@@ -125,6 +125,17 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
 
         final Material material = mAdapter.getMaterial(position);
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((LectureDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
+                }
+            });
+            builder.show();
+
 //        if (!material.isDownloaded()) {
 //            AlertDialog.Builder builder =
 //                    new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);

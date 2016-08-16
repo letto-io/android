@@ -70,4 +70,17 @@ public class Preference {
         SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
         return settings.getInt(USER_PROFILE, -1);
     }
+
+    public void clear(Context context) {
+        //deleta todas as preferencias
+        SharedPreferences token = context.getSharedPreferences(TOKEN, Context.MODE_PRIVATE);
+        SharedPreferences.Editor tokenEditor = token.edit();
+        tokenEditor.clear();
+        tokenEditor.commit();
+
+        SharedPreferences user = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor userEditor = user.edit();
+        userEditor.clear();
+        userEditor.commit();
+    }
 }

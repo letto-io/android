@@ -555,6 +555,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
         } else {
             //e por fim, caso já tenha permiçoes, faça download
+            getMaterial(mPositionFragment, mMaterialFragment);
             //getMaterialContent(mPositionFragment, mMaterialFragment);
         }
 
@@ -622,6 +623,46 @@ public class LectureDetailsActivity extends AppCompatActivity {
 //        });
 //
 //    }
+
+    private void getMaterial(int position, Material material) {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseConfirmMaterial> request = service.getMaterial(auth_token_string, material.getId());
+
+            request.enqueue(new Callback<ResponseConfirmMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                    if (response.isSuccessful()) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(response.body().getUrl()));
+                        startActivity(intent);
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
+        }
+    }
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
 
