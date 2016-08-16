@@ -49,6 +49,11 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
         holder.getName().setText(material.getName());
     }
 
+    public void addItemPosition(int position, Material material) {
+        mList.add(position, material);
+        notifyItemInserted(position);
+    }
+
     @Override
     public int getItemCount() {
         return mList.size();

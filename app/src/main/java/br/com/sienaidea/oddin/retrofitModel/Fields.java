@@ -1,10 +1,25 @@
 package br.com.sienaidea.oddin.retrofitModel;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Siena Idea on 11/08/2016.
  */
 public class Fields {
-    private String key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature;
+    private String key;
+    private String policy;
+
+    @SerializedName("x-amz-credential")
+    private String x_amz_credential;
+
+    @SerializedName("x-amz-algorithm")
+    private String x_amz_algorithm;
+
+    @SerializedName("x-amz-date")
+    private String x_amz_date;
+
+    @SerializedName("x-amz-signature")
+    private String x_amz_signature;
 
     public String getKey() {
         return key;

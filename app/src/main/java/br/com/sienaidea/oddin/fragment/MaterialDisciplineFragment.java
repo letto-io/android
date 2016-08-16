@@ -92,6 +92,12 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    public void addItemPosition(int position, Material material) {
+        mAdapter.addItemPosition(position, material);
+        mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, position);
+        checkState();
+    }
+
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
 

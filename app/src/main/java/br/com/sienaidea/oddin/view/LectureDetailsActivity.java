@@ -88,7 +88,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private Profile mProfile;
     private View mRootLayout;
     private ResponseCredentialsMaterial mCredentialsMaterial;
-    private Material mMaterial;
+    private Material mMaterial = new Material();
 
 
     @Override
@@ -316,7 +316,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
                     .build();
-            //.addConverterFactory(GsonConverterFactory.create())
 
             // Service setup
             HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
@@ -327,25 +326,17 @@ public class LectureDetailsActivity extends AppCompatActivity {
             // MultipartBody.Part is used to send also the actual file name
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
 
-
             mMaterial.setName(mTempFile.getName());
             mMaterial.setId(mCredentialsMaterial.getId());
             mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
 
-            // add another part within the multipart request
-            String keyString = "8a5d46f9-d83d-4acb-8ea0-f7f70b013ec6/${filename}";
-            String policyString = "eyJleHBpcmF0aW9uIjoiMjAxNi0wOC0xMlQxNDo1NzowOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJvc2puZXhmZXZsZmx2aCJ9LFsic3RhcnRzLXdpdGgiLCIka2V5IiwiOGE1ZDQ2ZjktZDgzZC00YWNiLThlYTAtZjdmNzBiMDEzZWM2LyJdLHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFJNFVUTEE1Q1BSSk9PRzRRLzIwMTYwODEyL3VzLXdlc3QtMi9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWFsZ29yaXRobSI6IkFXUzQtSE1BQy1TSEEyNTYifSx7IngtYW16LWRhdGUiOiIyMDE2MDgxMlQxMzU3MDlaIn1dfQ==";
-            String x_amz_credentialString = "AKIAI4UTLA5CPRJOOG4Q/20160812/us-west-2/s3/aws4_request";
-            String x_amz_algorithmString = "AWS4-HMAC-SHA256";
-            String x_amz_dateString = "20160812T135709Z";
-            String x_amz_signatureString = "2e7788fb2e650dc10fdb7eedffe28c6058e5acfdeda3362139f44f8f677a914a";
-
-            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), keyString);
-            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), policyString);
-            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_credentialString);
-            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_algorithmString);
-            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_dateString);
-            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), x_amz_signatureString);
+            // add another part within the multipart request (credenciais para upload Amazon)
+            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
 
             Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
 
@@ -365,7 +356,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
                     confirmUpload();
                 }
 
@@ -406,7 +396,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                 if (response.isSuccessful()) {
-
+                    mMaterial.setUrl(response.body().getUrl());
+                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
+                    mMaterialDisciplineFragment.addItemPosition(0, mMaterial);
+                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -416,7 +409,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Falha na Confirmação!", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -643,10 +636,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.dialog_cancel, null);
         builder.show();
 
-    }
-
-    private void addListItem(Material material) {
-        mList.add(material);
     }
 
     public List<Material> getListMaterial() {
