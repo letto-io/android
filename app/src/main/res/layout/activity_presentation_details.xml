@@ -2,10 +2,11 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_presentation_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@android:color/white"
+    android:fitsSystemWindows="true"
     tools:context=".view.PresentationDetailsActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -21,8 +22,8 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:expandedTitleTextAppearance="@style/HeaderTitleStyle">
+            app:expandedTitleTextAppearance="@style/HeaderTitleStyle"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_presentation_details"
@@ -44,10 +45,10 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_plus_white"
-        android:visibility="gone"
-        android:layout_gravity="bottom|end" />
+        android:visibility="gone" />
 
 </android.support.design.widget.CoordinatorLayout>
 

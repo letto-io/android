@@ -81,7 +81,7 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((PresentationDetailsActivity) getActivity()).loadMaterial();
+                ((PresentationDetailsActivity) getActivity()).getMaterials();
             }
         });
 
@@ -118,6 +118,17 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
     public void onClickListener(final int position) {
 
         final Material material = mAdapter.getMaterial(position);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((PresentationDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
+                }
+            });
+            builder.show();
 
 //        if (!material.isDownloaded()) {
 //            AlertDialog.Builder builder =

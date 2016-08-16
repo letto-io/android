@@ -24,14 +24,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +38,13 @@ import br.com.sienaidea.oddin.fragment.MaterialDisciplineFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
-import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
-import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
-import cz.msebera.android.httpclient.Header;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -64,13 +57,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static br.com.sienaidea.oddin.R.string.toast_fails_to_start;
 
 public class LectureDetailsActivity extends AppCompatActivity {
-    private static String URL_GET_MATERIAL;
     private static int REQUEST_CODE_MATERIAL = 2;
     private static final int REQUEST_PERMISSIONS_UPLOAD = 21;
     private static final int REQUEST_PERMISSIONS_DOWNLOAD = 12;
 
     private List<Material> mList = new ArrayList<>();
-    //private Discipline mDiscipline;
 
     private File mTempFile;
     private byte[] mBytes;
@@ -556,73 +547,9 @@ public class LectureDetailsActivity extends AppCompatActivity {
         } else {
             //e por fim, caso já tenha permiçoes, faça download
             getMaterial(mPositionFragment, mMaterialFragment);
-            //getMaterialContent(mPositionFragment, mMaterialFragment);
         }
 
     }
-
-//    private void getMaterialContent(final int position, final Material material) {
-//        BossClient.get(URL_GET_MATERIAL + "/" + material.getId(), null, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//
-//                if (FileUtils.isExternalStorageWritable()) {
-//                    File root = Environment.getExternalStorageDirectory();
-//
-//                    File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-//                    if (!dirOddin.exists()) {
-//                        dirOddin.mkdir();
-//                    }
-//
-//                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mInstruction.getLecture().getName().trim());
-//                    if (!dirDiscipline.exists()) {
-//                        dirDiscipline.mkdir();
-//                    }
-//
-//                    final File file = new File(dirDiscipline.getAbsolutePath(), material.getName().trim());
-//                    try {
-//
-//                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-//                        fileOutputStream.write(responseBody);
-//                        fileOutputStream.close();
-//
-//                        AlertDialog.Builder builder =
-//                                new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-//                        builder.setMessage("Material salvo em: " + file.getAbsolutePath());
-//                        builder.setPositiveButton("OK", null);
-//                        builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                Intent newIntent = new Intent();
-//                                newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), material.getMime());
-//                                newIntent.setAction(Intent.ACTION_VIEW);
-//                                try {
-//                                    startActivity(newIntent);
-//                                } catch (android.content.ActivityNotFoundException e) {
-//                                    Toast.makeText(getApplicationContext(), "Nenhum manipulador para este tipo de arquivo.", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        });
-//                        builder.show();
-//
-//                        //material.setDownloaded(true);
-//                        mMaterialDisciplineFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                Toast.makeText(getApplicationContext(), "Não foi possível fazer a requisição no servidor, tente novamente.", Toast.LENGTH_LONG).show();
-//            }
-//        });
-//
-//    }
 
     private void getMaterial(int position, Material material) {
         DetectConnection detectConnection = new DetectConnection(this);

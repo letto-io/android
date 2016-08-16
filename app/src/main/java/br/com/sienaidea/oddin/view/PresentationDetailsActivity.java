@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -43,12 +44,18 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.MaterialPresentationFragment;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Discipline;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Profile;
+import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
+import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
 import cz.msebera.android.httpclient.Header;
 import okhttp3.MediaType;
@@ -83,25 +90,36 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private MaterialPresentationFragment mMaterialPresentationFragment;
 
-    private static String URL_GET_MATERIAL;
+    //new
+    private FloatingActionButton mFab;
+    private Profile mProfile = new Profile();
+    private View mRootLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation_details);
 
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mRootLayout = findViewById(R.id.root_lecture_detail);
+
+        Preference preference = new Preference();
+        mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
+
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList("mList");
             mPresentation = savedInstanceState.getParcelable(Presentation.TAG);
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
+            //mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
 
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null && getIntent().getParcelableExtra(Discipline.NAME) != null) {
+            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
+                //mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
-                mDiscipline = getIntent().getParcelableExtra(Discipline.NAME);
-                //URL_GET_MATERIAL = "controller/instruction/" + mPresentation.getInstruction_id() + "/presentation/" + mPresentation.getId() + "/material";
+                //mProfile = getIntent().getParcelableExtra(Profile.TAG);
 
-                loadMaterial();
+                setupFab();
+                getMaterials();
             } else {
                 Toast.makeText(this, toast_fails_to_start, Toast.LENGTH_LONG).show();
                 finish();
@@ -117,25 +135,38 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         CollapsingToolbarLayout mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
         mCollapsingToolbarLayout.setTitle(mPresentation.getSubject());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
 
-                if (ContextCompat.checkSelfPermission(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+    private void setupFab() {
+        if (mProfile.getProfile() == Constants.INSTRUCTOR) {
+            mFab.setVisibility(View.VISIBLE);
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //se uma das duas permissões não estiverem liberadas
+                    if (ContextCompat.checkSelfPermission(PresentationDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        callDialog("É preciso a permissão para ler arquivos do seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+                        //verifica se já foi recusado a permissão de escrita
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(PresentationDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            callDialog("É preciso a permission WRITE_EXTERNAL_STORAGE para SALVAR o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+                            return;
+                        }
+
+                        //verifica se já foi recusado a permissão de leitura
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            callDialog("É preciso a permission READ_EXTERNAL_STORAGE para LER o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+                            return;
+                        }
+
+                        //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
+                        ActivityCompat.requestPermissions(PresentationDetailsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+
                     } else {
-                        ActivityCompat.requestPermissions(PresentationDetailsActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
+                        openFileManager();
                     }
-                } else {
-                    openFileManager();
                 }
-            }
-        });
-        if (mDiscipline.getProfile() == 2) {
-            fab.setVisibility(View.VISIBLE);
+            });
         }
     }
 
@@ -171,10 +202,10 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 for (int i = 0; i < permissions.length; i++) {
 
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     } else if (permissions[i].equalsIgnoreCase(Manifest.permission.WRITE_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     }
 
@@ -311,7 +342,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                         return;
                     }
                     Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
-                    loadMaterial();//SUBSTITUIT PELO RESULT
+                    //loadMaterial();//SUBSTITUIT PELO RESULT
                 }
 
                 /**
@@ -323,53 +354,55 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
                 }
             });
-        }else {
+        } else {
             Toast.makeText(getApplicationContext(), "Não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void loadMaterial() {
-        BossClient.get(URL_GET_MATERIAL, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                try {
-                    JSONArray materials = response.getJSONArray("materials");
-                    Log.d("MATERIALS", materials.toString());
+    public void getMaterials() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-                    mList.clear();
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-                    for (int i = 0; i < materials.length(); i++) {
-                       // material = new Material();
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
 
-                        material.setId(materials.getJSONObject(i).getInt("id"));
-                        material.setName(materials.getJSONObject(i).getString("name"));
-                        material.setMime(materials.getJSONObject(i).getString("mime"));
+            Call<List<Material>> request = service.PresentationMaterials(auth_token_string, mPresentation.getId());
 
-                        addListItem(material);
-                    }
-
-                    mMaterialPresentationFragment = (MaterialPresentationFragment) fragmentManager.findFragmentByTag(MaterialPresentationFragment.TAG);
-                    if (mMaterialPresentationFragment != null) {
-                        mMaterialPresentationFragment.notifyDataSetChanged();
+            request.enqueue(new Callback<List<Material>>() {
+                @Override
+                public void onResponse(Call<List<Material>> call, Response<List<Material>> response) {
+                    if (response.isSuccessful()) {
+                        mList.clear();
+                        mList = response.body();
+                        onRequestSuccess();
                     } else {
-                        mMaterialPresentationFragment = MaterialPresentationFragment.newInstance(getListMaterial());
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.add(R.id.rl_fragment_presentation_details, mMaterialPresentationFragment, MaterialPresentationFragment.TAG);
-                        fragmentTransaction.commit();
+                        onRequestFailure(response.code());
                     }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-                //fragmentMaterialPresentation.swipeRefreshStop();
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Material>> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getMaterials();
+                        }
+                    }).show();
+        }
     }
 
     public void attemptGetMaterialContent(int position, Material material) {
@@ -398,76 +431,72 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
         } else {
             //e por fim, caso já tenha permiçoes, faça download
-            getMaterialContent(mPositionFragment, mMaterialFragment);
+            getMaterial(mPositionFragment, mMaterialFragment);
         }
-
     }
 
-    public void getMaterialContent(final int position, final Material material) {
-        BossClient.get(URL_GET_MATERIAL + "/" + material.getId(), null, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                if (FileUtils.isExternalStorageWritable()) {
+    private void getMaterial(int position, Material material) {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-                    File root = Environment.getExternalStorageDirectory();
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-                    File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-                    if (!dirOddin.exists()) {
-                        dirOddin.mkdir();
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseConfirmMaterial> request = service.getMaterial(auth_token_string, material.getId());
+
+            request.enqueue(new Callback<ResponseConfirmMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                    if (response.isSuccessful()) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(response.body().getUrl()));
+                        startActivity(intent);
+                    } else {
+                        onRequestFailure(response.code());
                     }
-
-                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mDiscipline.getNome().trim());
-                    if (!dirDiscipline.exists()) {
-                        dirDiscipline.mkdir();
-                    }
-
-                    File dirPresentation = new File(dirDiscipline.getAbsolutePath() + "/" + mPresentation.getSubject().trim());
-                    if (!dirPresentation.exists()) {
-                        dirPresentation.mkdir();
-                    }
-
-                    final File file = new File(dirPresentation.getAbsolutePath(), material.getName());
-                    try {
-
-                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-                        fileOutputStream.write(responseBody);
-                        fileOutputStream.close();
-
-                        AlertDialog.Builder builder =
-                                new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-                        builder.setMessage("Material salvo em: " + file.getAbsolutePath());
-                        builder.setPositiveButton("OK", null);
-                        builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent newIntent = new Intent();
-                                newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), material.getMime());
-                                newIntent.setAction(Intent.ACTION_VIEW);
-                                try {
-                                    startActivity(newIntent);
-                                } catch (android.content.ActivityNotFoundException e) {
-                                    Toast.makeText(getApplicationContext(), "Nenhum manipulador para este tipo de arquivo.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        builder.show();
-
-                        //material.setDownloaded(true);
-                        mMaterialPresentationFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplicationContext(), "Não foi possível fazer a requisição no servidor, tente novamente.", Toast.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onRequestSuccess() {
+        mMaterialPresentationFragment = (MaterialPresentationFragment) fragmentManager.findFragmentByTag(mMaterialPresentationFragment.TAG);
+        if (mMaterialPresentationFragment != null) {
+            mMaterialPresentationFragment.notifyDataSetChanged();
+        } else {
+            mMaterialPresentationFragment = mMaterialPresentationFragment.newInstance(getListMaterial());
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.rl_fragment_presentation_details, mMaterialPresentationFragment, mMaterialPresentationFragment.TAG);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private void onRequestFailure(int statusCode) {
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void addListItem(Material material) {

@@ -98,6 +98,11 @@ public class HttpApi {
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
 
+        //Get Presentation Materials
+        @GET("presentations/{presentation_id}/materials")
+        Call<List<Material>> PresentationMaterials(@Header("x-session-token") String token,
+                                                   @Path("presentation_id") int presentation_id);
+
         //Get Credentials Instruction Material OK
         @GET("instructions/{instruction_id}/materials/new")
         Call<ResponseCredentialsMaterial> createInstructionMaterial(@Header("x-session-token") String token,
