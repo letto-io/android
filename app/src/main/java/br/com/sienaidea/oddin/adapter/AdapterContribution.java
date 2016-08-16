@@ -13,15 +13,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.model.Contribution;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
+import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterContribution extends RecyclerView.Adapter<AdapterContribution.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
-    private List<Contribution> mList;
+    private List<Answer> mList;
     private Context mContext;
     private int mProfile;
 
-    public AdapterContribution(Context context, List<Contribution> list, int profile) {
+    public AdapterContribution(Context context, List<Answer> list, int profile) {
         this.mContext = context;
         this.mList = list;
         this.mProfile = profile;
@@ -36,10 +37,10 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Contribution contribution = mList.get(position);
-        holder.getTvPersonName().setText(contribution.getPersonName());
-        holder.getTvText().setText(contribution.getText());
-        holder.getTvCreatedat().setText(contribution.getCreatedat());
+        Answer answer = mList.get(position);
+        holder.getTvPersonName().setText(answer.getPerson().getName());
+        holder.getTvText().setText(answer.getText());
+        holder.getTvCreatedat().setText(DateUtil.getDateUFCFormat(answer.getCreated_at()));
 
         if (mProfile == 2) {
             holder.ivUnderstand.setVisibility(View.GONE);

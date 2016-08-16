@@ -7,9 +7,13 @@ import android.os.Parcelable;
  * Created by Siena Idea on 04/08/2016.
  */
 public class Answer implements Parcelable {
+    public static String TAG = Answer.class.getName();
+
     private int id, upvotes, downvotes, my_vote;
     private String text, created_at;
     private boolean anonymous, accepted;
+    private Question question;
+    private Person person;
 
     protected Answer(Parcel in) {
         id = in.readInt();
@@ -20,6 +24,8 @@ public class Answer implements Parcelable {
         created_at = in.readString();
         anonymous = in.readByte() != 0;
         accepted = in.readByte() != 0;
+        question = in.readParcelable(Question.class.getClassLoader());
+        person = in.readParcelable(Person.class.getClassLoader());
     }
 
     public static final Creator<Answer> CREATOR = new Creator<Answer>() {
@@ -98,6 +104,22 @@ public class Answer implements Parcelable {
         this.accepted = accepted;
     }
 
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -113,5 +135,7 @@ public class Answer implements Parcelable {
         dest.writeString(created_at);
         dest.writeByte((byte) (anonymous ? 1 : 0));
         dest.writeByte((byte) (accepted ? 1 : 0));
+        dest.writeParcelable(question, flags);
+        dest.writeParcelable(person, flags);
     }
 }

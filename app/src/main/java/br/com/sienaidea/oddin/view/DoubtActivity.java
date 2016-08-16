@@ -396,4 +396,8 @@ public class DoubtActivity extends AppCompatActivity {
         }
         super.startActivity(intent);
     }
+
+    public Instruction getInstruction() {
+        return mInstruction;
+    }
 }

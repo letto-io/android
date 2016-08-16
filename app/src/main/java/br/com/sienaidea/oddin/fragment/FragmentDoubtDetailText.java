@@ -17,13 +17,13 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterContribution;
-import br.com.sienaidea.oddin.model.Contribution;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class FragmentDoubtDetailText extends Fragment {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Contribution> mList;
+    private List<Answer> mList;
     private AdapterContribution mAdapter;
     private Context mContext;
     private int mProfile;
@@ -35,12 +35,12 @@ public class FragmentDoubtDetailText extends Fragment {
         super.onAttach(context);
     }
 
-    public static FragmentDoubtDetailText newInstance(List<Contribution> list, int profile ) {
+    public static FragmentDoubtDetailText newInstance(List<Answer> list, int profile ) {
 
         FragmentDoubtDetailText fragment = new FragmentDoubtDetailText();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Contribution.NAME, (ArrayList<Contribution>) list);
+        args.putParcelableArrayList(Answer.TAG, (ArrayList<Answer>) list);
         args.putInt("profile", profile);
         fragment.setArguments(args);
 
@@ -72,7 +72,7 @@ public class FragmentDoubtDetailText extends Fragment {
             }
         });
 
-        mList = getArguments().getParcelableArrayList(Contribution.NAME);
+        mList = getArguments().getParcelableArrayList(Answer.TAG);
         mProfile = getArguments().getInt("profile");
 
         if (mList != null) {

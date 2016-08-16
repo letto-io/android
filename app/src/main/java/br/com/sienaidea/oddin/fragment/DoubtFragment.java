@@ -29,6 +29,7 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Doubt;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
@@ -38,6 +39,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private List<Question> mList;
+    private Instruction mInstruction;
     private Presentation mPresentation;
     private AdapterDoubt mAdapterDoubt;
     private Context mContext;
@@ -190,7 +192,8 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
     @Override
     public void onClickListener(View view, final int position, String option) {
-        Log.d("DEBUG >>>", "OnClickDuvida");
+        mInstruction = ((DoubtActivity) getActivity()).getInstruction();
+
         final Question question = mAdapterDoubt.getDoubtAdapter(position);
         if (option != null) {
             if (option.equals(LIKE)) {
@@ -227,12 +230,11 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 //                }
 //            }
         } else {
-            // TODO: 05/08/2016 chamar a doubt details
-//            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
-//            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
-//            intent.putExtra(Discipline.NAME, mDiscipline);
-//            intent.putExtra(Presentation.TAG, mPresentation);
-//            startActivity(intent);
+            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
+            intent.putExtra(Question.TAG, mAdapterDoubt.getDoubtAdapter(position));
+            intent.putExtra(Instruction.TAG, mInstruction);
+            intent.putExtra(Presentation.TAG, mPresentation);
+            startActivity(intent);
         }
     }
 

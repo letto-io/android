@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Person;
@@ -84,16 +85,16 @@ public class HttpApi {
         @DELETE("session")
         Call<Void> Logoff(@Header("x-session-token") String token);
 
-        //Profile OK
+        //Get Profile OK
         @GET("instructions/{instruction_id}/profile")
         Call<Profile> Profile(@Header("x-session-token") String token,
                               @Path("instruction_id") int instruction_id);
 
-        //Instructions OK
+        //Get vInstructions OK
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 
-        //Instruction Materials OK
+        //Get Instruction Materials OK
         @GET("instructions/{instruction_id}/materials")
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
@@ -130,7 +131,7 @@ public class HttpApi {
         Call<ResponseConfirmMaterial> getMaterial(@Header("x-session-token") String token,
                                                   @Path("material_id") int material_id);
 
-        //Presentations OK
+        //Get Presentations OK
         @GET("instructions/{instruction_id}/presentations")
         Call<List<Presentation>> Presentations(@Header("x-session-token") String token,
                                                @Path("instruction_id") int instruction_id);
@@ -146,12 +147,12 @@ public class HttpApi {
         Call<Presentation> ClosePresentation(@Header("x-session-token") String token,
                                              @Path("presentation_id") int presentation_id);
 
-        //Participants OK
+        //Get Participants OK
         @GET("instructions/{instruction_id}/participants")
         Call<List<Person>> Participants(@Header("x-session-token") String token,
                                         @Path("instruction_id") int instruction_id);
 
-        //Questions OK
+        //Get Questions OK
         @GET("presentations/{presentation_id}/questions")
         Call<List<Question>> Questions(@Header("x-session-token") String token,
                                        @Path("presentation_id") int presentation_id);
@@ -171,6 +172,11 @@ public class HttpApi {
         @POST("questions/{question_id}/downvote")
         Call<ResponseVote> DownVoteQuestion(@Header("x-session-token") String token,
                                             @Path("question_id") int question_id);
+
+        //Get Question Answers OK
+        @GET("questions/{question_id}/answers")
+        Call<List<Answer>> getAnswers(@Header("x-session-token") String token,
+                                      @Path("question_id") int question_id);
 
         //FIM NEW BACK
 

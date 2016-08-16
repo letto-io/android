@@ -58,13 +58,16 @@ import br.com.sienaidea.oddin.fragment.MaterialDoubtDetailFragment;
 import br.com.sienaidea.oddin.fragment.VideoDoubtDetailFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Contribution;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Doubt;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
+import br.com.sienaidea.oddin.retrofitModel.Profile;
+import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.FileUtils;
 import cz.msebera.android.httpclient.Header;
@@ -96,8 +99,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private List<Material> mListMaterial = new ArrayList<>();
     private Contribution mContribution;
     private MaterialDoubt mMaterial;
-    private Doubt mDoubt;
-    private Discipline mDiscipline;
     private Presentation mPresentation;
     private FloatingActionButton fab;
 
@@ -127,7 +128,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             R.drawable.ic_paperclip_selector
     };
 
-    private int[] fabIcons = {R.drawable.ic_plus_white,R.drawable.ic_microphone};
+    private int[] fabIcons = {R.drawable.ic_plus_white, R.drawable.ic_microphone};
 
     private int mMaxProgress = 100;
     private LinkedList<ProgressType> mProgressTypes;
@@ -141,10 +142,19 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private int mPositionFragment;
     private MaterialDoubt mMaterialFragment;
 
+    //new
+    private List<Answer> mListAnswers = new ArrayList<>();
+    private Instruction mInstruction;
+    private Question mQuestion;
+    private Profile mProfile = new Profile();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doubt_details);
+
+        Preference preference = new Preference();
+        mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_doubt_details);
         mViewPager = (ViewPager) findViewById(R.id.vp_doubt_details);
@@ -154,27 +164,26 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList(Contribution.NAME);
-            mDoubt = savedInstanceState.getParcelable(Doubt.NAME);
-            mDiscipline = savedInstanceState.getParcelable(Discipline.NAME);
-            mPresentation = savedInstanceState.getParcelable(Presentation.NAME);
-            mTvPersonName.setText(mDoubt.getPerson().getName());
-            mTvText.setText(mDoubt.getText());
+            mQuestion = savedInstanceState.getParcelable(Question.TAG);
+            mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
+            mPresentation = savedInstanceState.getParcelable(Presentation.TAG);
+            mTvPersonName.setText(mQuestion.getPerson().getName());
+            mTvText.setText(mQuestion.getText());
             setupViewPager(mViewPager);
         } else {
             if (getIntent().getExtras() != null) {
-                mDoubt = getIntent().getExtras().getParcelable(Doubt.NAME);
-                mDiscipline = getIntent().getExtras().getParcelable(Discipline.NAME);
-                mPresentation = getIntent().getExtras().getParcelable(Presentation.NAME);
-                mTvPersonName.setText(mDoubt.getPerson().getName());
-                mTvText.setText(mDoubt.getText());
-                URL_GET_CONTRIBUTION = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + mDoubt.getPresentation_id() + "/doubt/" + mDoubt.getId() + "/contribution";
-                URL_GET_MATERIAL = "controller/instruction/" + mDiscipline.getInstruction_id() + "/presentation/" + mDoubt.getPresentation_id() + "/doubt/" + mDoubt.getId() + "/contribution/";
+                mQuestion = getIntent().getExtras().getParcelable(Question.TAG);
+                mInstruction = getIntent().getExtras().getParcelable(Instruction.TAG);
+                mPresentation = getIntent().getExtras().getParcelable(Presentation.TAG);
+                mTvPersonName.setText(mQuestion.getPerson().getName());
+                mTvText.setText(mQuestion.getText());
                 getContentDoubt();
+                getAnswers();
             }
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tb_doubt_details);
-        toolbar.setTitle(mDiscipline.getNome());
+        toolbar.setTitle(mInstruction.getLecture().getName());
         toolbar.setSubtitle(mPresentation.getSubject());
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -188,35 +197,88 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        if (mDiscipline.getProfile() == 2) {
-            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    fab.hide(true);
-                    animateFab(position);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                }
-            });
-
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(this);
-
-        }
+//        if (mDiscipline.getProfile() == 2) {
+//            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//                @Override
+//                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                }
+//
+//                @Override
+//                public void onPageSelected(int position) {
+//                    fab.hide(true);
+//                    animateFab(position);
+//                }
+//
+//                @Override
+//                public void onPageScrollStateChanged(int state) {
+//                }
+//            });
+//
+//            fab.setVisibility(View.VISIBLE);
+//            fab.setOnClickListener(this);
+//
+//        }
 
     }
 
-    public void fabHide(){
+    private void getAnswers() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<List<Answer>> request = service.getAnswers(auth_token_string, mQuestion.getId());
+
+        request.enqueue(new Callback<List<Answer>>() {
+            @Override
+            public void onResponse(Call<List<Answer>> call, Response<List<Answer>> response) {
+                if (response.isSuccessful()) {
+                    mListAnswers.clear();
+                    mListAnswers = response.body();
+                    onRequestSuccess();
+                } else {
+                    onRequestFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Answer>> call, Throwable t) {
+                onRequestFailure(401);
+            }
+        });
+    }
+
+    private void onRequestSuccess() {
+        mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
+        setupViewPager(mViewPager);
+        mViewPager.setCurrentItem(mSelectedTabPosition);
+        mAdapterViewPager.notifyDataSetChanged();
+    }
+
+    private void onRequestFailure(int statusCode) {
+        if (statusCode == 401) {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            startActivity(new Intent(getApplication(), LoginActivity.class));
+            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    public void fabHide() {
         fab.hide(true);
     }
 
-    public void fabShow(){
+    public void fabShow() {
         fab.show(true);
     }
 
@@ -327,7 +389,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void animateFab(final int position) {
-        if (position == 1){
+        if (position == 1) {
             // Change FAB color icon
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fab.setImageDrawable(getResources().getDrawable(fabIcons[position], null));
@@ -355,7 +417,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 }
             });
 
-        }else {
+        } else {
             // Change FAB color icon
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fab.setImageDrawable(getResources().getDrawable(fabIcons[0], null));
@@ -536,7 +598,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                         dirOddin.mkdir();
                     }
 
-                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mDiscipline.getNome());
+                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mInstruction.getLecture().getName());
                     if (!dirDiscipline.exists()) {
                         dirDiscipline.mkdir();
                     }
@@ -600,11 +662,11 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        fragmentDoubtDetailText = FragmentDoubtDetailText.newInstance(getList(), mDiscipline.getProfile());
+        fragmentDoubtDetailText = FragmentDoubtDetailText.newInstance(getList(), mProfile.getProfile());
 
-        mAudioDoubtDetailFragment = AudioDoubtDetailFragment.newInstance(getAudio(), mDiscipline.getProfile());
-        mVideoDoubtDetailFragment = VideoDoubtDetailFragment.newInstance(getVideo(), mDiscipline.getProfile());
-        mMaterialDoubtDetailFragment = MaterialDoubtDetailFragment.newInstance(getAttachment(), mDiscipline.getProfile());
+        mAudioDoubtDetailFragment = AudioDoubtDetailFragment.newInstance(getAudio(), mProfile.getProfile());
+        mVideoDoubtDetailFragment = VideoDoubtDetailFragment.newInstance(getVideo(), mProfile.getProfile());
+        mMaterialDoubtDetailFragment = MaterialDoubtDetailFragment.newInstance(getAttachment(), mProfile.getProfile());
 
         mAdapterViewPager.addFragment(fragmentDoubtDetailText, "");
         mAdapterViewPager.addFragment(mAudioDoubtDetailFragment, "");
@@ -625,8 +687,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private List<Contribution> getList() {
-        return mList;
+    private List<Answer> getList() {
+        return mListAnswers;
     }
 
     private List<Material> getListMaterial() {
@@ -644,33 +706,33 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private List<Material> getAudio() {
         List<Material> listAux = new ArrayList<>();
 
-        for (Material material : mListMaterial) {
-            if (material.getMime().equalsIgnoreCase("audio/3gpp")) {
-                listAux.add(material);
-            }
-        }
+//        for (Material material : mListMaterial) {
+//            if (material.getMime().equalsIgnoreCase("audio/3gpp")) {
+//                listAux.add(material);
+//            }
+//        }
         return listAux;
     }
 
     private List<Material> getVideo() {
         List<Material> listAux = new ArrayList<>();
 
-        for (Material material : mListMaterial) {
-            if (material.getMime().equalsIgnoreCase("video/mp4")) {
-                listAux.add(material);
-            }
-        }
+//        for (Material material : mListMaterial) {
+//            if (material.getMime().equalsIgnoreCase("video/mp4")) {
+//                listAux.add(material);
+//            }
+//        }
         return listAux;
     }
 
     private List<Material> getAttachment() {
         List<Material> listAux = new ArrayList<>();
 
-        for (Material material : mListMaterial) {
-            if (material.getMime().equalsIgnoreCase("application/pdf")) {
-                listAux.add(material);
-            }
-        }
+//        for (Material material : mListMaterial) {
+//            if (material.getMime().equalsIgnoreCase("application/pdf")) {
+//                listAux.add(material);
+//            }
+//        }
         return listAux;
     }
 
@@ -686,9 +748,9 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Contribution.NAME, (ArrayList<Contribution>) mList);
-        outState.putParcelable(Discipline.NAME, mDiscipline);
-        outState.putParcelable(Presentation.NAME, mPresentation);
-        outState.putParcelable(Doubt.NAME, mDoubt);
+        outState.putParcelable(Instruction.TAG, mInstruction);
+        outState.putParcelable(Presentation.TAG, mPresentation);
+        outState.putParcelable(Question.TAG, mQuestion);
         super.onSaveInstanceState(outState);
     }
 
@@ -700,8 +762,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             switch (position) {
                 case 0:
                     Intent intent = new Intent(DoubtDetailsActivity.this, NewContributionActivity.class);
-                    intent.putExtra(Presentation.NAME, mPresentation);
-                    intent.putExtra(Doubt.NAME, mDoubt);
+                    intent.putExtra(Presentation.TAG, mPresentation);
+                    intent.putExtra(Question.TAG, mQuestion);
                     startActivityForResult(intent, ACTION_POST_TEXT_REQUEST);
                     break;
                 case 1:
@@ -932,7 +994,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             Call<Void> call = service.postFileContribution(CookieUtil.getCookie(getApplicationContext()),
                     String.valueOf(mPresentation.getId()), //instruction id e nao presentation id
                     String.valueOf(mPresentation.getId()),
-                    String.valueOf(mDoubt.getId()),
+                    String.valueOf(mQuestion.getId()),
                     body);
 
             call.enqueue(new Callback<Void>() {
