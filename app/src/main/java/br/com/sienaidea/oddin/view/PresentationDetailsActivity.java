@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -27,18 +26,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,16 +41,9 @@ import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
-import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import br.com.sienaidea.oddin.util.FileUtils;
-import cz.msebera.android.httpclient.Header;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -301,62 +284,62 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     }
 
     private void uploadFile() {
-
-        //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
-
-        if (mTempFile != null) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
-            // Prepare the HTTP request
-            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), mTempFile);
-
-            // MultipartBody.Part is used to send also the actual file name
-            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
-
-            Call<Void> call = service.postMaterialPresentation(CookieUtil.getCookie(getApplicationContext()),
-                    String.valueOf(mDiscipline.getInstruction_id()),
-                    String.valueOf(mPresentation.getId()),
-                    body);
-
-            // Asynchronously execute HTTP request
-            call.enqueue(new Callback<Void>() {
-                /**
-                 * onResponse is called when any kind of response has been received.
-                 */
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    // http response status code + headers
-                    //System.out.println("Response status code: " + response.code());
-
-                    // isSuccess is true if response code => 200 and <= 300
-                    if (!response.isSuccessful()) {
-                        // print response body if unsuccessful
-                        Toast.makeText(getApplicationContext(), "Não foi possível enviar o arquivo, tente novamente! ", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
-                    //loadMaterial();//SUBSTITUIT PELO RESULT
-                }
-
-                /**
-                 * onFailure gets called when the HTTP request didn't get through.
-                 * For instance if the URL is invalid / host not reachable
-                 */
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(getApplicationContext(), "Não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
-        }
+//
+//        //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
+//
+//        if (mTempFile != null) {
+//            // Retrofit setup
+//            Retrofit retrofit = new Retrofit.Builder()
+//                    .baseUrl(HttpApi.API_URL)
+//                    .addConverterFactory(GsonConverterFactory.create())
+//                    .build();
+//
+//            // Service setup
+//            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+//
+//            // Prepare the HTTP request
+//            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), mTempFile);
+//
+//            // MultipartBody.Part is used to send also the actual file name
+//            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
+//
+//            Call<Void> call = service.postMaterialPresentation(CookieUtil.getCookie(getApplicationContext()),
+//                    String.valueOf(mDiscipline.getInstruction_id()),
+//                    String.valueOf(mPresentation.getId()),
+//                    body);
+//
+//            // Asynchronously execute HTTP request
+//            call.enqueue(new Callback<Void>() {
+//                /**
+//                 * onResponse is called when any kind of response has been received.
+//                 */
+//                @Override
+//                public void onResponse(Call<Void> call, Response<Void> response) {
+//                    // http response status code + headers
+//                    //System.out.println("Response status code: " + response.code());
+//
+//                    // isSuccess is true if response code => 200 and <= 300
+//                    if (!response.isSuccessful()) {
+//                        // print response body if unsuccessful
+//                        Toast.makeText(getApplicationContext(), "Não foi possível enviar o arquivo, tente novamente! ", Toast.LENGTH_LONG).show();
+//                        return;
+//                    }
+//                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
+//                    //loadMaterial();//SUBSTITUIT PELO RESULT
+//                }
+//
+//                /**
+//                 * onFailure gets called when the HTTP request didn't get through.
+//                 * For instance if the URL is invalid / host not reachable
+//                 */
+//                @Override
+//                public void onFailure(Call<Void> call, Throwable t) {
+//                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
+//                }
+//            });
+//        } else {
+//            Toast.makeText(getApplicationContext(), "Não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+//        }
     }
 
     public void getMaterials() {

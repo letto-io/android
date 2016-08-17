@@ -76,14 +76,14 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
             notifyDataSetChanged();
         }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                ((LectureDetailsActivity) getActivity()).getMaterials();
-            }
-        });
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                ((LectureDetailsActivity) getActivity()).getMaterials();
+//            }
+//        });
 
         return view;
     }

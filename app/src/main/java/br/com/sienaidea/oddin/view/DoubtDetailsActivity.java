@@ -17,7 +17,6 @@ import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -35,15 +34,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,15 +57,9 @@ import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
-import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.util.CookieUtil;
 import br.com.sienaidea.oddin.util.FileUtils;
-import cz.msebera.android.httpclient.Header;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -177,7 +163,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 mPresentation = getIntent().getExtras().getParcelable(Presentation.TAG);
                 mTvPersonName.setText(mQuestion.getPerson().getName());
                 mTvText.setText(mQuestion.getText());
-                getContentDoubt();
+                //getContentDoubt();
                 getAnswers();
             }
         }
@@ -197,28 +183,26 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-//        if (mDiscipline.getProfile() == 2) {
-//            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//                @Override
-//                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                }
-//
-//                @Override
-//                public void onPageSelected(int position) {
-//                    fab.hide(true);
-//                    animateFab(position);
-//                }
-//
-//                @Override
-//                public void onPageScrollStateChanged(int state) {
-//                }
-//            });
-//
-//            fab.setVisibility(View.VISIBLE);
-//            fab.setOnClickListener(this);
-//
-//        }
+        if (mProfile.getProfile() == Constants.INSTRUCTOR) {
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
 
+                @Override
+                public void onPageSelected(int position) {
+                    fab.hide(true);
+                    animateFab(position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                }
+            });
+
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(this);
+        }
     }
 
     private void getAnswers() {
@@ -432,51 +416,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void getContentDoubt() {
-        BossClient.get(URL_GET_CONTRIBUTION, null, CookieUtil.getCookie(this), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_LONG).show();
-                try {
-                    JSONArray contributions = response.getJSONArray("contributions");
-                    Log.d("CONTRIBUTIONS", contributions.toString());
-
-                    mList.clear();
-                    mListMaterial.clear();
-
-                    for (int i = 0; i < contributions.length(); i++) {
-                        mContribution = new Contribution();
-                        mMaterial = new MaterialDoubt();
-
-                        mContribution.setId(contributions.getJSONObject(i).getInt("id"));
-                        mContribution.setText(contributions.getJSONObject(i).getString("text"));
-                        mContribution.setCreatedat(contributions.getJSONObject(i).getString("createdat"));
-                        mContribution.setPersonName(contributions.getJSONObject(i).getJSONObject("person").getString("name"));
-
-                        mMaterial.setId(contributions.getJSONObject(i).getJSONObject("mcmaterial").getInt("id"));
-                        mMaterial.setName(contributions.getJSONObject(i).getJSONObject("mcmaterial").getString("name"));
-                        mMaterial.setMime(contributions.getJSONObject(i).getJSONObject("mcmaterial").getString("mime"));
-                        mMaterial.setContribution_id(contributions.getJSONObject(i).getInt("id"));
-
-                        if (!mContribution.getText().equalsIgnoreCase("null")) {
-                            addItemList(mContribution);
-                        }
-                        addItemList(mMaterial);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
-                setupViewPager(mViewPager);
-                mViewPager.setCurrentItem(mSelectedTabPosition);
-                mAdapterViewPager.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(getApplicationContext(), errorResponse.toString(), Toast.LENGTH_LONG).show();
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
+        // TODO: 17/08/2016
     }
 
     private void openFileManager() {
@@ -586,76 +526,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void getMaterialContent(final int position, final MaterialDoubt material) {
-        BossClient.get(URL_GET_MATERIAL + material.getContribution_id() + "/materials/" + material.getId(), null, CookieUtil.getCookie(getApplicationContext()), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                if (FileUtils.isExternalStorageWritable()) {
-                    File root = Environment.getExternalStorageDirectory();
-
-                    File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-                    if (!dirOddin.exists()) {
-                        dirOddin.mkdir();
-                    }
-
-                    File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/" + mInstruction.getLecture().getName());
-                    if (!dirDiscipline.exists()) {
-                        dirDiscipline.mkdir();
-                    }
-
-                    final File file = new File(dirDiscipline.getAbsolutePath(), material.getName());
-                    try {
-
-                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-                        fileOutputStream.write(responseBody);
-                        fileOutputStream.close();
-
-                        Fragment fragment = mAdapterViewPager.getItem(mViewPager.getCurrentItem());
-
-                        //material.setDownloaded(true);
-
-                        if (fragment instanceof AudioDoubtDetailFragment) {
-                            mAudioDoubtDetailFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-                        } else {
-                            if (fragment instanceof MaterialDoubtDetailFragment) {
-                                mMaterialDoubtDetailFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-                            } else if (fragment instanceof VideoDoubtDetailFragment) {
-                                mVideoDoubtDetailFragment.downloadFinished(position, Uri.parse("file://" + file.getPath()));
-                            }
-
-                            AlertDialog.Builder builder =
-                                    new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-                            builder.setMessage("Material salvo em: " + file.getAbsolutePath());
-                            builder.setPositiveButton("OK", null);
-                            builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent newIntent = new Intent();
-                                    newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), material.getMime());
-                                    newIntent.setAction(Intent.ACTION_VIEW);
-                                    try {
-                                        startActivity(newIntent);
-                                    } catch (android.content.ActivityNotFoundException e) {
-                                        Toast.makeText(getApplicationContext(), "No handler for this type of file.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            builder.show();
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getApplicationContext(), "Não foi possível fazer a requisição no servidor, tente novamente.", Toast.LENGTH_LONG).show();
-            }
-        });
+        // TODO: 17/08/2016
     }
 
     private void setupViewPager(final ViewPager viewPager) {
@@ -970,60 +841,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
 
     private void uploadFile(final int requestCode, String mimeType) {
-
-        if (requestCode == ACTION_GET_CONTENT_REQUEST || requestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
-            //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
-        }
-
-        if (mTempFile != null) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
-            // Prepare the HTTP request
-            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), mTempFile);
-
-            // MultipartBody.Part is used to send also the actual file name
-            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
-
-            Call<Void> call = service.postFileContribution(CookieUtil.getCookie(getApplicationContext()),
-                    String.valueOf(mPresentation.getId()), //instruction id e nao presentation id
-                    String.valueOf(mPresentation.getId()),
-                    String.valueOf(mQuestion.getId()),
-                    body);
-
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
-                    /*
-                    if (requestCode == RECORD_SOUND_ACTION_REQUEST) {
-                        mAudioDoubtDetailFragment.notifyDataSetChanged();
-                    } else if (requestCode == ACTION_GET_CONTENT_REQUEST) {
-                        mMaterialDoubtDetailFragment.notifyDataSetChanged();
-                    } else if (requestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
-                        mVideoDoubtDetailFragment.notifyDataSetChanged();
-                    }*/
-                    getContentDoubt();
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(getApplicationContext(), "não foi possível gerar o arquivo", Toast.LENGTH_SHORT).show();
-        }
+        // TODO: 17/08/2016
     }
 
     @Override

@@ -93,14 +93,14 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             notifyDataSetChanged();
         }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
-            }
-        });
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
+//            }
+//        });
 
         return view;
     }

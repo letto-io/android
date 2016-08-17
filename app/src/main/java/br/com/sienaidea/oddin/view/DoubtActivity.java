@@ -94,9 +94,6 @@ public class DoubtActivity extends AppCompatActivity {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-//                if (mProfile.getProfile() == -1) {
-//                    onRequestFailure(401);
-//                }
                 getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -228,13 +225,7 @@ public class DoubtActivity extends AppCompatActivity {
             Preference preference = new Preference();
             final String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<ResponseVote> request;
-
-            if (question.getMy_vote() != 0) {
-                request = service.DownVoteQuestion(auth_token_string, question.getId());
-            } else {
-                request = service.UpVoteQuestion(auth_token_string, question.getId());
-            }
+            Call<ResponseVote> request = service.UpVoteQuestion(auth_token_string, question.getId());
 
             request.enqueue(new Callback<ResponseVote>() {
                 @Override
@@ -243,9 +234,6 @@ public class DoubtActivity extends AppCompatActivity {
                         if (response.body().isUp()) {
                             question.setMy_vote(1);
                             question.setUpvotes(question.getUpvotes() + 1);
-                        } else {
-                            question.setMy_vote(0);
-                            question.setUpvotes(question.getUpvotes() - 1);
                         }
                         fragmentNotifyItemChanged(question);
                     } else {
@@ -351,15 +339,15 @@ public class DoubtActivity extends AppCompatActivity {
             intent.putExtra(Presentation.TAG, mPresentation);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
-        } else if (id == R.id.action_remove_sugestions) {
-            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
-                    SearchableProvider.AUTHORITY,
-                    SearchableProvider.MODE);
-
-            searchRecentSuggestions.clearHistory();
-
-            Toast.makeText(this, "Históricos removidos", Toast.LENGTH_SHORT).show();
-        }
+        } //else if (id == R.id.action_remove_sugestions) {
+//            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
+//                    SearchableProvider.AUTHORITY,
+//                    SearchableProvider.MODE);
+//
+//            searchRecentSuggestions.clearHistory();
+//
+//            Toast.makeText(this, "Históricos removidos", Toast.LENGTH_SHORT).show();
+//        }
 
         return true;
     }

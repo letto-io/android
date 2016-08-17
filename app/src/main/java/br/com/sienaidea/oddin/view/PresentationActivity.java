@@ -84,10 +84,13 @@ public class PresentationActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-//                if (mProfile.getProfile() == -1) {
-//                    getProfile();
-//                } else setupFab();
-                getProfile();
+                if (mProfile.getProfile() == Constants.INSTRUCTOR) {
+                    setupFab();
+                } else if (mProfile.getProfile() == Constants.LISTENER) {
+                    setupFab();
+                } else {
+                    getProfile();
+                }
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -115,7 +118,9 @@ public class PresentationActivity extends AppCompatActivity {
                     startActivityForResult(intent, NEW_PRESENTATION_REQUEST);
                 }
             });
-        }else fab.setVisibility(View.GONE);
+        } else {
+            fab.setVisibility(View.GONE);
+        }
     }
 
     public void fabHide() {
@@ -370,15 +375,15 @@ public class PresentationActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ParticipantsActivity.class);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
-        } else if (id == R.id.action_remove_sugestions) {
-            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
-                    SearchableProvider.AUTHORITY,
-                    SearchableProvider.MODE);
-
-            searchRecentSuggestions.clearHistory();
-
-            Toast.makeText(this, "Históricos removidos", Toast.LENGTH_SHORT).show();
-        }
+        } //else if (id == R.id.action_remove_sugestions) {
+//            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
+//                    SearchableProvider.AUTHORITY,
+//                    SearchableProvider.MODE);
+//
+//            searchRecentSuggestions.clearHistory();
+//
+//            Toast.makeText(this, "Históricos removidos", Toast.LENGTH_SHORT).show();
+//        }
 
         return true;
     }

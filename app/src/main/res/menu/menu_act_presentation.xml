@@ -19,8 +19,8 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_remove_sugestions"
-        android:title="@string/action_remove_sugestions"
-        android:orderInCategory="100"
-        app:showAsAction="never"/>
+    <!--<item android:id="@+id/action_remove_sugestions"-->
+        <!--android:title="@string/action_remove_sugestions"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never"/>-->
 </menu>

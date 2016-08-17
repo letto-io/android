@@ -14,17 +14,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.User;
-import br.com.sienaidea.oddin.server.BossClient;
 import br.com.sienaidea.oddin.util.DetectConnection;
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     //URL da requisiçao
@@ -58,35 +52,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-
-            HttpEntity entity = null;
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(User.EMAIL, mEmailEditText.getText().toString());
-
-                entity = new StringEntity(jsonObject.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            final ProgressDialog progressDialog = new ProgressDialog(ForgotPasswordActivity.this, R.style.AppTheme_Dark_Dialog);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage(getResources().getString(R.string.sending));
-            progressDialog.show();
-
-            BossClient.post(getApplicationContext(), URL_RECOVER_PASSWORD, entity, new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    onRecoverPasswordSuccess();
-                    progressDialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    onRecoverPasswordFailure();
-                    progressDialog.dismiss();
-                }
-            });
+            // TODO: 17/08/2016
         } else {
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
         }

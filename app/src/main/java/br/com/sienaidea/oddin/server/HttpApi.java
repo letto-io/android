@@ -76,7 +76,7 @@ public class HttpApi {
      * HttpBin.org service definition
      */
     public interface HttpBinService {
-        //NEW BACK
+
         //Create Session OK
         @POST("session")
         Call<Session> Login(@Body User user);
@@ -120,7 +120,7 @@ public class HttpApi {
                                 @Part("x-amz-signature") RequestBody x_amz_signature,
                                 @Part MultipartBody.Part file);
 
-        //Cofirm Material upload (está retornando 500 - mandei email para o Bruno)
+        //Cofirm Material OK
         @PUT("materials/{material_id}")
         Call<ResponseConfirmMaterial> confirmMaterial(@Header("x-session-token") String token,
                                                       @Path("material_id") int material_id,
@@ -168,94 +168,9 @@ public class HttpApi {
         Call<ResponseVote> UpVoteQuestion(@Header("x-session-token") String token,
                                           @Path("question_id") int question_id);
 
-        //DownVote Question OK
-        @POST("questions/{question_id}/downvote")
-        Call<ResponseVote> DownVoteQuestion(@Header("x-session-token") String token,
-                                            @Path("question_id") int question_id);
-
         //Get Question Answers OK
         @GET("questions/{question_id}/answers")
         Call<List<Answer>> getAnswers(@Header("x-session-token") String token,
                                       @Path("question_id") int question_id);
-
-        //FIM NEW BACK
-
-
-        //change Status Question TESTAR
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/change-status")
-        Call<Void> changeStatusDoubt(@Header("Cookie") String cookie,
-                                     @Path("instruction_id") String instruction_id,
-                                     @Path("presentation_id") String presentation_id,
-                                     @Path("doubt_id") String doubt_id,
-                                     @Body String json);
-
-        /*new Question
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt")
-        Call<Question> postDoubt(@Header("Cookie") String cookie,
-                              @Path("instruction_id") String instruction_id,
-                              @Path("presentation_id") String presentation_id,
-                              @Body Question doubt);
-        */
-
-        //new Material Discipline OK
-        @Multipart
-        @POST("controller/instruction/{instruction_id}/material")
-        Call<Void> postMaterial(@Header("Cookie") String cookie,
-                                @Path("instruction_id") String instruction_id,
-                                @Part MultipartBody.Part file);
-
-
-        //getMaterial Presentation TESTAR
-        @GET("controller/instruction/{instruction_id}/presentation/{presentation_id}/material")
-        Call<JSONObject> getMaterialPresentation(@Header("Cookie") String cookie,
-                                                 @Path("instruction_id") String instruction_id,
-                                                 @Path("presentation_id") String presentation_id);
-
-        //new Material Presentation OK
-        @Multipart
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/material")
-        Call<Void> postMaterialPresentation(@Header("Cookie") String cookie,
-                                            @Path("instruction_id") String instruction_id,
-                                            @Path("presentation_id") String presentation_id,
-                                            @Part MultipartBody.Part file);
-
-        //new Contribution text testar (aparentemente funcionou, necessário corrigir bug do retorno das contributions)
-        @Multipart
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/contribution")
-        Call<Void> postTextContributionMultiPart(@Header("Cookie") String cookie,
-                                                 @Path("instruction_id") String instruction_id,
-                                                 @Path("presentation_id") String presentation_id,
-                                                 @Path("doubt_id") String doubt_id,
-                                                 @Part("text") RequestBody text);
-
-        //não funcionou no teste
-        @FormUrlEncoded
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/contribution")
-        Call<Void> postTextContributionFormUrlEncoded(@Header("Cookie") String cookie,
-                                                      @Path("instruction_id") String instruction_id,
-                                                      @Path("presentation_id") String presentation_id,
-                                                      @Path("doubt_id") String doubt_id,
-                                                      @Field("text") String text);
-
-        //new Contribution File OK
-        @Multipart
-        @POST("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/contribution")
-        Call<Void> postFileContribution(@Header("Cookie") String cookie,
-                                        @Path("instruction_id") String instruction_id,
-                                        @Path("presentation_id") String presentation_id,
-                                        @Path("doubt_id") String doubt_id,
-                                        @Part MultipartBody.Part file);
-
-
-        //get Contribution File testar
-        //GET /instruction/$instruction_id/presentation/$presentation_id/doubt/$doubt_id/contribution/$contribution_id/materials/$material_id
-        @GET("controller/instruction/{instruction_id}/presentation/{presentation_id}/doubt/{doubt_id}/contribution/{contribution_id}/materials/{material_id}")
-        Call<byte[]> getFileContribution(@Header("Cookie") String cookie,
-                                         @Path("instruction_id") String instruction_id,
-                                         @Path("presentation_id") String presentation_id,
-                                         @Path("doubt_id") String doubt_id,
-                                         @Path("contribution_id") String contribution_id,
-                                         @Path("material_id") String material_id);
-
     }
 }

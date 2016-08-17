@@ -1,6 +1,8 @@
 package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -91,7 +93,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         mRootLayout = findViewById(R.id.root_lecture_detail);
 
         if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList("mList");
+            mList = savedInstanceState.getParcelableArrayList(Material.TAG);
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mProfile = savedInstanceState.getParcelable(Profile.TAG);
         } else {
@@ -432,22 +434,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
         }
 
         return file;
-
-        /*
-        try {
-
-            File tempFile = new File(getCacheDir(), mFileName);
-            FileOutputStream fos = new FileOutputStream(tempFile);
-            fos.write(mBytes);
-            return tempFile;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        */
-
-
     }
 
     public void getMaterials() {
@@ -551,7 +537,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void getMaterial(int position, Material material) {
+    private void getMaterial(int position, final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup
@@ -572,9 +558,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                     if (response.isSuccessful()) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(response.body().getUrl()));
-                        startActivity(intent);
+                        startDownload(Uri.parse(response.body().getUrl()), material);
                     } else {
                         onRequestFailure(response.code());
                     }
@@ -589,6 +573,15 @@ public class LectureDetailsActivity extends AppCompatActivity {
         } else {
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void startDownload(Uri uri, Material material) {
+        DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(material.getName());
+        request.setMimeType(material.getMime());
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        Long DownloadReference = downloadmanager.enqueue(request);
     }
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
@@ -621,8 +614,9 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("mList", (ArrayList<Material>) mList);
+        outState.putParcelableArrayList(Material.TAG, (ArrayList<Material>) mList);
         outState.putParcelable(Instruction.TAG, mInstruction);
+        outState.putParcelable(Profile.TAG, mProfile);
         super.onSaveInstanceState(outState);
     }
 }

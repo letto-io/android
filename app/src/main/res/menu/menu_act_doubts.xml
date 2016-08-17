@@ -16,10 +16,10 @@
         android:title="@string/action_attachment"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_remove_sugestions"
-        android:orderInCategory="100"
-        android:title="@string/action_remove_sugestions"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_remove_sugestions"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_remove_sugestions"-->
+        <!--app:showAsAction="never" />-->
 
 </menu>

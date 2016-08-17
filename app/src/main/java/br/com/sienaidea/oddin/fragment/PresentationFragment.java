@@ -79,17 +79,17 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         mInstruction = getArguments().getParcelable(Instruction.TAG);
 
         // TODO: 09/08/2016 verificar o profile pra depois fazer o scroll
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    ((PresentationActivity) getActivity()).fabHide();
-                } else {
-                    ((PresentationActivity) getActivity()).fabShow();
-                }
-            }
-        });
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy > 0) {
+//                    ((PresentationActivity) getActivity()).fabHide();
+//                } else {
+//                    ((PresentationActivity) getActivity()).fabShow();
+//                }
+//            }
+//        });
 
         if (mListPresentation != null) {
             mAdapterPresentation = new AdapterPresentation(mContext, mListPresentation);
@@ -97,14 +97,14 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
             notifyDataSetChanged();
         }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                ((PresentationActivity) getActivity()).getPresentations();
-            }
-        });
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                ((PresentationActivity) getActivity()).getPresentations();
+//            }
+//        });
 
         return view;
     }
