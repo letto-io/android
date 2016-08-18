@@ -46,8 +46,8 @@ public class HttpApi {
     Context mContext;
     private List<Person> persons = new ArrayList<>();
 
-    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     /**
      * Generic HttpBin.org Response Container
@@ -85,12 +85,16 @@ public class HttpApi {
         @DELETE("session")
         Call<Void> Logoff(@Header("x-session-token") String token);
 
+        //Recover Password
+        @POST("recover-password")
+        Call<Void> recoverPassword(@Body User user);
+
         //Get Profile OK
         @GET("instructions/{instruction_id}/profile")
         Call<Profile> Profile(@Header("x-session-token") String token,
                               @Path("instruction_id") int instruction_id);
 
-        //Get vInstructions OK
+        //Get Instructions OK
         @GET("instructions")
         Call<List<Instruction>> Instructions(@Header("x-session-token") String token);
 

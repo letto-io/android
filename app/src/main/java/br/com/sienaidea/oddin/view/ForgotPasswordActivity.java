@@ -1,6 +1,7 @@
 package br.com.sienaidea.oddin.view;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -18,7 +19,13 @@ import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.User;
+import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.util.DetectConnection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     //URL da requisiçao
@@ -52,7 +59,45 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            // TODO: 17/08/2016
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            User user = new User();
+            user.setEmail(mEmailEditText.getText().toString());
+
+            Call<Void> call = service.recoverPassword(user);
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
+                        //builder.setTitle("Informação");
+                        builder.setMessage("Email enviado, acesse sua caixa de entrada");
+                        builder.setPositiveButton("LOGAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                        builder.show();
+                    } else {
+                        //onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    //onRequestFailure(401);
+                }
+            });
         } else {
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
         }
