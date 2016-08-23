@@ -99,8 +99,6 @@ public class LectureFragment extends Fragment implements RecyclerViewOnClickList
 
     @Override
     public void onLongPressClickListener(int position) {
-        //TODO implements Lecture details
-        Toast.makeText(mContext, "Será implementado os detalhes desta ação!", Toast.LENGTH_SHORT).show();
     }
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {

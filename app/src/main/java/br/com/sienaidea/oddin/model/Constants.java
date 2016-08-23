@@ -1,6 +1,8 @@
 package br.com.sienaidea.oddin.model;
 
 public class Constants {
+    public static final int UP_VOTE = 1;
+    public static final int DOWN_VOTE = -1;
     public static String MIME_TYPE_IMAGE = "image/jpeg";
     public static String MIME_TYPE_PDF = "application/pdf";
     public static String MIME_TYPE_VIDEO = "video/mp4";

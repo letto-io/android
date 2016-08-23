@@ -1,6 +1,7 @@
 package br.com.sienaidea.oddin.server;
 
 import android.content.Context;
+import android.service.voice.VoiceInteractionService;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
+import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
@@ -42,12 +44,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public class HttpApi {
-
-    Context mContext;
-    private List<Person> persons = new ArrayList<>();
-
-    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     /**
      * Generic HttpBin.org Response Container
@@ -81,7 +79,7 @@ public class HttpApi {
         @POST("session")
         Call<Session> Login(@Body User user);
 
-        //Delete Session
+        //Delete Session OK
         @DELETE("session")
         Call<Void> Logoff(@Header("x-session-token") String token);
 
@@ -176,5 +174,25 @@ public class HttpApi {
         @GET("questions/{question_id}/answers")
         Call<List<Answer>> getAnswers(@Header("x-session-token") String token,
                                       @Path("question_id") int question_id);
+
+        //UpVote Answer OK
+        @POST("answers/{answer_id}/upvote")
+        Call<ResponseUpVoteAnswer> upVoteAnswer(@Header("x-session-token") String token,
+                                                @Path("answer_id") int answer_id);
+
+        //DownVote Answer OK
+        @POST("answers/{answer_id}/downvote")
+        Call<ResponseUpVoteAnswer> downVoteAnswer(@Header("x-session-token") String token,
+                                                  @Path("answer_id") int answer_id);
+
+        //Accept Answer
+        @POST("answers/{answer_id}/accept")
+        Call<Void> acceptAnswer(@Header("x-session-token") String token,
+                                @Path("answer_id") int answer_id);
+
+        //Delete Accept Answer
+        @POST("answers/{answer_id}/accept")
+        Call<Void> DeleteAcceptAnswer(@Header("x-session-token") String token,
+                                      @Path("answer_id") int answer_id);
     }
 }

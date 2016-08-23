@@ -339,7 +339,11 @@ public class DoubtActivity extends AppCompatActivity {
             intent.putExtra(Presentation.TAG, mPresentation);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
-        } //else if (id == R.id.action_remove_sugestions) {
+        }if (id == R.id.action_participants) {
+            Intent intent = new Intent(this, ParticipantsActivity.class);
+            intent.putExtra(Instruction.TAG, mInstruction);
+            startActivity(intent);
+        }  //else if (id == R.id.action_remove_sugestions) {
 //            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
 //                    SearchableProvider.AUTHORITY,
 //                    SearchableProvider.MODE);

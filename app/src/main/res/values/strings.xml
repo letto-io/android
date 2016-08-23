@@ -40,6 +40,7 @@
     <!-- Strings related to Toasts -->
     <string name="toast_new_presentation_added">Nova apresentação adicionada</string>
     <string name="toast_fails_to_start">Falha ao iniciar</string>
+    <string name="toast_voted">Você já votou esta opção</string>
 
     <string name="label_forgot_password">Esqueceu a Senha?</string>
     <string name="search">Pesquisar</string>

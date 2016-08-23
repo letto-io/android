@@ -57,6 +57,7 @@ import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.FileUtils;
@@ -234,6 +235,78 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onFailure(Call<List<Answer>> call, Throwable t) {
+                onRequestFailure(401);
+            }
+        });
+    }
+
+    public void upVote(final Answer answer) {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<ResponseUpVoteAnswer> request = service.upVoteAnswer(auth_token_string, answer.getId());
+
+        request.enqueue(new Callback<ResponseUpVoteAnswer>() {
+            @Override
+            public void onResponse(Call<ResponseUpVoteAnswer> call, Response<ResponseUpVoteAnswer> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().isUp()) {
+                        answer.setUpvotes(answer.getUpvotes() + 1);
+                        answer.setMy_vote(1);
+                        fragmentDoubtDetailText.notifyDataSetChanged();
+                    }
+                } else {
+                    onRequestFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseUpVoteAnswer> call, Throwable t) {
+                onRequestFailure(401);
+            }
+        });
+    }
+
+    public void downVote(final Answer answer) {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<ResponseUpVoteAnswer> request = service.downVoteAnswer(auth_token_string, answer.getId());
+
+        request.enqueue(new Callback<ResponseUpVoteAnswer>() {
+            @Override
+            public void onResponse(Call<ResponseUpVoteAnswer> call, Response<ResponseUpVoteAnswer> response) {
+                if (response.isSuccessful()) {
+                    if (!response.body().isUp()) {
+                        answer.setUpvotes(answer.getUpvotes() - 1);
+                        answer.setMy_vote(-1);
+                        fragmentDoubtDetailText.notifyDataSetChanged();
+                    }
+                } else {
+                    onRequestFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseUpVoteAnswer> call, Throwable t) {
                 onRequestFailure(401);
             }
         });

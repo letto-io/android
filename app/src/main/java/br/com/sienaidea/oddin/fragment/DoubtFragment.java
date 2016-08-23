@@ -197,7 +197,10 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         final Question question = mAdapterDoubt.getDoubtAdapter(position);
         if (option != null) {
             if (option.equals(LIKE)) {
-                ((DoubtActivity) getActivity()).voteQuestion(question);
+                if (question.getMy_vote() == 1) {
+                    Toast.makeText(mContext, R.string.toast_voted, Toast.LENGTH_SHORT).show();
+                } else
+                    ((DoubtActivity) getActivity()).voteQuestion(question);
             }
 //            } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
 //
