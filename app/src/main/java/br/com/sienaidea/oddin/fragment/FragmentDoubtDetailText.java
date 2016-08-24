@@ -12,12 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterContribution;
 import br.com.sienaidea.oddin.retrofitModel.Answer;
+import br.com.sienaidea.oddin.retrofitModel.Person;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class FragmentDoubtDetailText extends Fragment {
@@ -27,6 +31,7 @@ public class FragmentDoubtDetailText extends Fragment {
     private AdapterContribution mAdapter;
     private Context mContext;
     private int mProfile;
+    private int mPersonId;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -35,13 +40,14 @@ public class FragmentDoubtDetailText extends Fragment {
         super.onAttach(context);
     }
 
-    public static FragmentDoubtDetailText newInstance(List<Answer> list, int profile ) {
+    public static FragmentDoubtDetailText newInstance(List<Answer> list, int profile, int personId) {
 
         FragmentDoubtDetailText fragment = new FragmentDoubtDetailText();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(Answer.TAG, (ArrayList<Answer>) list);
         args.putInt("profile", profile);
+        args.putInt(Person.TAG, personId);
         fragment.setArguments(args);
 
         return fragment;
@@ -64,9 +70,9 @@ public class FragmentDoubtDetailText extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0){
+                if (dy > 0) {
                     ((DoubtDetailsActivity) getActivity()).fabHide();
-                }else {
+                } else {
                     ((DoubtDetailsActivity) getActivity()).fabShow();
                 }
             }
@@ -74,9 +80,14 @@ public class FragmentDoubtDetailText extends Fragment {
 
         mList = getArguments().getParcelableArrayList(Answer.TAG);
         mProfile = getArguments().getInt("profile");
+        mPersonId = getArguments().getInt(Person.TAG);
 
         if (mList != null) {
-            mAdapter = new AdapterContribution(mContext, mList, mProfile);
+            boolean isQuestionOwner;
+
+            Preference preference = new Preference();
+            isQuestionOwner = (mPersonId == preference.getUserId(mContext));
+            mAdapter = new AdapterContribution(mContext, mList, mProfile, isQuestionOwner);
 
             mRecyclerView.setAdapter(mAdapter);
             notifyDataSetChanged();

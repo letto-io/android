@@ -57,12 +57,6 @@
             android:layout_marginBottom="8dp"
             android:visibility="gone"/>
 
-        <!--
-        android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="36dp"
-        -->
-
         <ImageView
             android:id="@+id/iv_closed"
             android:layout_width="15dp"
@@ -108,24 +102,6 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:paddingTop="8dp" />
-
-        <!--TextView
-            android:id="@+id/iv_understand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/vw_divider"
-            android:layout_toEndOf="@+id/iv_like"
-            android:layout_toRightOf="@+id/iv_like"
-            android:clickable="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_checkbox_blank_outline"
-            android:paddingBottom="8dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp"
-            android:text="ENTENDI"
-            android:gravity="center"
-            android:textSize="14sp" /-->
 
         <ImageView
             android:id="@+id/iv_lock"

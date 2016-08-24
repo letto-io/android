@@ -1,6 +1,8 @@
 package br.com.sienaidea.oddin.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,23 +24,26 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
     private List<Answer> mList;
     private Context mContext;
     private int mProfile;
+    private boolean isQuestionOwner;
 
-    public AdapterContribution(Context context, List<Answer> list, int profile) {
+    public AdapterContribution(Context context, List<Answer> list, int profile, boolean isQuestionOwner) {
         this.mContext = context;
         this.mList = list;
         this.mProfile = profile;
+        this.isQuestionOwner = isQuestionOwner;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.item_contribution, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.item_contribution_card, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final Answer answer = mList.get(position);
+
 
         holder.tvPersonName.setText(answer.getPerson().getName());
         holder.tvText.setText(answer.getText());
@@ -74,18 +79,38 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
                 }
             });
 
-            holder.ivAccept.setVisibility(View.VISIBLE);
-            holder.ivAccept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // TODO: 23/08/2016 accept
-                    if (answer.isAccepted()) {
-                        // TODO: 23/08/2016 implementar a opção de desmarcar resposta
-                    } else {
-                        // TODO: 23/08/2016 implementar a opçao de entendi
+            //somente se a dúvida for da pessoa que a opçao "aceitar" será exibida.
+            if (isQuestionOwner) {
+                holder.ivAccept.setVisibility(View.VISIBLE);
+                holder.ivAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                        builder.setNegativeButton(R.string.dialog_cancel, null);
+                        if (answer.isAccepted()) {
+                            builder.setMessage(R.string.dialog_delete_accept_answer);
+                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ((DoubtDetailsActivity) mContext).deleteAcceptAnswer(answer);
+                                }
+                            });
+                            builder.show();
+                        } else {
+                            builder.setMessage(R.string.dialog_accept_answer);
+                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
+                                }
+                            });
+                            builder.show();
+                        }
                     }
-                }
-            });
+                });
+            }else {
+                holder.ivAccept.setVisibility(View.GONE);
+            }
         }
     }
 

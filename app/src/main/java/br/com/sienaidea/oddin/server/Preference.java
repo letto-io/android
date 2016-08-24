@@ -11,6 +11,7 @@ public class Preference {
     public static final String USER_TOKEN = "x-session-token";
 
     public static final String USER_PREFERENCE = "USER_PREFERENCE";
+    public static final String USER_ID = "USER_ID";
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_EMAIL = "USER_EMAIL";
     public static final String USER_PROFILE = "USER_PROFILE";
@@ -28,6 +29,14 @@ public class Preference {
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
         editor.putString(USER_NAME, userName);
+        editor.commit();
+    }
+
+    public void setUserId(Context context, int userId) {
+        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.putInt(USER_ID, userId);
         editor.commit();
     }
 
@@ -57,6 +66,12 @@ public class Preference {
         //Restaura as preferencias gravadas
         SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
         return settings.getString(USER_NAME, "");
+    }
+
+    public int getUserId(Context context) {
+        //Restaura as preferencias gravadas
+        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        return settings.getInt(USER_ID, -1);
     }
 
     public String getUserEmail(Context context) {

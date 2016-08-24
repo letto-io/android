@@ -192,7 +192,7 @@ public class HttpApi {
 
         //Delete Accept Answer
         @POST("answers/{answer_id}/accept")
-        Call<Void> DeleteAcceptAnswer(@Header("x-session-token") String token,
+        Call<Void> deleteAcceptAnswer(@Header("x-session-token") String token,
                                       @Path("answer_id") int answer_id);
     }
 }

@@ -13,6 +13,8 @@
     <string name="dialog_close_presentation">Fechar apresentação?</string>
     <string name="dialog_close_doubt">Fechar dúvida?</string>
     <string name="dialog_open_doubt">Abrir dúvida?</string>
+    <string name="dialog_accept_answer">Marcar como melhor resposta?</string>
+    <string name="dialog_delete_accept_answer">Tem certeza que gostaria de desmarcar esta resposta?</string>
 
     <!-- Strings related to Snakebar -->
     <string name="snake_no_connection">Sem conexão</string>

@@ -117,6 +117,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //salvando as informações que irei utilizar durante o fluxo das telas no aparelho
         Preference preference = new Preference();
         preference.setToken(getApplicationContext(), session.getToken());
+        preference.setUserId(getApplicationContext(), session.getUser_id());
         preference.setUserName(getApplicationContext(), session.getPerson().getName());
         preference.setUserEmail(getApplicationContext(), session.getUser().getEmail());
 

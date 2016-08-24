@@ -312,6 +312,62 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         });
     }
 
+    public void acceptAnswer(final Answer answer) {
+        //setup retrofit
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpApi.API_URL).build();
+
+        //setup service
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        //get token
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<Void> request = service.acceptAnswer(auth_token_string, answer.getId());
+
+        request.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    fragmentDoubtDetailText.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                onRequestFailure(401);
+            }
+        });
+    }
+
+    public void deleteAcceptAnswer(final Answer answer) {
+        //setup retrofit
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpApi.API_URL).build();
+
+        //setup service
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        //get token
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<Void> request = service.deleteAcceptAnswer(auth_token_string, answer.getId());
+
+        request.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    fragmentDoubtDetailText.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                onRequestFailure(401);
+            }
+        });
+    }
+
     private void onRequestSuccess() {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
@@ -606,7 +662,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        fragmentDoubtDetailText = FragmentDoubtDetailText.newInstance(getList(), mProfile.getProfile());
+        fragmentDoubtDetailText = FragmentDoubtDetailText.newInstance(getList(), mProfile.getProfile(), mQuestion.getPerson().getId());
 
         mAudioDoubtDetailFragment = AudioDoubtDetailFragment.newInstance(getAudio(), mProfile.getProfile());
         mVideoDoubtDetailFragment = VideoDoubtDetailFragment.newInstance(getVideo(), mProfile.getProfile());
