@@ -71,8 +71,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private Uri returnUri;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private MaterialDisciplineFragment mMaterialDisciplineFragment;
-
-    private int mPositionFragment;
     private Material mMaterialFragment;
 
     //new
@@ -96,6 +94,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
             mList = savedInstanceState.getParcelableArrayList(Material.TAG);
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mProfile = savedInstanceState.getParcelable(Profile.TAG);
+            setupFab();
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
@@ -506,9 +505,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void attemptGetMaterialContent(int position, Material material) {
-
-        mPositionFragment = position;
+    public void attemptGetMaterialContent(Material material) {
         mMaterialFragment = material;
 
         //se uma das duas permissões não estiverem liberadas
@@ -532,12 +529,12 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
         } else {
             //e por fim, caso já tenha permiçoes, faça download
-            getMaterial(mPositionFragment, mMaterialFragment);
+            getMaterial(mMaterialFragment);
         }
 
     }
 
-    private void getMaterial(int position, final Material material) {
+    private void getMaterial(final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup

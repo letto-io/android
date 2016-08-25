@@ -41,9 +41,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     private AdapterPresentation mAdapterPresentation;
 
     private Instruction mInstruction;
-
-    //private Discipline mDiscipline;
-    //private Presentation mPresentation;
+    private Presentation mPresentation;
 
     private Toolbar mToolbar;
 
@@ -91,13 +89,11 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
                     SearchableProvider.MODE);
             searchRecentSuggestions.saveRecentQuery(query, null);
 
-            //mPresentation = intent.getParcelableExtra(Presentation.TAG);
-            // mDiscipline = intent.getParcelableExtra(Discipline.NAME);
-
             mInstruction = intent.getParcelableExtra(Instruction.TAG);
 
             mListDoubt = intent.getParcelableArrayListExtra(Question.TAG);
             if (mListDoubt != null) {
+                mPresentation = intent.getParcelableExtra(Presentation.TAG);
                 mToolbar.setSubtitle(mInstruction.getLecture().getName());
                 if (!mListDoubt.isEmpty()) {
                     filterDoubts(query);
@@ -137,7 +133,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
             }
         }
 
-        if (mListAuxDoubt.isEmpty()){
+        if (mListAuxDoubt.isEmpty()) {
             Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
         }
 
@@ -154,7 +150,7 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
             }
         }
 
-        if (mListAuxPresentation.isEmpty()){
+        if (mListAuxPresentation.isEmpty()) {
             Toast.makeText(this, "Nenhum resultado...", Toast.LENGTH_SHORT).show();
         }
 
@@ -192,11 +188,11 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
     @Override
     public void onClickListener(View view, int position) {
         if (isDoubt) {
-//            Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
-//            intent.putExtra(Doubt.NAME, mAdapterDoubt.getDoubtAdapter(position));
-//            intent.putExtra(Discipline.NAME, mDiscipline);
-//            intent.putExtra(Presentation.TAG, mPresentation);
-//            startActivity(intent);
+            Intent intent = new Intent(SearchableActivity.this, DoubtDetailsActivity.class);
+            intent.putExtra(Question.TAG, mAdapterDoubt.getQuestionAdapter(position));
+            intent.putExtra(Instruction.TAG, mInstruction);
+            intent.putExtra(Presentation.TAG, mPresentation);
+            startActivity(intent);
         } else {
             Intent intent = new Intent(SearchableActivity.this, DoubtActivity.class);
             intent.putExtra(Instruction.TAG, mInstruction);

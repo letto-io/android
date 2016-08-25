@@ -2,8 +2,6 @@ package br.com.sienaidea.oddin.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,43 +122,14 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((PresentationDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
+                    ((PresentationDetailsActivity) getActivity()).attemptGetMaterialContent(material);
                 }
             });
             builder.show();
-
-//        if (!material.isDownloaded()) {
-//            AlertDialog.Builder builder =
-//                    new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-//            builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
-//            builder.setNegativeButton(R.string.dialog_cancel, null);
-//            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    ((PresentationDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-//                }
-//            });
-//            builder.show();
-//        } else {
-//            Intent newIntent = new Intent();
-//            //newIntent.setDataAndType(material.getUri(), material.getMime());
-//            newIntent.setAction(Intent.ACTION_VIEW);
-//            try {
-//                startActivity(newIntent);
-//            } catch (android.content.ActivityNotFoundException e) {
-//                Toast.makeText(mContext, "No handler for this type of file.", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-    }
-
-    public void downloadFinished(int position, Uri uri) {
-        mAdapter.downloadFinished(position, uri);
     }
 
     @Override
-    public void onClick(View v) {
-
-    }
+    public void onClick(View v) {}
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {
         private Context mContext;

@@ -44,7 +44,6 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final Answer answer = mList.get(position);
 
-
         holder.tvPersonName.setText(answer.getPerson().getName());
         holder.tvText.setText(answer.getText());
         holder.tvCreatedat.setText(DateUtil.getDateUFCFormat(answer.getCreated_at()));

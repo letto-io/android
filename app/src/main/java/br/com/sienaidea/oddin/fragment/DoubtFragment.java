@@ -28,10 +28,12 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Doubt;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 import br.com.sienaidea.oddin.view.DoubtActivity;
 
@@ -151,41 +153,6 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         checkState();
     }
 
-    public void addItem(Question question) {
-        mAdapterDoubt.addItem(question);
-        checkState();
-    }
-
-    public void removeItem(Doubt doubt) {
-        mList.remove(doubt);
-        notifyDataSetChanged();
-    }
-
-    public void notifyLike(int position, Boolean like) {
-        if (like) {
-            mAdapterDoubt.like(position);
-        } else {
-            mAdapterDoubt.unLike(position);
-        }
-    }
-
-    public void notifyUnderstand(int position, Boolean understand) {
-       /* if (understand) {
-            mAdapterDoubt.understand(position);
-        } else {
-            mAdapterDoubt.removeUnderstand(position);
-        }*/
-    }
-
-    public void notifyLock(int position, int status) {
-        mAdapterDoubt.changeStatus(position, status);
-    }
-
-    public void removeItem(int position) {
-        mAdapterDoubt.removeItem(position);
-        checkState();
-    }
-
     @Override
     public void onClickListener(View view, int position) {
     }
@@ -194,51 +161,24 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
     public void onClickListener(View view, final int position, String option) {
         mInstruction = ((DoubtActivity) getActivity()).getInstruction();
 
-        final Question question = mAdapterDoubt.getDoubtAdapter(position);
-        if (option != null) {
-            if (option.equals(LIKE)) {
-                if (question.getMy_vote() == 1) {
-                    Toast.makeText(mContext, R.string.toast_voted, Toast.LENGTH_SHORT).show();
-                } else
-                    ((DoubtActivity) getActivity()).voteQuestion(question);
+        final Question question = mAdapterDoubt.getQuestionAdapter(position);
+
+        Preference preference = new Preference();
+        if (!(preference.getUserProfile(mContext) == Constants.INSTRUCTOR)) {
+            if (option != null) {
+                if (option.equals(LIKE)) {
+                    if (question.getMy_vote() == 1) {
+                        Toast.makeText(mContext, R.string.toast_voted, Toast.LENGTH_SHORT).show();
+                    } else
+                        ((DoubtActivity) getActivity()).voteQuestion(question);
+                }
             }
-//            } else if (option.equals(LOCK) && mDiscipline.getProfile() == 2) {
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-//
-//                if (mList.get(position).getStatus() == 0) {
-//                    if (mList.get(position).getContributions() > 0) {
-//                        builder.setNegativeButton(R.string.dialog_cancel, null);
-//                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                ((DoubtActivity) getActivity()).changeStatus(position, doubt, 2);
-//                            }
-//                        });
-//                        builder.setMessage(R.string.dialog_close_doubt);
-//                        builder.show();
-//                    } else {
-//                        Toast.makeText(mContext, "Não permitido fechar dúvida sem contribuição!", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    builder.setNegativeButton(R.string.dialog_cancel, null);
-//                    builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            ((DoubtActivity) getActivity()).changeStatus(position, doubt, 0);
-//                        }
-//                    });
-//                    builder.setMessage(R.string.dialog_open_doubt);
-//                    builder.show();
-//                }
-//            }
-        } else {
-            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
-            intent.putExtra(Question.TAG, mAdapterDoubt.getDoubtAdapter(position));
-            intent.putExtra(Instruction.TAG, mInstruction);
-            intent.putExtra(Presentation.TAG, mPresentation);
-            startActivity(intent);
         }
+        Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
+        intent.putExtra(Question.TAG, mAdapterDoubt.getQuestionAdapter(position));
+        intent.putExtra(Instruction.TAG, mInstruction);
+        intent.putExtra(Presentation.TAG, mPresentation);
+        startActivity(intent);
     }
 
     @Override

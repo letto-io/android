@@ -761,7 +761,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
             switch (position) {
                 case 0:
-                    Intent intent = new Intent(DoubtDetailsActivity.this, NewContributionActivity.class);
+                    Intent intent = new Intent(DoubtDetailsActivity.this, NewAnswerActivity.class);
                     intent.putExtra(Presentation.TAG, mPresentation);
                     intent.putExtra(Question.TAG, mQuestion);
                     startActivityForResult(intent, ACTION_POST_TEXT_REQUEST);
@@ -876,7 +876,9 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             inputName.setLayoutParams(lp);
 
             if (requestCode == ACTION_POST_TEXT_REQUEST) {
-                getContentDoubt();
+                Answer answer = data.getParcelableExtra(Answer.TAG);
+                fragmentDoubtDetailText.addItem(answer);
+                Toast.makeText(this, R.string.toast_new_answer_added, Toast.LENGTH_SHORT).show();
             } else if (requestCode == ACTION_GET_CONTENT_REQUEST) {
 
                 /*

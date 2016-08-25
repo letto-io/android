@@ -65,4 +65,5 @@
     <string name="email_sent">Email enviado</string>
     <string name="sending">Enviando</string>
     <string name="new_presentation">Nova Apresentação</string>
+    <string name="toast_new_answer_added">Nova resposta adicionada</string>
 </resources>

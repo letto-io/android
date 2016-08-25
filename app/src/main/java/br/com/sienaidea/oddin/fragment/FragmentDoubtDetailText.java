@@ -66,17 +66,17 @@ public class FragmentDoubtDetailText extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    ((DoubtDetailsActivity) getActivity()).fabHide();
-                } else {
-                    ((DoubtDetailsActivity) getActivity()).fabShow();
-                }
-            }
-        });
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy > 0) {
+//                    ((DoubtDetailsActivity) getActivity()).fabHide();
+//                } else {
+//                    ((DoubtDetailsActivity) getActivity()).fabShow();
+//                }
+//            }
+//        });
 
         mList = getArguments().getParcelableArrayList(Answer.TAG);
         mProfile = getArguments().getInt("profile");
@@ -86,7 +86,10 @@ public class FragmentDoubtDetailText extends Fragment {
             boolean isQuestionOwner;
 
             Preference preference = new Preference();
-            isQuestionOwner = (mPersonId == preference.getUserId(mContext));
+            if (mPersonId == preference.getUserId(mContext)) {
+                isQuestionOwner = true;
+            } else isQuestionOwner = false;
+
             mAdapter = new AdapterContribution(mContext, mList, mProfile, isQuestionOwner);
 
             mRecyclerView.setAdapter(mAdapter);
@@ -122,5 +125,11 @@ public class FragmentDoubtDetailText extends Fragment {
             mRecyclerView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
         }
+    }
+
+    public void addItem(Answer answer) {
+        mList.add(0, answer);
+        mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
+        mAdapter.notifyDataSetChanged();
     }
 }

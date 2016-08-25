@@ -75,7 +75,7 @@
             android:name=".view.DoubtDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.NewContributionActivity"
+            android:name=".view.NewAnswerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="br.com.sienaidea.oddin.view.SplashActivity"

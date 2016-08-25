@@ -15,6 +15,9 @@ public class Answer implements Parcelable {
     private Question question;
     private Person person;
 
+    public Answer() {
+    }
+
     protected Answer(Parcel in) {
         id = in.readInt();
         upvotes = in.readInt();
