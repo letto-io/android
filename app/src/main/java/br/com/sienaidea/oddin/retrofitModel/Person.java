@@ -8,8 +8,7 @@ public class Person implements Parcelable {
     public static final String NAME = "NAME";
 
     private int id;
-    private String name;
-    private User user;
+    private String name, email;
 
     public Person() {
     }
@@ -17,6 +16,7 @@ public class Person implements Parcelable {
     protected Person(Parcel in) {
         id = in.readInt();
         name = in.readString();
+        email = in.readString();
     }
 
     public static final Creator<Person> CREATOR = new Creator<Person>() {
@@ -47,12 +47,12 @@ public class Person implements Parcelable {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -64,5 +64,6 @@ public class Person implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
+        dest.writeString(email);
     }
 }

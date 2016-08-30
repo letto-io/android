@@ -47,7 +47,7 @@
     <string name="label_forgot_password">Esqueceu a Senha?</string>
     <string name="search">Pesquisar</string>
     <string name="search_hint">Pesquisar</string>
-    <string name="action_attachment">Anexos</string>
+    <string name="action_attachment">Material</string>
     <string name="action_participants">Participantes</string>
     <string name="navigation_drawer_open">drawerOpen</string>
     <string name="navigation_drawer_close">drawer_close</string>

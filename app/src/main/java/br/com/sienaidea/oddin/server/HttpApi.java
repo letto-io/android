@@ -83,7 +83,7 @@ public class HttpApi {
         @DELETE("session")
         Call<Void> Logoff(@Header("x-session-token") String token);
 
-        //Recover Password
+        //Recover Password OK
         @POST("recover-password")
         Call<Void> recoverPassword(@Body User user);
 
@@ -100,6 +100,11 @@ public class HttpApi {
         @GET("instructions/{instruction_id}/materials")
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
+
+        //Delete Material
+        @DELETE("materials/{material_id}")
+        Call<Void> deleteInstructionMaterial(@Header("x-session-token") String token,
+                                             @Path("material_id") int material_id);
 
         //Get Presentation Materials
         @GET("presentations/{presentation_id}/materials")
@@ -200,6 +205,7 @@ public class HttpApi {
         Call<Answer> createAnswer(@Header("x-session-token") String token,
                                   @Path("question_id") int question_id,
                                   @Body Answer answer);
+
 
     }
 }

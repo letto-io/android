@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.view;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +27,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewDoubtActivity extends AppCompatActivity {
-    private CheckBox mChkAnonymous;
-    private EditText mEdtDoubt;
+    private CheckBox mCheckBoxAnonymous;
+    private TextInputLayout mTextInputLayoutQuestion;
+    private EditText mEditTextQuestion;
     private Presentation mPresentation;
     private Question mQuestion;
     private View mRootLayout;
@@ -37,13 +39,15 @@ public class NewDoubtActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_doubt);
 
-        mEdtDoubt = (EditText) findViewById(R.id.edt_doubt);
-        mChkAnonymous = (CheckBox) findViewById(R.id.chk_anonimous);
         mRootLayout = findViewById(R.id.root);
+        mTextInputLayoutQuestion = (TextInputLayout) findViewById(R.id.til_question);
+        mEditTextQuestion = (EditText) findViewById(R.id.et_question);
+        mCheckBoxAnonymous = (CheckBox) findViewById(R.id.chk_anonimous);
+
 
         if (savedInstanceState != null) {
-            mEdtDoubt.setText(savedInstanceState.getString("mEdtDoubt"));
-            mChkAnonymous.setChecked(savedInstanceState.getBoolean("checked"));
+            mEditTextQuestion.setText(savedInstanceState.getString("mEdtDoubt"));
+            mCheckBoxAnonymous.setChecked(savedInstanceState.getBoolean("checked"));
             mPresentation = savedInstanceState.getParcelable(Presentation.TAG);
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
@@ -54,7 +58,7 @@ public class NewDoubtActivity extends AppCompatActivity {
             }
         }
 
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_doubt);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_question);
         mToolbar.setTitle("Nova dúvida");
         mToolbar.setSubtitle(mPresentation.getSubject());
         setSupportActionBar(mToolbar);
@@ -64,16 +68,14 @@ public class NewDoubtActivity extends AppCompatActivity {
     }
 
     private void sendNewQuestion() {
-        DetectConnection mDetectConnection = new DetectConnection(getApplicationContext());
-
-        if (mDetectConnection.existConnection()) {
-            if (TextUtils.isEmpty(mEdtDoubt.getText().toString().trim())) {
-                mEdtDoubt.setError(getString(R.string.error_field_required));
-                mEdtDoubt.requestFocus();
-            } else {
+        if (!validate()) {
+            return;
+        } else {
+            DetectConnection mDetectConnection = new DetectConnection(getApplicationContext());
+            if (mDetectConnection.existConnection()) {
                 mQuestion = new Question();
-                mQuestion.setText(mEdtDoubt.getText().toString());
-                mQuestion.setAnonymous(mChkAnonymous.isChecked());
+                mQuestion.setText(mEditTextQuestion.getText().toString());
+                mQuestion.setAnonymous(mCheckBoxAnonymous.isChecked());
                 // Retrofit setup
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(HttpApi.API_URL)
@@ -104,16 +106,29 @@ public class NewDoubtActivity extends AppCompatActivity {
                         onRequestFailure(401);
                     }
                 });
+            } else {
+                Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                sendNewQuestion();
+                            }
+                        }).show();
             }
-        } else {
-            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sendNewQuestion();
-                        }
-                    }).show();
         }
+    }
+
+    private boolean validate() {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(mEditTextQuestion.getText().toString().trim())) {
+            mTextInputLayoutQuestion.setError(getResources().getString(R.string.error_field_required));
+            valid = false;
+        } else {
+            mTextInputLayoutQuestion.setError(null);
+        }
+
+        return valid;
     }
 
     private void onRequestSuccess() {
@@ -151,8 +166,8 @@ public class NewDoubtActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("mEdtDoubt", mEdtDoubt.toString());
-        outState.putBoolean("checked", mChkAnonymous.isChecked());
+        outState.putString("mEdtDoubt", mEditTextQuestion.toString());
+        outState.putBoolean("checked", mCheckBoxAnonymous.isChecked());
         outState.putParcelable(Presentation.TAG, mPresentation);
         super.onSaveInstanceState(outState);
     }
