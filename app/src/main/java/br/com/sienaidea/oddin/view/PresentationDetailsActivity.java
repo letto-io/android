@@ -386,6 +386,34 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         }
     }
 
+    public void deleteMaterial(Material material){
+        DetectConnection detectConnection = new DetectConnection(getApplicationContext());
+        if (detectConnection.existConnection()){
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<Void> request = service.deletePresentationMaterial(auth_token_string, material.getId());
+            request.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    // TODO: 31/08/2016
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    // TODO: 31/08/2016
+                }
+            });
+        }
+    }
+
     public void attemptGetMaterialContent(Material material) {
         mMaterialFragment = material;
 

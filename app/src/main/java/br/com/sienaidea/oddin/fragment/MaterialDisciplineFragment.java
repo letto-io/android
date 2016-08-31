@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,17 +20,19 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterial;
-import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListener;
+import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
+import br.com.sienaidea.oddin.model.Constants;
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.retrofitModel.Material;
+import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.LectureDetailsActivity;
 
-public class MaterialDisciplineFragment extends Fragment implements RecyclerViewOnClickListener, View.OnClickListener {
+public class MaterialDisciplineFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private List<Material> mList;
     private AdapterMaterial mAdapter;
     private Context mContext;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static final String TAG = MaterialDisciplineFragment.class.getName();
 
@@ -73,20 +74,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
             notifyDataSetChanged();
         }
 
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                ((LectureDetailsActivity) getActivity()).getMaterials();
-//            }
-//        });
-
         return view;
-    }
-
-    public void swipeRefreshStop() {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void addItemPosition(int position, Material material) {
@@ -119,44 +107,71 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
 
     @Override
     public void onClickListener(final int position) {
-
         final Material material = mAdapter.getMaterial(position);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
-            builder.setNegativeButton(R.string.dialog_cancel, null);
-            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ((LectureDetailsActivity) getActivity()).attemptGetMaterialContent(material);
-                }
-            });
-            builder.show();
+        builder.setTitle(material.getName());
+        builder.setMessage(R.string.dialog_download_material);
+        builder.setNegativeButton(R.string.dialog_cancel, null);
+        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ((LectureDetailsActivity) getActivity()).attemptGetMaterialContent(material);
+            }
+        });
+        builder.show();
     }
 
     @Override
-    public void onClick(View v) {}
+    public void onLongPressClickListener(int position) {
+        final Material material = mAdapter.getMaterial(position);
+
+        Preference preference = new Preference();
+        if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((LectureDetailsActivity) getActivity()).deleteMaterial(material);
+                }
+            });
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setTitle(material.getName());
+            builder.setMessage(R.string.dialog_delete_material);
+            builder.show();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+    }
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {
         private Context mContext;
         private GestureDetector mGestureDetector;
-        private RecyclerViewOnClickListener mRecyclerViewOnClickListener;
+        private RecyclerViewOnClickListenerOnLongPressListener mRecyclerViewOnClickListenerOnLongPressListener;
 
-        public RecyclerViewTouchListener(Context c, final RecyclerView recyclerView, RecyclerViewOnClickListener rvoclh) {
+        public RecyclerViewTouchListener(Context c, final RecyclerView recyclerView, RecyclerViewOnClickListenerOnLongPressListener rvoclh) {
             mContext = c;
-            mRecyclerViewOnClickListener = rvoclh;
+            mRecyclerViewOnClickListenerOnLongPressListener = rvoclh;
 
             mGestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public void onLongPress(MotionEvent e) {
+                    View itemView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+
+                    if (mRecyclerViewOnClickListenerOnLongPressListener != null && itemView != null) {
+                        mRecyclerViewOnClickListenerOnLongPressListener.onLongPressClickListener(
+                                recyclerView.getChildAdapterPosition(itemView));
+                    }
                 }
 
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
                     View itemView = recyclerView.findChildViewUnder(e.getX(), e.getY());
 
-                    if (mRecyclerViewOnClickListener != null && itemView != null) {
-                        mRecyclerViewOnClickListener.onClickListener(
+                    if (mRecyclerViewOnClickListenerOnLongPressListener != null && itemView != null) {
+                        mRecyclerViewOnClickListenerOnLongPressListener.onClickListener(
                                 recyclerView.getChildAdapterPosition(itemView));
                     }
                     return true;

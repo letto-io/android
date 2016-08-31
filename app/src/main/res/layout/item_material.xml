@@ -4,21 +4,20 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
     android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
 
     <TextView
-        android:textColor="@color/colorSecondaryText"
+        android:id="@+id/tv_material_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Material.pdf"
-        android:id="@+id/tv_material_name"
-        android:gravity="center"
-        android:textSize="14sp"
         android:drawableLeft="@drawable/ic_file_document_box"
-        android:drawablePadding="8dp"/>
-
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:text="Material.pdf"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="14sp" />
 </RelativeLayout>

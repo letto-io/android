@@ -66,4 +66,6 @@
     <string name="sending">Enviando</string>
     <string name="new_presentation">Nova Apresentação</string>
     <string name="toast_new_answer_added">Nova resposta adicionada</string>
+    <string name="dialog_delete_material">Você tem certeza que quer deletar este material?</string>
+    <string name="dialog_download_material">Iniciar download?</string>
 </resources>

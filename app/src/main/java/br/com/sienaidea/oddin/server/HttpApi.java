@@ -101,10 +101,15 @@ public class HttpApi {
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
 
-        //Delete Material
+        //Delete Instruction Material
         @DELETE("materials/{material_id}")
-        Call<Void> deleteInstructionMaterial(@Header("x-session-token") String token,
+        Call<Void> deleteLectureMaterial(@Header("x-session-token") String token,
                                              @Path("material_id") int material_id);
+
+        //Delete Presentation Material
+        @DELETE("materials/{material_id}")
+        Call<Void> deletePresentationMaterial(@Header("x-session-token") String token,
+                                              @Path("material_id") int material_id);
 
         //Get Presentation Materials
         @GET("presentations/{presentation_id}/materials")
