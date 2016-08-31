@@ -68,4 +68,5 @@
     <string name="toast_new_answer_added">Nova resposta adicionada</string>
     <string name="dialog_delete_material">Você tem certeza que quer deletar este material?</string>
     <string name="dialog_download_material">Iniciar download?</string>
+    <string name="action_home">Home</string>
 </resources>

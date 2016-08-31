@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/action_lock"
-        android:icon="@drawable/ic_lock_open_outline"
+        android:id="@+id/action_home"
         android:orderInCategory="100"
-        android:title="Tittle"
-        app:showAsAction="always" />
+        android:title="@string/action_home"
+        app:showAsAction="never" />
 </menu>

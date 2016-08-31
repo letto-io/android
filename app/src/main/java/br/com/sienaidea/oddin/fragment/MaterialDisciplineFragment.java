@@ -22,7 +22,6 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterial;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.LectureDetailsActivity;
@@ -83,9 +82,13 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         checkState();
     }
 
+    public void removeItem(int position){
+        mList.remove(position);
+        notifyDataSetChanged();
+    }
+
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
-
         checkState();
     }
 
@@ -123,7 +126,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
     }
 
     @Override
-    public void onLongPressClickListener(int position) {
+    public void onLongPressClickListener(final int position) {
         final Material material = mAdapter.getMaterial(position);
 
         Preference preference = new Preference();
@@ -132,7 +135,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((LectureDetailsActivity) getActivity()).deleteMaterial(material);
+                    ((LectureDetailsActivity) getActivity()).deleteMaterial(position, material);
                 }
             });
             builder.setNegativeButton(R.string.dialog_cancel, null);

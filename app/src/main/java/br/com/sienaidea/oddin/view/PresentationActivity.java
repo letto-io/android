@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.SearchRecentSuggestions;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -29,7 +28,6 @@ import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
-import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.server.HttpApi;
@@ -348,7 +346,7 @@ public class PresentationActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_act_presentation, menu);
+        getMenuInflater().inflate(R.menu.presentation_menu, menu);
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
 

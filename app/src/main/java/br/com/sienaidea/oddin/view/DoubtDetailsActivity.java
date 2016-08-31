@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -973,6 +974,12 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     private void uploadFile(final int requestCode, String mimeType) {
         // TODO: 17/08/2016
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.question_detail_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

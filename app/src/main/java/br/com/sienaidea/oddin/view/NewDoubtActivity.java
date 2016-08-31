@@ -146,7 +146,7 @@ public class NewDoubtActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_act_new, menu);
+        getMenuInflater().inflate(R.menu.send_menu, menu);
         return true;
     }
 

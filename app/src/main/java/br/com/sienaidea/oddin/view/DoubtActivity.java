@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.SearchRecentSuggestions;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -34,7 +33,6 @@ import br.com.sienaidea.oddin.fragment.DoubtRankingFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
-import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
@@ -316,7 +314,7 @@ public class DoubtActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_act_doubts, menu);
+        getMenuInflater().inflate(R.menu.question_menu, menu);
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
 

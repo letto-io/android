@@ -78,7 +78,6 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
 
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
-
         checkState();
     }
 
@@ -116,7 +115,7 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
     }
 
     @Override
-    public void onLongPressClickListener(int position) {
+    public void onLongPressClickListener(final int position) {
         final Material material = mAdapter.getMaterial(position);
 
         Preference preference = new Preference();
@@ -125,7 +124,7 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((PresentationDetailsActivity) getActivity()).deleteMaterial(material);
+                    ((PresentationDetailsActivity) getActivity()).deleteMaterial(position, material);
                 }
             });
             builder.setNegativeButton(R.string.dialog_cancel, null);
@@ -137,6 +136,11 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
 
     @Override
     public void onClick(View v) {
+    }
+
+    public void removeItem(int position) {
+        mList.remove(position);
+        notifyDataSetChanged();
     }
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {

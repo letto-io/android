@@ -1,6 +1,5 @@
 package br.com.sienaidea.oddin.view;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
@@ -14,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.json.JSONObject;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.User;
@@ -134,7 +131,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_act_new, menu);
+        getMenuInflater().inflate(R.menu.send_menu, menu);
         return true;
     }
 

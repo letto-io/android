@@ -47,6 +47,7 @@ import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
+import br.com.sienaidea.oddin.util.ServerUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -481,9 +482,11 @@ public class LectureDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void deleteMaterial(Material material){
+    public void deleteMaterial(final int position, Material material) {
         DetectConnection detectConnection = new DetectConnection(getApplicationContext());
-        if (detectConnection.existConnection()){
+        if (detectConnection.existConnection()) {
+            final ServerUtil serverUtil = new ServerUtil(getApplicationContext());
+            serverUtil.onRequestStart();
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -498,12 +501,15 @@ public class LectureDetailsActivity extends AppCompatActivity {
             request.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    // TODO: 31/08/2016
+                    if (response.isSuccessful()) {
+                        serverUtil.onRequestSuccess();
+                        mMaterialDisciplineFragment.removeItem(position);
+                    } else serverUtil.onRequesFailure(response.code());
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    // TODO: 31/08/2016
+                    serverUtil.onRequesFailure(t.getMessage());
                 }
             });
         }
