@@ -222,10 +222,12 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         request.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Preference preference = new Preference();
-                preference.clear(getApplicationContext());
-                startActivity(new Intent(LectureActivity.this, LoginActivity.class));
-                finish();
+                if (response.isSuccessful()) {
+                    Preference preference = new Preference();
+                    preference.clear(getApplicationContext());
+                    startActivity(new Intent(LectureActivity.this, LoginActivity.class));
+                    finish();
+                }
             }
 
             @Override

@@ -37,7 +37,9 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -108,6 +110,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private String mFileName;
     private Uri returnUri;
     private File mTempFile;
+    private byte[] mBytes;
 
     private int[] tabIcons = {
             R.drawable.ic_format_text_selector,
@@ -880,95 +883,72 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 Answer answer = data.getParcelableExtra(Answer.TAG);
                 fragmentDoubtDetailText.addItem(answer);
                 Toast.makeText(this, R.string.toast_new_answer_added, Toast.LENGTH_SHORT).show();
-            } else if (requestCode == ACTION_GET_CONTENT_REQUEST) {
 
+            } else if (requestCode == ACTION_GET_CONTENT_REQUEST) {
                 /*
                 * Get the file's content URI from the incoming Intent,
                 * then query the server app to get the file's display name
                 * and size.
-                * */
-                Log.d(LOG_TAG, data.getData().getPath());
-                returnUri = data.getData();
-                final String mimeType = getContentResolver().getType(returnUri);
-
-                final Cursor returnCursor = getContentResolver().query(returnUri, null, null, null, null);
-                /*
-                * Get the column indexes of the data in the Cursor,
-                * move to the first row in the Cursor, get the data,
-                * and display it.
                 */
-
-                if (returnCursor != null) {
-                    int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-                    returnCursor.moveToFirst();
-                    mFileName = returnCursor.getString(nameIndex);
-                    //String size = Long.toString(returnCursor.getLong(sizeIndex));
-                } else mFileName = returnUri.getLastPathSegment();
-
-
-                final AlertDialog.Builder builder =
-                        new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-                builder.setTitle("Novo anexo");
-                inputName.setText(mFileName);
-                builder.setView(inputName);
-                builder.setNegativeButton("CANCELAR", null);
-                builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!TextUtils.isEmpty(inputName.getText())) {
-                            mFileName = inputName.getText().toString();
-                        }
-                        uploadFile(requestCode, mimeType);
-                    }
-                });
-                builder.show();
-
+                returnUri = data.getData();
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(returnUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mBytes = FileUtils.readBytes(inputStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                attemptUploadMaterial();
 
             } else if (requestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
                 /*
                 * Get the file's content URI from the incoming Intent,
                 * then query the server app to get the file's display name
                 * and size.
-                * */
-                returnUri = data.getData();
-                Log.d(LOG_TAG, data.getData().getPath());
-                final String mimeType = getContentResolver().getType(returnUri);
-
-                final Cursor returnCursor = getContentResolver().query(returnUri, null, null, null, null);
-                /*
-                * Get the column indexes of the data in the Cursor,
-                * move to the first row in the Cursor, get the data,
-                * and display it.
                 */
-
-                if (returnCursor != null) {
-                    int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-                    returnCursor.moveToFirst();
-                    mFileName = returnCursor.getString(nameIndex);
-                    //String size = Long.toString(returnCursor.getLong(sizeIndex));
-                } else mFileName = returnUri.getLastPathSegment();
-
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-                builder.setTitle("Novo video");
-                inputName.setText(mFileName);
-                builder.setView(inputName);
-                builder.setNegativeButton("CANCELAR", null);
-                builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!TextUtils.isEmpty(inputName.getText())) {
-                            mFileName = inputName.getText().toString();
-                        }
-                        uploadFile(requestCode, mimeType);
-                    }
-                });
-                builder.show();
+                returnUri = data.getData();
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(returnUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mBytes = FileUtils.readBytes(inputStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                attemptUploadMaterial();
 
             }
         }
+    }
+
+    private void attemptUploadMaterial() {
+        final EditText inputName = new EditText(DoubtDetailsActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        inputName.setLayoutParams(lp);
+
+        inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+        //builder.setTitle("Novo Material");
+        builder.setView(inputName);
+        builder.setNegativeButton(R.string.dialog_cancel, null);
+        builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(inputName.getText())) {
+                    mFileName = inputName.getText().toString();
+                }
+                //getCredentials();
+            }
+        });
+        builder.show();
     }
 
 

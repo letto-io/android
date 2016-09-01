@@ -44,8 +44,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public class HttpApi {
-    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     /**
      * Generic HttpBin.org Response Container
@@ -101,10 +101,10 @@ public class HttpApi {
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
 
-        //Delete Instruction Material
+        //Delete Material
         @DELETE("materials/{material_id}")
         Call<Void> deleteLectureMaterial(@Header("x-session-token") String token,
-                                             @Path("material_id") int material_id);
+                                         @Path("material_id") int material_id);
 
         //Delete Presentation Material
         @DELETE("materials/{material_id}")
@@ -205,11 +205,16 @@ public class HttpApi {
         Call<Void> deleteAcceptAnswer(@Header("x-session-token") String token,
                                       @Path("answer_id") int answer_id);
 
-        //Create Answer
+        //Create Answer OK
         @POST("questions/{question_id}/answers")
         Call<Answer> createAnswer(@Header("x-session-token") String token,
                                   @Path("question_id") int question_id,
                                   @Body Answer answer);
+
+        //Create Answer Material
+        @POST("questions/{question_id}/answer/materials")
+        Call<Void> createAnswerMaterial(@Header("x-session-token") String token,
+                                        @Path("question_id") int question_id);
 
 
     }

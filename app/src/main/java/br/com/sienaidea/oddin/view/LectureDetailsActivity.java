@@ -211,7 +211,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 }
                 try {
                     mBytes = FileUtils.readBytes(inputStream);
-                    Log.d("DEBUG", "proxima linha após a Thread");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

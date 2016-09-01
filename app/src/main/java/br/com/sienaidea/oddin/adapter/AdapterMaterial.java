@@ -19,10 +19,6 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
 
     public AdapterMaterial(Context context, List<Material> mList) {
         this.mList = mList;
-        Material material = new Material();
-        material.setMime("application/pdf");
-        material.setName("teste robson");
-        this.mList.add(material);
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

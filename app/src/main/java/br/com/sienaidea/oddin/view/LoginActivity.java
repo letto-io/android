@@ -132,6 +132,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         builder.setPositiveButton(R.string.dialog_ok, null);
 
         switch (statusCode) {
+            case 500:
+                builder.setMessage(R.string.error_server);
+                builder.show();
+                break;
             case 502:
                 builder.setMessage(R.string.error_server);
                 builder.show();
