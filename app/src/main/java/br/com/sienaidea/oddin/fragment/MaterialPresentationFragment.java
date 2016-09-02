@@ -143,6 +143,11 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
         notifyDataSetChanged();
     }
 
+    public void addItemPosition(int position, Material material) {
+        mList.add(position, material);
+        notifyDataSetChanged();
+    }
+
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {
         private Context mContext;
         private GestureDetector mGestureDetector;

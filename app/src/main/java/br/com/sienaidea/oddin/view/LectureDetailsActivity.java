@@ -505,7 +505,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    // TODO: 02/09/2016  
+                    // TODO: 02/09/2016
                 }
             });
         }

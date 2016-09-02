@@ -121,6 +121,11 @@ public class HttpApi {
         Call<ResponseCredentialsMaterial> createInstructionMaterial(@Header("x-session-token") String token,
                                                                     @Path("instruction_id") int instruction_id);
 
+        //Get Credentials Presentation Material
+        @POST("presentations/{presentation_id}/materials")
+        Call<ResponseCredentialsMaterial> createPresentationMaterial(@Header("x-session-token") String token,
+                                                                     @Path("presentation_id") int presentation_id);
+
         //Send File to Amazon OK
         @Multipart
         @POST("./")

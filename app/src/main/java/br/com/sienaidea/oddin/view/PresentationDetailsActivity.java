@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +32,9 @@ import android.widget.Toast;
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +47,15 @@ import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
+import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
+import br.com.sienaidea.oddin.util.FileUtils;
 import br.com.sienaidea.oddin.util.ServerUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,6 +72,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
     private int mPositionFragment;
     private Material mMaterialFragment;
+    private Material mMaterial = new Material();
 
     private List<Material> mList = new ArrayList<>();
     private Material material;
@@ -72,6 +82,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private File mTempFile;
     private String mFileName, mimeType;
     private Uri returnUri;
+    private byte[] mBytes;
+    private ResponseCredentialsMaterial mCredentialsMaterial;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private MaterialPresentationFragment mMaterialPresentationFragment;
@@ -231,114 +243,225 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(PresentationDetailsActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
             }
         } else {
-                /*
+            /*
                 * Get the file's content URI from the incoming Intent,
                 * then query the server app to get the file's display name
                 * and size.
-                * */
-            returnUri = data.getData();
-            mimeType = getContentResolver().getType(returnUri);
-
-            Cursor returnCursor = getContentResolver().query(returnUri, null, null, null, null);
-                /*
-                * Get the column indexes of the data in the Cursor,
-                * move to the first row in the Cursor, get the data,
-                * and display it.
                 */
-            if (returnCursor == null) {
-                mFileName = returnUri.getLastPathSegment();
-            } else {
-                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-                returnCursor.moveToFirst();
-                mFileName = returnCursor.getString(nameIndex);
-                //String size = Long.toString(returnCursor.getLong(sizeIndex));
+            returnUri = data.getData();
+            InputStream inputStream = null;
+            try {
+                inputStream = getContentResolver().openInputStream(returnUri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                mBytes = FileUtils.readBytes(inputStream);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             final EditText inputName = new EditText(PresentationDetailsActivity.this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             inputName.setLayoutParams(lp);
 
-            inputName.setText(mFileName);
+            inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
 
-            AlertDialog.Builder builder =
-                    new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+            AlertDialog.Builder builder = new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
             builder.setTitle("Novo Material");
-            //builder.setMessage(returnUri);
             builder.setView(inputName);
-            builder.setNegativeButton("CANCELAR", null);
-            builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (!TextUtils.isEmpty(inputName.getText())) {
                         mFileName = inputName.getText().toString();
                     }
-                    uploadFile();
+                    getCredentials();
                 }
             });
             builder.show();
         }
     }
 
+    private void getCredentials() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseCredentialsMaterial> request = service.createPresentationMaterial(auth_token_string, mPresentation.getId());
+
+            request.enqueue(new Callback<ResponseCredentialsMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseCredentialsMaterial> call, Response<ResponseCredentialsMaterial> response) {
+                    if (response.isSuccessful()) {
+                        mCredentialsMaterial = response.body();
+                        uploadFile();
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getCredentials();
+                        }
+                    }).show();
+        }
+    }
+
     private void uploadFile() {
-//
-//        //mTempFile = FileUtils.createTempFile(returnUri, mFileName, getApplicationContext(), getContentResolver());
-//
-//        if (mTempFile != null) {
-//            // Retrofit setup
-//            Retrofit retrofit = new Retrofit.Builder()
-//                    .baseUrl(HttpApi.API_URL)
-//                    .addConverterFactory(GsonConverterFactory.create())
-//                    .build();
-//
-//            // Service setup
-//            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-//
-//            // Prepare the HTTP request
-//            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), mTempFile);
-//
-//            // MultipartBody.Part is used to send also the actual file name
-//            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
-//
-//            Call<Void> call = service.postMaterialPresentation(CookieUtil.getCookie(getApplicationContext()),
-//                    String.valueOf(mDiscipline.getInstruction_id()),
-//                    String.valueOf(mPresentation.getId()),
-//                    body);
-//
-//            // Asynchronously execute HTTP request
-//            call.enqueue(new Callback<Void>() {
-//                /**
-//                 * onResponse is called when any kind of response has been received.
-//                 */
-//                @Override
-//                public void onResponse(Call<Void> call, Response<Void> response) {
-//                    // http response status code + headers
-//                    //System.out.println("Response status code: " + response.code());
-//
-//                    // isSuccess is true if response code => 200 and <= 300
-//                    if (!response.isSuccessful()) {
-//                        // print response body if unsuccessful
-//                        Toast.makeText(getApplicationContext(), "Não foi possível enviar o arquivo, tente novamente! ", Toast.LENGTH_LONG).show();
-//                        return;
-//                    }
-//                    Toast.makeText(getApplicationContext(), "Enviado!", Toast.LENGTH_LONG).show();
-//                    //loadMaterial();//SUBSTITUIT PELO RESULT
-//                }
-//
-//                /**
-//                 * onFailure gets called when the HTTP request didn't get through.
-//                 * For instance if the URL is invalid / host not reachable
-//                 */
-//                @Override
-//                public void onFailure(Call<Void> call, Throwable t) {
-//                    Toast.makeText(getApplicationContext(), "Falha na requisição ao servidor!", Toast.LENGTH_LONG).show();
-//                }
-//            });
-//        } else {
-//            Toast.makeText(getApplicationContext(), "Não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
-//        }
+        mTempFile = createTempFile();
+
+        if (mTempFile != null) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(mCredentialsMaterial.getUrl())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            // Prepare the HTTP request
+            RequestBody requestFile = RequestBody.create(MediaType.parse(FileUtils.getMimeType(getApplicationContext(), returnUri)), mTempFile);
+
+            // MultipartBody.Part is used to send also the actual file name
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
+
+            mMaterial.setName(mTempFile.getName());
+            mMaterial.setId(mCredentialsMaterial.getId());
+            mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
+
+            // add another part within the multipart request (credenciais para upload Amazon)
+            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
+
+            Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
+
+            // Asynchronously execute HTTP request
+            call.enqueue(new Callback<Void>() {
+                /**
+                 * onResponse is called when any kind of response has been received.
+                 */
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    // http response status code + headers
+                    //System.out.println("Response status code: " + response.code());
+
+                    // isSuccess is true if response code => 200 and <= 300
+                    if (!response.isSuccessful()) {
+                        // print response body if unsuccessful
+                        Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    confirmUpload();
+                }
+
+                /**
+                 * onFailure gets called when the HTTP request didn't get through.
+                 * For instance if the URL is invalid / host not reachable
+                 */
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private File createTempFile() {
+
+        File root = Environment.getExternalStorageDirectory();
+
+        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
+        if (!dirOddin.exists()) {
+            dirOddin.mkdir();
+        }
+
+        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
+        if (!dirDiscipline.exists()) {
+            dirDiscipline.mkdir();
+        }
+
+        final File file = new File(dirDiscipline.getAbsolutePath(), mFileName);
+        try {
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(mBytes);
+            fileOutputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return file;
+    }
+
+    private void confirmUpload() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<ResponseConfirmMaterial> call = service.confirmMaterial(auth_token_string, mMaterial.getId(), mMaterial);
+
+        // Asynchronously execute HTTP request
+        call.enqueue(new Callback<ResponseConfirmMaterial>() {
+            /**
+             * onResponse is called when any kind of response has been received.
+             */
+            @Override
+            public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                if (response.isSuccessful()) {
+                    mMaterial.setUrl(response.body().getUrl());
+                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
+                    mMaterialPresentationFragment.addItemPosition(0, mMaterial);
+                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            /**
+             * onFailure gets called when the HTTP request didn't get through.
+             * For instance if the URL is invalid / host not reachable
+             */
+            @Override
+            public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha na Confirmação!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public void getMaterials() {
@@ -390,8 +513,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     public void deleteMaterial(final int position, Material material) {
         DetectConnection detectConnection = new DetectConnection(getApplicationContext());
         if (detectConnection.existConnection()) {
-            final ServerUtil serverUtil = new ServerUtil(getApplicationContext());
-            serverUtil.onRequestStart();
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -407,14 +528,12 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        serverUtil.onRequestSuccess();
                         mMaterialPresentationFragment.removeItem(position);
-                    } else serverUtil.onRequesFailure(response.code());
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    serverUtil.onRequesFailure(t.getMessage());
                 }
             });
         }
