@@ -483,9 +483,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     public void deleteMaterial(final int position, Material material) {
         DetectConnection detectConnection = new DetectConnection(getApplicationContext());
-        if (detectConnection.existConnection()) {
-            final ServerUtil serverUtil = new ServerUtil(getApplicationContext());
-            serverUtil.onRequestStart();
+        if (detectConnection.existConnection()) {           
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -501,14 +499,13 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        serverUtil.onRequestSuccess();
                         mMaterialDisciplineFragment.removeItem(position);
-                    } else serverUtil.onRequesFailure(response.code());
+                    } 
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    serverUtil.onRequesFailure(t.getMessage());
+                    // TODO: 02/09/2016  
                 }
             });
         }

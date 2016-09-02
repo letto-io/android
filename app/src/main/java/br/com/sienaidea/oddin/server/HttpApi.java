@@ -44,8 +44,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public class HttpApi {
-    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     /**
      * Generic HttpBin.org Response Container
@@ -117,7 +117,7 @@ public class HttpApi {
                                                    @Path("presentation_id") int presentation_id);
 
         //Get Credentials Instruction Material OK
-        @GET("instructions/{instruction_id}/materials/new")
+        @POST("instructions/{instruction_id}/materials")
         Call<ResponseCredentialsMaterial> createInstructionMaterial(@Header("x-session-token") String token,
                                                                     @Path("instruction_id") int instruction_id);
 
