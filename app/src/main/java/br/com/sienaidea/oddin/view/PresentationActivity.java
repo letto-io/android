@@ -98,7 +98,7 @@ public class PresentationActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_presentation);
         mToolbar.setTitle(mInstruction.getLecture().getName());
-        mToolbar.setSubtitle("Aulas");
+        mToolbar.setSubtitle(R.string.toolbar_presentation);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

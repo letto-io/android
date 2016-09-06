@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="toast_new_answer_added">Nova resposta adicionada</string>
+    <string name="toolbar_discipline">Disciplinas</string>
+    <string name="toolbar_users">Usuários</string>
+    <string name="toolbar_presentation">Aulas</string>
 </resources>

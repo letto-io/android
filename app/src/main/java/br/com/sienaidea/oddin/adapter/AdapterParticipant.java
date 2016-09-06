@@ -33,11 +33,11 @@ public class AdapterParticipant extends RecyclerView.Adapter<AdapterParticipant.
         Person person = mList.get(position);
         holder.getName().setText(person.getName());
 
-        // TODO: 04/08/2016
-
-//        if (participant.isOnline()) {
-//            holder.ivParticipantOnline.setVisibility(View.VISIBLE);
-//        }
+        if (person.isOnline()) {
+            holder.ivParticipantOnline.setVisibility(View.VISIBLE);
+        }else {
+            holder.ivParticipantOnline.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

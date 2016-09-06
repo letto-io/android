@@ -47,7 +47,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private LectureFragment mLectureFragment;
 
-    private DrawerLayout mDrawerLayout;
+    protected DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
     @Override
@@ -56,13 +56,8 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         setContentView(R.layout.activity_lecture);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_discipline);
-        mToolbar.setTitle("Disciplinas");
+        mToolbar.setTitle(R.string.toolbar_discipline);
         setSupportActionBar(mToolbar);
-
-        //acessando o sharedPreferences para mostrar os dados do usuario no Drawer (name and email)
-        Preference preference = new Preference();
-        userName = preference.getUserName(getApplicationContext());
-        userEmail = preference.getUserEmail(getApplicationContext());
 
         mRootLayout = findViewById(R.id.root);
 
@@ -79,10 +74,14 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         TextView userNameTextView = (TextView) header.findViewById(R.id.user_name_drawer);
         TextView userEmailTextView = (TextView) header.findViewById(R.id.user_email_drawer);
 
+        Preference preference = new Preference();
+        userName = preference.getUserName(getApplicationContext());
+        userEmail = preference.getUserEmail(getApplicationContext());
+
         if (savedInstanceState != null) {
             mListInstruction = savedInstanceState.getParcelableArrayList(Instruction.TAG);
             userName = savedInstanceState.getString(Person.NAME);
-            userEmail = savedInstanceState.getString(User.EMAIL);
+            userEmail = savedInstanceState.getString(Person.EMAIL);
         } else {
             getInstructions();
         }
@@ -98,8 +97,6 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         } else {
             userEmailTextView.setText("email@email.com");
         }
-
-
     }
 
     private void getInstructions() {
@@ -182,7 +179,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Instruction.TAG, (ArrayList<Instruction>) mListInstruction);
         outState.putString(Person.NAME, userName);
-        outState.putString(User.EMAIL, userEmail);
+        outState.putString(Person.EMAIL, userEmail);
         super.onSaveInstanceState(outState);
     }
 

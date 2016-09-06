@@ -101,17 +101,17 @@ public class HttpApi {
         Call<List<Material>> InstructionMaterials(@Header("x-session-token") String token,
                                                   @Path("instruction_id") int instruction_id);
 
-        //Delete Material
+        //Delete Material OK
         @DELETE("materials/{material_id}")
         Call<Void> deleteLectureMaterial(@Header("x-session-token") String token,
                                          @Path("material_id") int material_id);
 
-        //Delete Presentation Material
+        //Delete Presentation Material OK redundante
         @DELETE("materials/{material_id}")
         Call<Void> deletePresentationMaterial(@Header("x-session-token") String token,
                                               @Path("material_id") int material_id);
 
-        //Get Presentation Materials
+        //Get Presentation Materials OK
         @GET("presentations/{presentation_id}/materials")
         Call<List<Material>> PresentationMaterials(@Header("x-session-token") String token,
                                                    @Path("presentation_id") int presentation_id);
@@ -218,7 +218,7 @@ public class HttpApi {
 
         //Create Answer Material
         @POST("questions/{question_id}/answer/materials")
-        Call<Void> createAnswerMaterial(@Header("x-session-token") String token,
+        Call<ResponseCredentialsMaterial> createAnswerMaterial(@Header("x-session-token") String token,
                                         @Path("question_id") int question_id);
 
 

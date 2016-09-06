@@ -71,7 +71,7 @@ public class ParticipantsActivity extends AppCompatActivity {
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_participants);
         mToolbar.setTitle(mInstruction.getLecture().getName());
-        mToolbar.setSubtitle("Participantes");
+        mToolbar.setSubtitle(R.string.toolbar_users);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -137,13 +137,11 @@ public class ParticipantsActivity extends AppCompatActivity {
     private List<Person> getListParticipantsOnline() {
         List<Person> listAux = new ArrayList<>();
 
-        // TODO: 04/08/2016
-
-//        for (Participant participant : mList) {
-//            if (participant.isOnline()) {
-//                listAux.add(participant);
-//            }
-//        }
+        for (Person person : mList) {
+            if (person.isOnline()) {
+                listAux.add(person);
+            }
+        }
 
         return listAux;
     }
@@ -151,13 +149,11 @@ public class ParticipantsActivity extends AppCompatActivity {
     private List<Person> getListParticipantsOffline() {
         List<Person> listAux = new ArrayList<>();
 
-        // TODO: 04/08/2016
-
-//        for (Participant participant : mList) {
-//            if (!participant.isOnline()) {
-//                listAux.add(participant);
-//            }
-//        }
+        for (Person person : mList) {
+            if (!person.isOnline()) {
+                listAux.add(person);
+            }
+        }
 
         return listAux;
     }

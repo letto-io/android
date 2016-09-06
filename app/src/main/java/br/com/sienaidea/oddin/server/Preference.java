@@ -25,7 +25,7 @@ public class Preference {
     }
 
     public void setUserName(Context context, String userName) {
-        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(USER_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
         editor.putString(USER_NAME, userName);
@@ -41,7 +41,7 @@ public class Preference {
     }
 
     public void setUserEmail(Context context, String userEmail) {
-        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(USER_EMAIL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
         editor.putString(USER_EMAIL, userEmail);
@@ -64,7 +64,7 @@ public class Preference {
 
     public String getUserName(Context context) {
         //Restaura as preferencias gravadas
-        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(USER_NAME, Context.MODE_PRIVATE);
         return settings.getString(USER_NAME, "");
     }
 
@@ -76,7 +76,7 @@ public class Preference {
 
     public String getUserEmail(Context context) {
         //Restaura as preferencias gravadas
-        SharedPreferences settings = context.getSharedPreferences(USER_PREFERENCE, Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(USER_EMAIL, Context.MODE_PRIVATE);
         return settings.getString(USER_EMAIL, "");
     }
 

@@ -115,6 +115,7 @@ public class FragmentDoubtDetailText extends Fragment {
         mAdapter.notifyDataSetChanged();
         if (mList.isEmpty())
             setEmpty(true);
+        else setEmpty(false);
     }
 
     private void setEmpty(boolean isEmpty) {
@@ -130,6 +131,6 @@ public class FragmentDoubtDetailText extends Fragment {
     public void addItem(Answer answer) {
         mList.add(0, answer);
         mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
-        mAdapter.notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 }

@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -60,9 +61,11 @@ import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
+import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -138,6 +141,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private Instruction mInstruction;
     private Question mQuestion;
     private Profile mProfile = new Profile();
+    private ResponseCredentialsMaterial mCredentialsMaterial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -422,38 +426,40 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
 
-        fab.hideProgress();
-        mProgressTypes.offer(ProgressType.HIDDEN);
+            fab.hideProgress();
+            mProgressTypes.offer(ProgressType.HIDDEN);
 
-        final EditText inputName = new EditText(DoubtDetailsActivity.this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        inputName.setLayoutParams(lp);
+            final EditText inputName = new EditText(DoubtDetailsActivity.this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            inputName.setLayoutParams(lp);
 
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-        builder.setTitle("Nova contribuição");
-        inputName.setText(mFileName);
-        builder.setView(inputName);
-        builder.setNegativeButton(R.string.dialog_cancel, null);
-        builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+            builder.setTitle("Nova contribuição");
+            inputName.setText(mFileName);
+            builder.setView(inputName);
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                if (!TextUtils.isEmpty(inputName.getText())) {
-                    mFileName = inputName.getText().toString();
+                    if (!TextUtils.isEmpty(inputName.getText())) {
+                        mFileName = inputName.getText().toString();
+                    }
+
+                    mTempFile = FileUtils.getFileFromPath(mFileNameRecord);
+                    uploadFile(0, Constants.MIME_TYPE_AUDIO);
                 }
-
-                mTempFile = FileUtils.getFileFromPath(mFileNameRecord);
-                uploadFile(0, Constants.MIME_TYPE_AUDIO);
-            }
-        });
-        builder.show();
+            });
+            builder.show();
+        }
     }
 
     private void startPlaying() {
@@ -945,10 +951,55 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
-                //getCredentials();
+                getCredentials();
             }
         });
         builder.show();
+    }
+
+    private void getCredentials() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            final String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseCredentialsMaterial> request = service.createAnswerMaterial(auth_token_string, mQuestion.getId());
+
+            request.enqueue(new Callback<ResponseCredentialsMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseCredentialsMaterial> call, Response<ResponseCredentialsMaterial> response) {
+                    if (response.isSuccessful()) {
+                        mCredentialsMaterial = response.body();
+                        uploadFile(response.code(), "");
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+//            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
+//                    .setAction(R.string.snake_try_again, new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            getCredentials();
+//                        }
+//                    }).show();
+        }
     }
 
 

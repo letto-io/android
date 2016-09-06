@@ -6,9 +6,11 @@ import android.os.Parcelable;
 public class Person implements Parcelable {
     public static final String TAG = Person.class.getName();
     public static final String NAME = "NAME";
+    public static final String EMAIL = "EMAIL";
 
     private int id;
     private String name, email;
+    private boolean online;
 
     public Person() {
     }
@@ -17,6 +19,7 @@ public class Person implements Parcelable {
         id = in.readInt();
         name = in.readString();
         email = in.readString();
+        online = in.readByte() != 0;
     }
 
     public static final Creator<Person> CREATOR = new Creator<Person>() {
@@ -55,6 +58,14 @@ public class Person implements Parcelable {
         this.email = email;
     }
 
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -65,5 +76,6 @@ public class Person implements Parcelable {
         dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(email);
+        dest.writeByte((byte) (online ? 1 : 0));
     }
 }
