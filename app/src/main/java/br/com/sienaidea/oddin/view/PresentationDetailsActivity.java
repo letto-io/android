@@ -523,7 +523,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             Preference preference = new Preference();
             String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<Void> request = service.deletePresentationMaterial(auth_token_string, material.getId());
+            Call<Void> request = service.deleteMaterial(auth_token_string, material.getId());
             request.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
