@@ -751,6 +751,9 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         int id = item.getItemId();
         if (id == android.R.id.home) {
             finish();
+        } else if (id == R.id.action_home) {
+            startActivity(new Intent(this, LectureActivity.class));
+            finish();
         }
         return true;
     }

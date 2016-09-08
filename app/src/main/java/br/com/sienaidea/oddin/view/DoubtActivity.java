@@ -341,15 +341,10 @@ public class DoubtActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ParticipantsActivity.class);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
-        }  //else if (id == R.id.action_remove_sugestions) {
-//            SearchRecentSuggestions searchRecentSuggestions = new SearchRecentSuggestions(this,
-//                    SearchableProvider.AUTHORITY,
-//                    SearchableProvider.MODE);
-//
-//            searchRecentSuggestions.clearHistory();
-//
-//            Toast.makeText(this, "Históricos removidos", Toast.LENGTH_SHORT).show();
-//        }
+        } else if (id == R.id.action_home) {
+            startActivity(new Intent(this, LectureActivity.class));
+            finish();
+        }
 
         return true;
     }
