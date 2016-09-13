@@ -231,65 +231,54 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_MATERIAL) {
-                attemptUploadMaterial(data);
-            }
-        }
-    }
-
-    private void attemptUploadMaterial(Intent data) {
-
-        if (ContextCompat.checkSelfPermission(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(PresentationDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(PresentationDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(PresentationDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                callDialog("É preciso a permissão para ler e escrever arquivos do seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
-            } else {
-                ActivityCompat.requestPermissions(PresentationDetailsActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_UPLOAD);
-            }
-        } else {
-            /*
+                /*
                 * Get the file's content URI from the incoming Intent,
                 * then query the server app to get the file's display name
                 * and size.
                 */
-            returnUri = data.getData();
-            InputStream inputStream = null;
-            try {
-                inputStream = getContentResolver().openInputStream(returnUri);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            try {
-                mBytes = FileUtils.readBytes(inputStream);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            final EditText inputName = new EditText(PresentationDetailsActivity.this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            inputName.setLayoutParams(lp);
-
-            inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-            builder.setTitle("Novo Material");
-            builder.setView(inputName);
-            builder.setNegativeButton(R.string.dialog_cancel, null);
-            builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (!TextUtils.isEmpty(inputName.getText())) {
-                        mFileName = inputName.getText().toString();
-                    }
-                    getCredentials();
+                returnUri = result.getData();
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(returnUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
-            });
-            builder.show();
+                try {
+                    mBytes = FileUtils.readBytes(inputStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                attemptUploadMateril();
+            }
         }
+    }
+
+    private void attemptUploadMateril() {
+
+        final EditText inputName = new EditText(PresentationDetailsActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        inputName.setLayoutParams(lp);
+
+        inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("Novo Material");
+        builder.setView(inputName);
+        builder.setNegativeButton("CANCELAR", null);
+        builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(inputName.getText())) {
+                    mFileName = inputName.getText().toString();
+                }
+                getCredentials();
+            }
+        });
+        builder.show();
     }
 
     private void getCredentials() {
