@@ -561,10 +561,17 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private void openFileManager() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setType(Constants.MIME_TYPE_PDF);
-        intent.setType(Constants.MIME_TYPE_TEXT);
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, ACTION_GET_CONTENT_REQUEST);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Selecione um arquivo para Upload"),
+                    ACTION_GET_CONTENT_REQUEST);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // Potentially direct the user to the Market with a Dialog
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openCamera() {

@@ -155,9 +155,17 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private void openFileManager() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/pdf");
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, REQUEST_CODE_MATERIAL);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Selecione um arquivo para Upload"),
+                    REQUEST_CODE_MATERIAL);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // Potentially direct the user to the Market with a Dialog
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
