@@ -145,7 +145,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
     public void onClickListener(final int position, boolean isUnderstand) {
         if (isUnderstand) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setMessage("Marcar que esta resposta sanou sua duvida?");
+            builder.setMessage(R.string.dialog_accept_answer);
             builder.setNegativeButton(R.string.dialog_cancel, null);
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
@@ -158,30 +158,19 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
             builder.show();
 
         } else {
-            final MaterialDoubt material = (MaterialDoubt) mAdapter.getMaterial(position);
+            final Material material = mAdapter.getMaterial(position);
 
-//            if (!material.isDownloaded()) {
-//                AlertDialog.Builder builder =
-//                        new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-//                builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
-//                builder.setNegativeButton(R.string.dialog_cancel, null);
-//                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-//                    }
-//                });
-//                builder.show();
-//            } else {
-//                Intent newIntent = new Intent();
-//                newIntent.setDataAndType(material.getUri(), material.getMime());
-//                newIntent.setAction(Intent.ACTION_VIEW);
-//                try {
-//                    startActivity(newIntent);
-//                } catch (android.content.ActivityNotFoundException e) {
-//                    Toast.makeText(mContext, "No handler for this type of file.", Toast.LENGTH_SHORT).show();
-//                }
-//            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setTitle(material.getName());
+            builder.setMessage(R.string.dialog_download_material);
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((DoubtDetailsActivity) getActivity()).getMaterial(material);
+                }
+            });
+            builder.show();
         }
     }
 

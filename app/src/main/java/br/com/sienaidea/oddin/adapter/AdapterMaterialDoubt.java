@@ -36,18 +36,18 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Material material = mList.get(position);
 
-//        String mime = material.getMime();
-//        if (mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
-//            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
-//        } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
-//            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
-//        } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
-//            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
-//        } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
-//            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
-//        }
+        String mime = material.getMime();
+        if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
+            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
+        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
+            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
+        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
+            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
+        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
+            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+        }
 
-        if (mProfile == 2){
+        if (mProfile == 2) {
             holder.ivUnderstand.setVisibility(View.GONE);
         }
 
@@ -64,7 +64,7 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
     }
 
     public void downloadFinished(int position, Uri uri) {
-       // mList.get(position).setUri(uri);
+        // mList.get(position).setUri(uri);
         notifyItemChanged(position);
     }
 

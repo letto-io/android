@@ -771,18 +771,29 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     private List<Material> getAudio() {
         List<Material> listAux = new ArrayList<>();
-
+        for (Answer answer : mListAnswers) {
+            if (!answer.getMaterials().isEmpty()) {
+                for (Material material : answer.getMaterials()) {
+                    if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_AUDIO)) {
+                        listAux.add(material);
+                    }
+                }
+            }
+        }
         return listAux;
     }
 
     private List<Material> getVideo() {
         List<Material> listAux = new ArrayList<>();
-
-//        for (Material material : mListMaterial) {
-//            if (material.getMime().equalsIgnoreCase("video/mp4")) {
-//                listAux.add(material);
-//            }
-//        }
+        for (Answer answer : mListAnswers) {
+            if (!answer.getMaterials().isEmpty()) {
+                for (Material material : answer.getMaterials()) {
+                    if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
+                        listAux.add(material);
+                    }
+                }
+            }
+        }
         return listAux;
     }
 
@@ -791,7 +802,9 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
-                    listAux.add(material);
+                    if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
+                        listAux.add(material);
+                    }
                 }
             }
         }
@@ -873,16 +886,29 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
             case REQUEST_PERMISSION_CAMERA:
                 //verifica se já foi liberado
-                if (ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                     //verifica se já foi recusado
                     if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.CAMERA)) {
                         callDialog("É preciso acessar a câmera em seu aparelho.", new String[]{Manifest.permission.CAMERA}, requestCode);
+                    }
+
+                    //verifica se já foi recusado
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        callDialog("É preciso READ_EXTERNAL_STORAGE em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
+                        return;
+                    }
+
+                    //verifica se já foi recusado
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(DoubtDetailsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        callDialog("É preciso WRITE_EXTERNAL_STORAGE em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
                         return;
                     }
 
                     //caso for a primeira vez que precisa do acesso, será solicitado aqui
-                    ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.CAMERA}, requestCode);
+                    ActivityCompat.requestPermissions(DoubtDetailsActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
 
                 } else
                     openCamera();

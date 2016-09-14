@@ -136,7 +136,7 @@ public class MaterialDoubtDetailFragment extends Fragment implements RecyclerVie
     public void onClickListener(final int position, boolean isUnderstand) {
         if (isUnderstand) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setMessage("Marcar que esta resposta sanou sua duvida?");
+            builder.setMessage(R.string.dialog_accept_answer);
             builder.setNegativeButton(R.string.dialog_cancel, null);
             builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                 @Override
