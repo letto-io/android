@@ -113,7 +113,6 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
 
     public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
-
         checkState();
     }
 
@@ -184,6 +183,11 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
 //                }
 //            }
         }
+    }
+
+    public void addItemPosition(int position, MaterialDoubt material) {
+        mList.add(position, material);
+        notifyDataSetChanged();
     }
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {

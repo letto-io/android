@@ -2,6 +2,8 @@ package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -39,6 +41,7 @@ import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -61,12 +64,16 @@ import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
+import br.com.sienaidea.oddin.retrofitModel.ResponseConfirmMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import br.com.sienaidea.oddin.util.FileUtils;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,8 +82,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DoubtDetailsActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String LOG_TAG = DoubtDetailsActivity.class.getName();
-    private static String URL_GET_CONTRIBUTION;
-    private static String URL_GET_MATERIAL;
 
     private static int RECORD_SOUND_ACTION_REQUEST = 345;
     private static int ACTION_VIDEO_CAPTURE_REQUEST = 578;
@@ -88,10 +93,12 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private static final int REQUEST_PERMISSION_RECORD_SOUND = 74;
     private static final int REQUEST_PERMISSION_CAMERA = 85;
 
+    private int mRequestCode;
+
     private List<Contribution> mList = new ArrayList<>();
     private List<Material> mListMaterial = new ArrayList<>();
     private Contribution mContribution;
-    private MaterialDoubt mMaterial;
+    private MaterialDoubt mMaterial = new MaterialDoubt();
     private Presentation mPresentation;
     private FloatingActionButton fab;
 
@@ -172,7 +179,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 mPresentation = getIntent().getExtras().getParcelable(Presentation.TAG);
                 mTvPersonName.setText(mQuestion.getPerson().getName());
                 mTvText.setText(mQuestion.getText());
-                //getContentDoubt();
                 getAnswers();
             }
         }
@@ -455,7 +461,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     }
 
                     mTempFile = FileUtils.getFileFromPath(mFileNameRecord);
-                    uploadFile(0, Constants.MIME_TYPE_AUDIO);
+                    //uploadFile(0, Constants.MIME_TYPE_AUDIO);
                 }
             });
             builder.show();
@@ -593,10 +599,10 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             case REQUEST_PERMISSION_DOWNLOAD:
                 for (int i = 0; i < permissions.length; i++) {
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     } else if (permissions[i].equalsIgnoreCase(Manifest.permission.WRITE_EXTERNAL_STORAGE) && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        getMaterialContent(mPositionFragment, mMaterialFragment);
+                        //getMaterialContent(mPositionFragment, mMaterialFragment);
                         return;
                     }
                 }
@@ -666,13 +672,56 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         } else {
             //e por fim, caso já tenha permiçoes, faça download
-            getMaterialContent(mPositionFragment, mMaterialFragment);
+            //getMaterialContent(mPositionFragment, mMaterialFragment);
         }
 
     }
 
-    public void getMaterialContent(final int position, final MaterialDoubt material) {
-        // TODO: 17/08/2016
+    public void getMaterial(final Material material) {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<ResponseConfirmMaterial> request = service.getMaterial(auth_token_string, material.getId());
+
+            request.enqueue(new Callback<ResponseConfirmMaterial>() {
+                @Override
+                public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                    if (response.isSuccessful()) {
+                        startDownload(Uri.parse(response.body().getUrl()), material);
+                    } else {
+                        onRequestFailure(response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                    onRequestFailure(401);
+                }
+            });
+
+        } else {
+            //Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void startDownload(Uri uri, Material material) {
+        DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(material.getName());
+        request.setMimeType(material.getMime());
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        Long DownloadReference = downloadmanager.enqueue(request);
     }
 
     private void setupViewPager(final ViewPager viewPager) {
@@ -723,11 +772,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private List<Material> getAudio() {
         List<Material> listAux = new ArrayList<>();
 
-//        for (Material material : mListMaterial) {
-//            if (material.getMime().equalsIgnoreCase("audio/3gpp")) {
-//                listAux.add(material);
-//            }
-//        }
         return listAux;
     }
 
@@ -744,12 +788,13 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     private List<Material> getAttachment() {
         List<Material> listAux = new ArrayList<>();
-
-//        for (Material material : mListMaterial) {
-//            if (material.getMime().equalsIgnoreCase("application/pdf")) {
-//                listAux.add(material);
-//            }
-//        }
+        for (Answer answer : mListAnswers) {
+            if (!answer.getMaterials().isEmpty()) {
+                for (Material material : answer.getMaterials()) {
+                    listAux.add(material);
+                }
+            }
+        }
         return listAux;
     }
 
@@ -887,6 +932,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, final Intent data) {
+        mRequestCode = requestCode;
         if (resultCode == Activity.RESULT_OK) {
 
             final EditText inputName = new EditText(DoubtDetailsActivity.this);
@@ -939,7 +985,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     e.printStackTrace();
                 }
                 attemptUploadMaterial();
-
             }
         }
     }
@@ -989,7 +1034,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 public void onResponse(Call<ResponseCredentialsMaterial> call, Response<ResponseCredentialsMaterial> response) {
                     if (response.isSuccessful()) {
                         mCredentialsMaterial = response.body();
-                        uploadFile(response.code(), "");
+                        uploadFile();
                     } else {
                         onRequestFailure(response.code());
                     }
@@ -1012,9 +1057,145 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    private void uploadFile() {
+        if (mRequestCode == ACTION_GET_CONTENT_REQUEST || mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
+            mTempFile = createTempFile();
+        }
 
-    private void uploadFile(final int requestCode, String mimeType) {
-        // TODO: 17/08/2016
+        if (mTempFile != null) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(mCredentialsMaterial.getUrl())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            // Prepare the HTTP request
+            RequestBody requestFile = RequestBody.create(MediaType.parse(FileUtils.getMimeType(getApplicationContext(), returnUri)), mTempFile);
+
+            // MultipartBody.Part is used to send also the actual file name
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
+
+            mMaterial.setName(mTempFile.getName());
+            mMaterial.setId(mCredentialsMaterial.getId());
+            mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
+
+            // add another part within the multipart request (credenciais para upload Amazon)
+            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
+
+            Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
+
+            // Asynchronously execute HTTP request
+            call.enqueue(new Callback<Void>() {
+                /**
+                 * onResponse is called when any kind of response has been received.
+                 */
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    // http response status code + headers
+                    //System.out.println("Response status code: " + response.code());
+
+                    // isSuccess is true if response code => 200 and <= 300
+                    if (!response.isSuccessful()) {
+                        // print response body if unsuccessful
+                        Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    confirmUpload();
+                }
+
+                /**
+                 * onFailure gets called when the HTTP request didn't get through.
+                 * For instance if the URL is invalid / host not reachable
+                 */
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private File createTempFile() {
+
+        File root = Environment.getExternalStorageDirectory();
+
+        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
+        if (!dirOddin.exists()) {
+            dirOddin.mkdir();
+        }
+
+        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
+        if (!dirDiscipline.exists()) {
+            dirDiscipline.mkdir();
+        }
+
+        final File file = new File(dirDiscipline.getAbsolutePath(), mFileName);
+        try {
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(mBytes);
+            fileOutputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return file;
+    }
+
+    private void confirmUpload() {
+        // Retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpApi.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Service setup
+        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+        Preference preference = new Preference();
+        final String auth_token_string = preference.getToken(getApplicationContext());
+
+        Call<ResponseConfirmMaterial> call = service.confirmMaterial(auth_token_string, mMaterial.getId(), mMaterial);
+
+        // Asynchronously execute HTTP request
+        call.enqueue(new Callback<ResponseConfirmMaterial>() {
+            /**
+             * onResponse is called when any kind of response has been received.
+             */
+            @Override
+            public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
+                if (response.isSuccessful()) {
+                    mMaterial.setUrl(response.body().getUrl());
+                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
+                    if (mRequestCode == ACTION_GET_CONTENT_REQUEST) {
+                        mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
+                    } else if (mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
+                        mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
+                    }
+                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            /**
+             * onFailure gets called when the HTTP request didn't get through.
+             * For instance if the URL is invalid / host not reachable
+             */
+            @Override
+            public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha na Confirmação!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

@@ -211,8 +211,8 @@ public class HttpApi {
                                   @Path("question_id") int question_id,
                                   @Body Answer answer);
 
-        //Create Answer Material
-        @POST("questions/{question_id}/answer/materials")
+        //Create Answer Material OK
+        @POST("questions/{question_id}/answers/materials")
         Call<ResponseCredentialsMaterial> createAnswerMaterial(@Header("x-session-token") String token,
                                                                @Path("question_id") int question_id);
 

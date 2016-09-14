@@ -3,6 +3,10 @@ package br.com.sienaidea.oddin.retrofitModel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
+import br.com.sienaidea.oddin.model.MaterialDoubt;
+
 /**
  * Created by Siena Idea on 04/08/2016.
  */
@@ -12,6 +16,7 @@ public class Answer implements Parcelable {
     private int id, upvotes, downvotes, my_vote;
     private String text, created_at;
     private boolean anonymous, accepted;
+    private List<Material> materials;
     private Question question;
     private Person person;
 
@@ -27,6 +32,7 @@ public class Answer implements Parcelable {
         created_at = in.readString();
         anonymous = in.readByte() != 0;
         accepted = in.readByte() != 0;
+        materials = in.createTypedArrayList(Material.CREATOR);
         question = in.readParcelable(Question.class.getClassLoader());
         person = in.readParcelable(Person.class.getClassLoader());
     }
@@ -107,6 +113,14 @@ public class Answer implements Parcelable {
         this.accepted = accepted;
     }
 
+    public List<Material> getMaterials() {
+        return materials;
+    }
+
+    public void setMaterials(List<Material> materials) {
+        this.materials = materials;
+    }
+
     public Question getQuestion() {
         return question;
     }
@@ -138,6 +152,7 @@ public class Answer implements Parcelable {
         dest.writeString(created_at);
         dest.writeByte((byte) (anonymous ? 1 : 0));
         dest.writeByte((byte) (accepted ? 1 : 0));
+        dest.writeTypedList(materials);
         dest.writeParcelable(question, flags);
         dest.writeParcelable(person, flags);
     }
