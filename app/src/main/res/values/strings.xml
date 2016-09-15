@@ -72,4 +72,6 @@
     <string name="toolbar_discipline">Disciplinas</string>
     <string name="toolbar_users">Usuários</string>
     <string name="toolbar_presentation">Aulas</string>
+    <string name="toast_recording">Gravando...</string>
+    <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
 </resources>

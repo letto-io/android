@@ -27,7 +27,6 @@ import br.com.sienaidea.oddin.adapter.AudioAdapter;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Contribution;
 import br.com.sienaidea.oddin.retrofitModel.Material;
-import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerHack, View.OnClickListener {
@@ -75,9 +74,9 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0){
+                if (dy > 0) {
                     ((DoubtDetailsActivity) getActivity()).fabHide();
-                }else {
+                } else {
                     ((DoubtDetailsActivity) getActivity()).fabShow();
                 }
             }
@@ -113,6 +112,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         mAudioAdapter.notifyDataSetChanged();
         if (mList.isEmpty())
             setEmpty(true);
+        else setEmpty(false);
     }
 
     private void setEmpty(boolean isEmpty) {
@@ -146,36 +146,41 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
 
     @Override
     public void onClickListener(View view, final int position, boolean isUnderstand) {
-        final MaterialDoubt material = (MaterialDoubt) mAudioAdapter.getMaterial(position);
+        final Material material = mAudioAdapter.getMaterial(position);
 
-//        if (material.isDownloaded()) {
-//            if (isUnderstand) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-//                builder.setMessage("Marcar que esta resposta sanou sua duvida?");
-//                builder.setNegativeButton(R.string.dialog_cancel, null);
-//                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // TODO: chamar metodo understand aqui:
-//                        //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-//
-//                    }
-//                });
-//                builder.show();
-//            }
-//        } else {
-//            AlertDialog.Builder builder =
-//                    new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-//            builder.setMessage("Deseja fazer download de: " + material.getName() + " ?");
-//            builder.setNegativeButton("CANCELAR", null);
-//            builder.setPositiveButton("CONFIRMAR", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    ((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-//                }
-//            });
-//            builder.show();
-//        }
+        if (material.isDownloaded()) {
+            if (isUnderstand) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                builder.setMessage(R.string.dialog_accept_answer);
+                builder.setNegativeButton(R.string.dialog_cancel, null);
+                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO: chamar metodo understand aqui:
+                        //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
+
+                    }
+                });
+                builder.show();
+            }
+        } else {
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setMessage(R.string.dialog_download_material);
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((DoubtDetailsActivity) getActivity()).getMaterial(material);
+                }
+            });
+            builder.show();
+        }
+    }
+
+    public void addItemPosition(int position, Material material) {
+        mList.add(position, material);
+        notifyDataSetChanged();
     }
 
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {

@@ -29,7 +29,6 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterialDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerMaterial;
 import br.com.sienaidea.oddin.retrofitModel.Material;
-import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerMaterial, View.OnClickListener {
@@ -174,7 +173,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
     }
 
-    public void addItemPosition(int position, MaterialDoubt material) {
+    public void addItemPosition(int position, Material material) {
         mList.add(position, material);
         notifyDataSetChanged();
     }

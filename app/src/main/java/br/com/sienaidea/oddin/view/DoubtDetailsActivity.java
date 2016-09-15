@@ -60,7 +60,6 @@ import br.com.sienaidea.oddin.model.Contribution;
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
-import br.com.sienaidea.oddin.model.MaterialDoubt;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
 import br.com.sienaidea.oddin.retrofitModel.Question;
@@ -98,7 +97,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private List<Contribution> mList = new ArrayList<>();
     private List<Material> mListMaterial = new ArrayList<>();
     private Contribution mContribution;
-    private MaterialDoubt mMaterial = new MaterialDoubt();
+    private Material mMaterial = new Material();
     private Presentation mPresentation;
     private FloatingActionButton fab;
 
@@ -139,9 +138,10 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private MediaRecorder mRecorder = null;
 
     private MediaPlayer mPlayer = null;
+    private boolean isAudio;
 
     private int mPositionFragment;
-    private MaterialDoubt mMaterialFragment;
+    private Material mMaterialFragment;
 
     //new
     private List<Answer> mListAnswers = new ArrayList<>();
@@ -418,7 +418,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         try {
             mRecorder.prepare();
-            Toast.makeText(getApplicationContext(), "Gravando...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.toast_recording, Toast.LENGTH_LONG).show();
             fab.setShowProgressBackground(true);
             fab.setIndeterminate(true);
             mProgressTypes.offer(ProgressType.INDETERMINATE);
@@ -461,7 +461,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     }
 
                     mTempFile = FileUtils.getFileFromPath(mFileNameRecord);
-                    //uploadFile(0, Constants.MIME_TYPE_AUDIO);
+                    isAudio = true;
+                    getCredentials();
                 }
             });
             builder.show();
@@ -571,7 +572,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(
-                    Intent.createChooser(intent, "Selecione um arquivo para Upload"),
+                    Intent.createChooser(intent, getResources().getString(R.string.file_manager_info)),
                     ACTION_GET_CONTENT_REQUEST);
         } catch (android.content.ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog
@@ -646,7 +647,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void attemptGetMaterialContent(int position, MaterialDoubt material) {
+    public void attemptGetMaterialContent(int position, Material material) {
 
         mPositionFragment = position;
         mMaterialFragment = material;
@@ -959,6 +960,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, final Intent data) {
         mRequestCode = requestCode;
+        isAudio = false;
         if (resultCode == Activity.RESULT_OK) {
 
             final EditText inputName = new EditText(DoubtDetailsActivity.this);
@@ -1097,15 +1099,21 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             // Service setup
             HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-            // Prepare the HTTP request
-            RequestBody requestFile = RequestBody.create(MediaType.parse(FileUtils.getMimeType(getApplicationContext(), returnUri)), mTempFile);
+            mMaterial.setName(mTempFile.getName());
+            mMaterial.setId(mCredentialsMaterial.getId());
 
+            // Prepare the HTTP request
+            RequestBody requestFile;
+            if (isAudio) {
+                requestFile = RequestBody.create(MediaType.parse(Constants.MIME_TYPE_AUDIO), mTempFile);
+                mMaterial.setMime(Constants.MIME_TYPE_AUDIO);
+            } else {
+                requestFile = RequestBody.create(MediaType.parse(FileUtils.getMimeType(getApplicationContext(), returnUri)), mTempFile);
+                mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
+            }
             // MultipartBody.Part is used to send also the actual file name
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
 
-            mMaterial.setName(mTempFile.getName());
-            mMaterial.setId(mCredentialsMaterial.getId());
-            mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
 
             // add another part within the multipart request (credenciais para upload Amazon)
             RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
@@ -1208,6 +1216,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                         mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
                         mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
+                    }else if (isAudio){
+                        mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
                     }
                     Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
                 }

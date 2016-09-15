@@ -159,7 +159,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(
-                    Intent.createChooser(intent, "Selecione um arquivo para Upload"),
+                    Intent.createChooser(intent, getResources().getString(R.string.file_manager_info)),
                     REQUEST_CODE_MATERIAL);
         } catch (android.content.ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog

@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-import br.com.sienaidea.oddin.model.MaterialDoubt;
-
 /**
  * Created by Siena Idea on 04/08/2016.
  */
