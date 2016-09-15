@@ -125,8 +125,11 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
     }
 
-    public void downloadFinished(int position, Uri uri) {
-        mAudioAdapter.downloadFinished(position, uri);
+    public void downloadFinished(Material material, String url) {
+        int index = mList.indexOf(material);
+        mList.get(index).setDownloaded(true);
+        mList.get(index).setUrl(url);
+        notifyDataSetChanged();
     }
 
     @Override

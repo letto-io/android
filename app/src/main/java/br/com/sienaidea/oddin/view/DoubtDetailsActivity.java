@@ -699,7 +699,11 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                     if (response.isSuccessful()) {
-                        startDownload(Uri.parse(response.body().getUrl()), material);
+                        if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_AUDIO)) {
+                            mAudioDoubtDetailFragment.downloadFinished(material, response.body().getUrl());
+                        } else {
+                            startDownload(Uri.parse(response.body().getUrl()), material);
+                        }
                     } else {
                         onRequestFailure(response.code());
                     }
@@ -1216,7 +1220,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                         mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
                         mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
-                    }else if (isAudio){
+                    } else if (isAudio) {
                         mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
                     }
                     Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
