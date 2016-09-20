@@ -7,17 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -25,7 +23,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -52,8 +49,8 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterViewPager;
 import br.com.sienaidea.oddin.fragment.AudioDoubtDetailFragment;
-import br.com.sienaidea.oddin.fragment.FragmentDoubtDetailText;
 import br.com.sienaidea.oddin.fragment.MaterialDoubtDetailFragment;
+import br.com.sienaidea.oddin.fragment.TextDoubtDetailFragment;
 import br.com.sienaidea.oddin.fragment.VideoDoubtDetailFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.model.Contribution;
@@ -81,8 +78,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DoubtDetailsActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String LOG_TAG = DoubtDetailsActivity.class.getName();
+    private static final int TAB_TEXT = 0;
+    private static final int TAB_AUDIO = 1;
+    private static final int TAB_VIDEO = 2;
+    private static final int TAB_MATERIAL = 3;
 
-    private static int RECORD_SOUND_ACTION_REQUEST = 345;
     private static int ACTION_VIDEO_CAPTURE_REQUEST = 578;
     private static int ACTION_GET_CONTENT_REQUEST = 499;
     private static int ACTION_POST_TEXT_REQUEST = 753;
@@ -95,18 +95,16 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private int mRequestCode;
 
     private List<Contribution> mList = new ArrayList<>();
-    private List<Material> mListMaterial = new ArrayList<>();
-    private Contribution mContribution;
     private Material mMaterial = new Material();
     private Presentation mPresentation;
     private FloatingActionButton fab;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
-    private FragmentDoubtDetailText fragmentDoubtDetailText;
 
+    private TextDoubtDetailFragment mTextDoubtDetailFragment;
     private AudioDoubtDetailFragment mAudioDoubtDetailFragment;
-    private MaterialDoubtDetailFragment mMaterialDoubtDetailFragment;
     private VideoDoubtDetailFragment mVideoDoubtDetailFragment;
+    private MaterialDoubtDetailFragment mMaterialDoubtDetailFragment;
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -137,11 +135,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private static String mFileNameRecord = null;
     private MediaRecorder mRecorder = null;
 
-    private MediaPlayer mPlayer = null;
     private boolean isAudio;
-
-    private int mPositionFragment;
-    private Material mMaterialFragment;
 
     //new
     private List<Answer> mListAnswers = new ArrayList<>();
@@ -243,13 +237,13 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     mListAnswers = response.body();
                     onRequestSuccess();
                 } else {
-                    onRequestFailure(response.code());
+                    onRequestFailure("getAnswers onResponse");
                 }
             }
 
             @Override
             public void onFailure(Call<List<Answer>> call, Throwable t) {
-                onRequestFailure(401);
+                onRequestFailure("getAnswers onFailure");
             }
         });
     }
@@ -276,16 +270,16 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     if (response.body().isUp()) {
                         answer.setUpvotes(answer.getUpvotes() + 1);
                         answer.setMy_vote(1);
-                        fragmentDoubtDetailText.notifyDataSetChanged();
+                        mTextDoubtDetailFragment.notifyDataSetChanged();
                     }
                 } else {
-                    onRequestFailure(response.code());
+                    onRequestFailure("upVote onResponse");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseUpVoteAnswer> call, Throwable t) {
-                onRequestFailure(401);
+                onRequestFailure("upVote onFailure");
             }
         });
     }
@@ -312,16 +306,16 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     if (!response.body().isUp()) {
                         answer.setUpvotes(answer.getUpvotes() - 1);
                         answer.setMy_vote(-1);
-                        fragmentDoubtDetailText.notifyDataSetChanged();
+                        mTextDoubtDetailFragment.notifyDataSetChanged();
                     }
                 } else {
-                    onRequestFailure(response.code());
+                    onRequestFailure("downVote onResponse");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseUpVoteAnswer> call, Throwable t) {
-                onRequestFailure(401);
+                onRequestFailure("downVote onFailure");
             }
         });
     }
@@ -343,44 +337,62 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    fragmentDoubtDetailText.notifyDataSetChanged();
+                    answer.setAccepted(true);
+                    mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
+                    switch (mSelectedTabPosition) {
+                        case TAB_TEXT:
+                            mTextDoubtDetailFragment.notifyDataSetChanged();
+                            break;
+                        case TAB_AUDIO:
+                            mAudioDoubtDetailFragment.notifyDataSetChanged();
+                            break;
+                        case TAB_VIDEO:
+                            mVideoDoubtDetailFragment.notifyDataSetChanged();
+                            break;
+                        case TAB_MATERIAL:
+                            mMaterialDoubtDetailFragment.notifyDataSetChanged();
+                    }
+                } else {
+                    if (response.code() == Constants.INAUTHORIZED) {
+                        Toast.makeText(getApplicationContext(), R.string.inauthorized, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                onRequestFailure(401);
+                onRequestFailure("acceptAnswer onFailure");
             }
         });
     }
 
-    public void deleteAcceptAnswer(final Answer answer) {
-        //setup retrofit
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpApi.API_URL).build();
-
-        //setup service
-        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
-        //get token
-        Preference preference = new Preference();
-        final String auth_token_string = preference.getToken(getApplicationContext());
-
-        Call<Void> request = service.deleteAcceptAnswer(auth_token_string, answer.getId());
-
-        request.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    fragmentDoubtDetailText.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                onRequestFailure(401);
-            }
-        });
-    }
+//    public void deleteAcceptAnswer(final Answer answer) {
+//        //setup retrofit
+//        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpApi.API_URL).build();
+//
+//        //setup service
+//        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+//
+//        //get token
+//        Preference preference = new Preference();
+//        final String auth_token_string = preference.getToken(getApplicationContext());
+//
+//        Call<Void> request = service.deleteAcceptAnswer(auth_token_string, answer.getId());
+//
+//        request.enqueue(new Callback<Void>() {
+//            @Override
+//            public void onResponse(Call<Void> call, Response<Void> response) {
+//                if (response.isSuccessful()) {
+//                    mTextDoubtDetailFragment.notifyDataSetChanged();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Void> call, Throwable t) {
+//                onRequestFailure("deleteAcceptAnswer onFailure");
+//            }
+//        });
+//    }
 
     private void onRequestSuccess() {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
@@ -389,16 +401,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         mAdapterViewPager.notifyDataSetChanged();
     }
 
-    private void onRequestFailure(int statusCode) {
-        if (statusCode == 401) {
-            startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-            finish();
-        }
+    private void onRequestFailure(String string) {
+        Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed + string, Toast.LENGTH_LONG).show();
     }
 
     public void fabHide() {
@@ -469,22 +473,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private void startPlaying() {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(mFileNameRecord);
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
-    }
-
     private String getAudioRecordName() {
         mFileNameRecord = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileNameRecord += "/audiorecordoddin.3gp";
@@ -519,6 +507,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void animateFab(final int position) {
+        mSelectedTabPosition = position;
         if (position == 1) {
             // Change FAB color icon
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -561,10 +550,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         fab.show(true);
     }
 
-    public void getContentDoubt() {
-        // TODO: 17/08/2016
-    }
-
     private void openFileManager() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -583,12 +568,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     private void openCamera() {
         startActivityForResult(new Intent(MediaStore.ACTION_VIDEO_CAPTURE), ACTION_VIDEO_CAPTURE_REQUEST);
-    }
-
-    private void openRecordAudio() {
-
-        //TODO: tratar quando não tiver gravador de som.
-        startActivityForResult(new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION), RECORD_SOUND_ACTION_REQUEST);
     }
 
     @Override
@@ -649,8 +628,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     public void attemptGetMaterialContent(int position, Material material) {
 
-        mPositionFragment = position;
-        mMaterialFragment = material;
+        //mPositionFragment = position;
+        //mMaterialFragment = material;
 
         //se uma das duas permissões não estiverem liberadas
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -705,15 +684,16 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                             startDownload(Uri.parse(response.body().getUrl()), material);
                         }
                     } else {
-                        onRequestFailure(response.code());
+                        onRequestFailure("getMaterial onResponse");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure("getMaterial onFailure");
                 }
             });
+
 
         } else {
             //Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
@@ -733,13 +713,13 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        fragmentDoubtDetailText = FragmentDoubtDetailText.newInstance(getList(), mProfile.getProfile(), mQuestion.getPerson().getId());
+        mTextDoubtDetailFragment = TextDoubtDetailFragment.newInstance(getList(), mProfile.getProfile(), mQuestion.getPerson().getId());
 
         mAudioDoubtDetailFragment = AudioDoubtDetailFragment.newInstance(getAudio(), mProfile.getProfile());
         mVideoDoubtDetailFragment = VideoDoubtDetailFragment.newInstance(getVideo(), mProfile.getProfile());
         mMaterialDoubtDetailFragment = MaterialDoubtDetailFragment.newInstance(getAttachment(), mProfile.getProfile());
 
-        mAdapterViewPager.addFragment(fragmentDoubtDetailText, "");
+        mAdapterViewPager.addFragment(mTextDoubtDetailFragment, "");
         mAdapterViewPager.addFragment(mAudioDoubtDetailFragment, "");
         mAdapterViewPager.addFragment(mVideoDoubtDetailFragment, "");
         mAdapterViewPager.addFragment(mMaterialDoubtDetailFragment, "");
@@ -759,28 +739,23 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private List<Answer> getList() {
-        return mListAnswers;
+        List<Answer> listAux = new ArrayList<>();
+        for (Answer answer : mListAnswers) {
+            if (!answer.getText().isEmpty()) {
+                listAux.add(answer);
+            }
+        }
+        return listAux;
     }
 
-    private List<Material> getListMaterial() {
-        return mListMaterial;
-    }
-
-    private void addItemList(Contribution contribution) {
-        mList.add(contribution);
-    }
-
-    private void addItemList(Material material) {
-        mListMaterial.add(material);
-    }
-
-    private List<Material> getAudio() {
-        List<Material> listAux = new ArrayList<>();
+    private List<Answer> getAudio() {
+        List<Answer> listAux = new ArrayList<>();
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
                     if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_AUDIO)) {
-                        listAux.add(material);
+                        material.setAccepted(answer.isAccepted());
+                        listAux.add(answer);
                     }
                 }
             }
@@ -788,13 +763,14 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         return listAux;
     }
 
-    private List<Material> getVideo() {
-        List<Material> listAux = new ArrayList<>();
+    private List<Answer> getVideo() {
+        List<Answer> listAux = new ArrayList<>();
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
                     if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
-                        listAux.add(material);
+                        material.setAccepted(answer.isAccepted());
+                        listAux.add(answer);
                     }
                 }
             }
@@ -802,13 +778,14 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         return listAux;
     }
 
-    private List<Material> getAttachment() {
-        List<Material> listAux = new ArrayList<>();
+    private List<Answer> getAttachment() {
+        List<Answer> listAux = new ArrayList<>();
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
                     if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
-                        listAux.add(material);
+                        material.setAccepted(answer.isAccepted());
+                        listAux.add(answer);
                     }
                 }
             }
@@ -975,7 +952,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
             if (requestCode == ACTION_POST_TEXT_REQUEST) {
                 Answer answer = data.getParcelableExtra(Answer.TAG);
-                fragmentDoubtDetailText.addItem(answer);
+                mTextDoubtDetailFragment.addItem(answer);
                 Toast.makeText(this, R.string.toast_new_answer_added, Toast.LENGTH_SHORT).show();
 
             } else if (requestCode == ACTION_GET_CONTENT_REQUEST) {
@@ -1068,13 +1045,13 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                         mCredentialsMaterial = response.body();
                         uploadFile();
                     } else {
-                        onRequestFailure(response.code());
+                        onRequestFailure("getCredentials() onResponse");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure("getCredentials() onFailure");
                 }
             });
 
@@ -1215,13 +1192,12 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
-                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
                     if (mRequestCode == ACTION_GET_CONTENT_REQUEST) {
-                        mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        //mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
-                        mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        //mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (isAudio) {
-                        mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        //mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
                     }
                     Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
                 }

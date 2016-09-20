@@ -28,13 +28,14 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterMaterialDoubt;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerMaterial;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerMaterial, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Material> mList;
+    private List<Answer> mList;
     private AdapterMaterialDoubt mAdapter;
     private Context mContext;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -48,12 +49,12 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         super.onAttach(context);
     }
 
-    public static VideoDoubtDetailFragment newInstance(List<Material> list, int profile) {
+    public static VideoDoubtDetailFragment newInstance(List<Answer> list, int profile) {
 
         VideoDoubtDetailFragment fragment = new VideoDoubtDetailFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Material.TAG, (ArrayList<Material>) list);
+        args.putParcelableArrayList(Answer.TAG, (ArrayList<Answer>) list);
         args.putInt("profile", profile);
         fragment.setArguments(args);
 
@@ -86,7 +87,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
             }
         });
 
-        mList = getArguments().getParcelableArrayList(Material.TAG);
+        mList = getArguments().getParcelableArrayList(Answer.TAG);
         mProfile = getArguments().getInt("profile");
         if (mList != null) {
             mAdapter = new AdapterMaterialDoubt(mContext, mList, mProfile);
@@ -173,8 +174,8 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
     }
 
-    public void addItemPosition(int position, Material material) {
-        mList.add(position, material);
+    public void addItemPosition(int position, Answer answer) {
+        mList.add(position, answer);
         notifyDataSetChanged();
     }
 

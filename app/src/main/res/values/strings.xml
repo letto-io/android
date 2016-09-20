@@ -74,4 +74,6 @@
     <string name="toolbar_presentation">Aulas</string>
     <string name="toast_recording">Gravando...</string>
     <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
+    <string name="toast_request_not_completed">Requisição não completada</string>
+    <string name="inauthorized">Inautorizado</string>
 </resources>

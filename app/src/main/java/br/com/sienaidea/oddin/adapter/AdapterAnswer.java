@@ -2,6 +2,9 @@ package br.com.sienaidea.oddin.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,14 +22,16 @@ import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.util.DateUtil;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
-public class AdapterContribution extends RecyclerView.Adapter<AdapterContribution.MyViewHolder> {
+public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
     private List<Answer> mList;
     private Context mContext;
     private int mProfile;
     private boolean isQuestionOwner;
+    private Drawable mDrawable;
 
-    public AdapterContribution(Context context, List<Answer> list, int profile, boolean isQuestionOwner) {
+
+    public AdapterAnswer(Context context, List<Answer> list, int profile, boolean isQuestionOwner) {
         this.mContext = context;
         this.mList = list;
         this.mProfile = profile;
@@ -36,7 +41,7 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.item_contribution_card, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.item_answer_card, parent, false);
         return new MyViewHolder(view);
     }
 
@@ -54,7 +59,8 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
             holder.ivUpVote.setClickable(false);
             holder.ivDownVote.setEnabled(false);
             holder.ivDownVote.setClickable(false);
-            holder.ivAccept.setVisibility(View.GONE);
+            holder.ivAccept.setEnabled(false);
+            holder.ivAccept.setClickable(false);
         } else {
             holder.ivUpVote.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,39 +84,53 @@ public class AdapterContribution extends RecyclerView.Adapter<AdapterContributio
                 }
             });
 
-            //somente se a dúvida for da pessoa que a opçao "aceitar" será exibida.
-            if (isQuestionOwner) {
-                holder.ivAccept.setVisibility(View.VISIBLE);
-                holder.ivAccept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-                        builder.setNegativeButton(R.string.dialog_cancel, null);
-                        if (answer.isAccepted()) {
-                            builder.setMessage(R.string.dialog_delete_accept_answer);
-                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ((DoubtDetailsActivity) mContext).deleteAcceptAnswer(answer);
-                                }
-                            });
-                            builder.show();
-                        } else {
-                            builder.setMessage(R.string.dialog_accept_answer);
-                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
-                                }
-                            });
-                            builder.show();
-                        }
+            holder.ivAccept.setVisibility(View.VISIBLE);
+            holder.ivAccept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                    builder.setNegativeButton(R.string.dialog_cancel, null);
+                    if (answer.isAccepted()) {
+//                        builder.setMessage(R.string.dialog_delete_accept_answer);
+//                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
+//                            }
+//                        });
+//                        builder.show();
+                    } else {
+                        builder.setMessage(R.string.dialog_accept_answer);
+                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
+                            }
+                        });
+                        builder.show();
                     }
-                });
-            }else {
-                holder.ivAccept.setVisibility(View.GONE);
-            }
+                }
+            });
+
         }
+
+        if (answer.isAccepted()){
+            Drawable mDrawable = colorize(R.drawable.ic_check_white, R.color.colorAccent);
+            holder.ivAccept.setImageDrawable(mDrawable);
+        }else {
+            holder.ivAccept.setImageResource(R.drawable.ic_check);
+        }
+    }
+
+    private Drawable colorize(int resource, int color) {
+        Drawable mDrawable = ContextCompat.getDrawable(mContext, resource);
+
+        int mColor = ContextCompat.getColor(mContext, color);        //copy it in a new one
+        Drawable willBeWhite = mDrawable.getConstantState().newDrawable();
+        willBeWhite.clearColorFilter();
+        //set the color filter, you can use also Mode.SRC_ATOP
+        willBeWhite.mutate().setColorFilter(mColor, PorterDuff.Mode.MULTIPLY);
+        return willBeWhite;
     }
 
     @Override

@@ -12,23 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.adapter.AdapterContribution;
+import br.com.sienaidea.oddin.adapter.AdapterAnswer;
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.server.Preference;
-import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
-public class FragmentDoubtDetailText extends Fragment {
+public class TextDoubtDetailFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private List<Answer> mList;
-    private AdapterContribution mAdapter;
+    private AdapterAnswer mAdapter;
     private Context mContext;
     private int mProfile;
     private int mPersonId;
@@ -40,9 +37,9 @@ public class FragmentDoubtDetailText extends Fragment {
         super.onAttach(context);
     }
 
-    public static FragmentDoubtDetailText newInstance(List<Answer> list, int profile, int personId) {
+    public static TextDoubtDetailFragment newInstance(List<Answer> list, int profile, int personId) {
 
-        FragmentDoubtDetailText fragment = new FragmentDoubtDetailText();
+        TextDoubtDetailFragment fragment = new TextDoubtDetailFragment();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(Answer.TAG, (ArrayList<Answer>) list);
@@ -90,7 +87,7 @@ public class FragmentDoubtDetailText extends Fragment {
                 isQuestionOwner = true;
             } else isQuestionOwner = false;
 
-            mAdapter = new AdapterContribution(mContext, mList, mProfile, isQuestionOwner);
+            mAdapter = new AdapterAnswer(mContext, mList, mProfile, isQuestionOwner);
 
             mRecyclerView.setAdapter(mAdapter);
             notifyDataSetChanged();

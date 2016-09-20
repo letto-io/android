@@ -1,26 +1,33 @@
 package br.com.sienaidea.oddin.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.model.Constants;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Material;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDoubt.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
-    private List<Material> mList;
+    private List<Answer> mList;
     private int mProfile;
+    private Context mContext;
 
-    public AdapterMaterialDoubt(Context context, List<Material> list, int profile) {
+    public AdapterMaterialDoubt(Context context, List<Answer> list, int profile) {
+        mContext = context;
         this.mList = list;
         this.mProfile = profile;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -33,25 +40,56 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        Material material = mList.get(position);
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        final List<Material> materials = mList.get(position).getMaterials();
 
-        String mime = material.getMime();
-        if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
-            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
-        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
-            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
-        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
-            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
-        } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
-            holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+        for (final Material material : materials) {
+            String mime = material.getMime();
+            if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
+                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
+            } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
+                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
+            } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
+                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
+            } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
+                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+            }
+
+            holder.getName().setText(material.getName());
+
+            if (mProfile == Constants.INSTRUCTOR) {
+                holder.ivAccept.setEnabled(false);
+                holder.ivAccept.setClickable(false);
+            } else {
+                holder.ivAccept.setVisibility(View.VISIBLE);
+                holder.ivAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                        builder.setNegativeButton(R.string.dialog_cancel, null);
+                        if (material.isAccepted()) {
+//                        builder.setMessage(R.string.dialog_delete_accept_answer);
+//                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
+//                            }
+//                        });
+//                        builder.show();
+                        } else {
+                            builder.setMessage(R.string.dialog_accept_answer);
+                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ((DoubtDetailsActivity) mContext).acceptAnswer(mList.get(position));
+                                }
+                            });
+                            builder.show();
+                        }
+                    }
+                });
+            }
         }
-
-        if (mProfile == 2) {
-            holder.ivUnderstand.setVisibility(View.GONE);
-        }
-
-        holder.getName().setText(material.getName());
     }
 
     @Override
@@ -60,7 +98,7 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
     }
 
     public Material getMaterial(int position) {
-        return mList.get(position);
+        return mList.get(position).getMaterials().get(position);
     }
 
     public void downloadFinished(int position, Uri uri) {
@@ -70,12 +108,12 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView Name;
-        private ImageView ivUnderstand;
+        private ImageView ivAccept;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             Name = (TextView) itemView.findViewById(R.id.tv_material_name);
-            ivUnderstand = (ImageView) itemView.findViewById(R.id.iv_understand);
+            ivAccept = (ImageView) itemView.findViewById(R.id.iv_accepted);
         }
 
         public TextView getName() {

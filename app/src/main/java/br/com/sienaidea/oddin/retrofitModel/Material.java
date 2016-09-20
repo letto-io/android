@@ -8,7 +8,7 @@ public class Material implements Parcelable {
 
     private int id, attachable_id;
     private String name, mime, attachable_type, uploaded_at, url;
-    private boolean checked, downloaded;
+    private boolean checked, downloaded, accepted;
     Person person;
 
     public Material() {
@@ -24,6 +24,7 @@ public class Material implements Parcelable {
         url = in.readString();
         checked = in.readByte() != 0;
         downloaded = in.readByte() != 0;
+        accepted = in.readByte() != 0;
         person = in.readParcelable(Person.class.getClassLoader());
     }
 
@@ -111,6 +112,14 @@ public class Material implements Parcelable {
         this.downloaded = downloaded;
     }
 
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
+    }
+
     public Person getPerson() {
         return person;
     }
@@ -135,6 +144,7 @@ public class Material implements Parcelable {
         dest.writeString(url);
         dest.writeByte((byte) (checked ? 1 : 0));
         dest.writeByte((byte) (downloaded ? 1 : 0));
+        dest.writeByte((byte) (accepted ? 1 : 0));
         dest.writeParcelable(person, flags);
     }
 }

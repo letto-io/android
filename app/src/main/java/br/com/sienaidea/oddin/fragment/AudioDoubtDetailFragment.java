@@ -26,13 +26,14 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AudioAdapter;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
 import br.com.sienaidea.oddin.model.Contribution;
+import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOnClickListenerHack, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Material> mList;
+    private List<Answer> mList;
     private AudioAdapter mAudioAdapter;
     private Context mContext;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -44,12 +45,12 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         super.onAttach(context);
     }
 
-    public static AudioDoubtDetailFragment newInstance(List<Material> list, int profile) {
+    public static AudioDoubtDetailFragment newInstance(List<Answer> list, int profile) {
 
         AudioDoubtDetailFragment fragment = new AudioDoubtDetailFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Contribution.NAME, (ArrayList<Material>) list);
+        args.putParcelableArrayList(Answer.TAG, (ArrayList<Answer>) list);
         args.putInt("profile", profile);
         fragment.setArguments(args);
 
@@ -82,7 +83,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             }
         });
 
-        mList = getArguments().getParcelableArrayList(Contribution.NAME);
+        mList = getArguments().getParcelableArrayList(Answer.TAG);
         mProfile = getArguments().getInt("profile");
 
         if (mList != null) {
@@ -127,8 +128,8 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
 
     public void downloadFinished(Material material, String url) {
         int index = mList.indexOf(material);
-        mList.get(index).setDownloaded(true);
-        mList.get(index).setUrl(url);
+        mList.get(index).getMaterials().get(index).setDownloaded(true);
+        mList.get(index).getMaterials().get(index).setUrl(url);
         notifyDataSetChanged();
     }
 
@@ -181,8 +182,8 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
     }
 
-    public void addItemPosition(int position, Material material) {
-        mList.add(position, material);
+    public void addItemPosition(int position, Answer answer) {
+        mList.add(position, answer);
         notifyDataSetChanged();
     }
 

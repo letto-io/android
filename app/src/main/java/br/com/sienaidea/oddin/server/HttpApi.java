@@ -195,15 +195,15 @@ public class HttpApi {
         Call<ResponseUpVoteAnswer> downVoteAnswer(@Header("x-session-token") String token,
                                                   @Path("answer_id") int answer_id);
 
-        //Accept Answer
+        //Accept Answer OK
         @POST("answers/{answer_id}/accept")
         Call<Void> acceptAnswer(@Header("x-session-token") String token,
                                 @Path("answer_id") int answer_id);
 
-        //Delete Accept Answer
-        @POST("answers/{answer_id}/accept")
-        Call<Void> deleteAcceptAnswer(@Header("x-session-token") String token,
-                                      @Path("answer_id") int answer_id);
+//        //Delete Accept Answer
+//        @POST("answers/{answer_id}/accept")
+//        Call<Void> deleteAcceptAnswer(@Header("x-session-token") String token,
+//                                      @Path("answer_id") int answer_id);
 
         //Create Answer OK
         @POST("questions/{question_id}/answers")
