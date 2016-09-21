@@ -1,9 +1,11 @@
 package br.com.sienaidea.oddin.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +19,10 @@ import java.io.IOException;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Material;
+import br.com.sienaidea.oddin.view.DoubtDetailsActivity;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder> {
     private LayoutInflater mLayoutInflater;
@@ -47,7 +51,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder myViewHolder, int position) {
+    public void onBindViewHolder(final MyViewHolder myViewHolder, final int position) {
         final List<Material> materials = mList.get(position).getMaterials();
 
         for (final Material material : materials) {
@@ -118,9 +122,40 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
                 });
                 myViewHolder.seekBar.setEnabled(true);
             }
-
-            if (mProfile == 2) {
-                myViewHolder.iv_understand.setVisibility(View.GONE);
+            if (mProfile == Constants.INSTRUCTOR) {
+                myViewHolder.iv_understand.setEnabled(false);
+                myViewHolder.iv_understand.setClickable(false);
+            } else {
+                if (material.isDownloaded()) {
+                    myViewHolder.iv_understand.setEnabled(true);
+                    myViewHolder.iv_understand.setClickable(true);
+                    myViewHolder.iv_understand.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+                            builder.setNegativeButton(R.string.dialog_cancel, null);
+                            if (material.isAccepted()) {
+//                        builder.setMessage(R.string.dialog_delete_accept_answer);
+//                        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ((DoubtDetailsActivity) mContext).acceptAnswer(answer);
+//                            }
+//                        });
+//                        builder.show();
+                            } else {
+                                builder.setMessage(R.string.dialog_accept_answer);
+                                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        ((DoubtDetailsActivity) mContext).acceptAnswer(mList.get(position));
+                                    }
+                                });
+                                builder.show();
+                            }
+                        }
+                    });
+                }
             }
         }
     }

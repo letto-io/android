@@ -94,21 +94,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
             mRecyclerView.setAdapter(mAdapter);
             notifyDataSetChanged();
         }
-
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
-//            }
-//        });
-
         return view;
-    }
-
-    public void swipeRefreshStop() {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void notifyDataSetChanged() {
@@ -132,10 +118,6 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
         else setEmpty(false);
     }
 
-    public void downloadFinished(int position, Uri uri) {
-        mAdapter.downloadFinished(position, uri);
-    }
-
     @Override
     public void onClick(View v) {
 
@@ -143,21 +125,7 @@ public class VideoDoubtDetailFragment extends Fragment implements RecyclerViewOn
 
     @Override
     public void onClickListener(final int position, boolean isUnderstand) {
-        if (isUnderstand) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setMessage(R.string.dialog_accept_answer);
-            builder.setNegativeButton(R.string.dialog_cancel, null);
-            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // TODO: chamar metodo understand aqui:
-                    //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-                    Log.d(TAG, "isUnderstand");
-                }
-            });
-            builder.show();
-
-        } else {
+        if (!isUnderstand) {
             final Material material = mAdapter.getMaterial(position);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);

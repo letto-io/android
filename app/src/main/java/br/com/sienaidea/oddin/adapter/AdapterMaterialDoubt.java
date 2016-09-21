@@ -98,7 +98,7 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
     }
 
     public Material getMaterial(int position) {
-        return mList.get(position).getMaterials().get(position);
+        return mList.get(position).getMaterials().get(0);
     }
 
     public void downloadFinished(int position, Uri uri) {

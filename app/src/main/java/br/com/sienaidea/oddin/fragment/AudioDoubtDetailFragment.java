@@ -93,15 +93,6 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
             notifyDataSetChanged();
         }
 
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                ((DoubtDetailsActivity) getActivity()).getContentDoubt();
-//            }
-//        });
-
         return view;
     }
 
@@ -127,9 +118,14 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
     }
 
     public void downloadFinished(Material material, String url) {
-        int index = mList.indexOf(material);
-        mList.get(index).getMaterials().get(index).setDownloaded(true);
-        mList.get(index).getMaterials().get(index).setUrl(url);
+        for (Answer answer : mList) {
+            int index = answer.getMaterials().indexOf(material);
+            if (index != -1) {
+                answer.getMaterials().get(index).setDownloaded(true);
+                answer.getMaterials().get(index).setUrl(url);
+                break;
+            }
+        }
         notifyDataSetChanged();
     }
 
@@ -151,23 +147,7 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
     @Override
     public void onClickListener(View view, final int position, boolean isUnderstand) {
         final Material material = mAudioAdapter.getMaterial(position);
-
-        if (material.isDownloaded()) {
-            if (isUnderstand) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-                builder.setMessage(R.string.dialog_accept_answer);
-                builder.setNegativeButton(R.string.dialog_cancel, null);
-                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO: chamar metodo understand aqui:
-                        //((DoubtDetailsActivity) getActivity()).attemptGetMaterialContent(position, material);
-
-                    }
-                });
-                builder.show();
-            }
-        } else {
+        if (!material.isDownloaded()) {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
             builder.setMessage(R.string.dialog_download_material);

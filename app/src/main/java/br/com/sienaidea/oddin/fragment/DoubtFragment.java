@@ -87,15 +87,6 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
 
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                ((DoubtActivity) getActivity()).getQuestions();
-//            }
-//        });
-
         return view;
     }
 
@@ -117,10 +108,6 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
     public void notifyItemChanged(Question question) {
         mAdapterDoubt.notifyItemChanged(question);
-    }
-
-    public void swipeRefreshStop() {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void notifyDataSetChanged() {
@@ -163,9 +150,9 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
 
         final Question question = mAdapterDoubt.getQuestionAdapter(position);
 
-        Preference preference = new Preference();
-        if (!(preference.getUserProfile(mContext) == Constants.INSTRUCTOR)) {
-            if (option != null) {
+        if (option != null) {
+            Preference preference = new Preference();
+            if (!(preference.getUserProfile(mContext) == Constants.INSTRUCTOR)) {
                 if (option.equals(LIKE)) {
                     if (question.getMy_vote() == 1) {
                         Toast.makeText(mContext, R.string.toast_voted, Toast.LENGTH_SHORT).show();
@@ -173,12 +160,13 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                         ((DoubtActivity) getActivity()).voteQuestion(question);
                 }
             }
+        }else {
+            Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
+            intent.putExtra(Question.TAG, mAdapterDoubt.getQuestionAdapter(position));
+            intent.putExtra(Instruction.TAG, mInstruction);
+            intent.putExtra(Presentation.TAG, mPresentation);
+            startActivity(intent);
         }
-        Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
-        intent.putExtra(Question.TAG, mAdapterDoubt.getQuestionAdapter(position));
-        intent.putExtra(Instruction.TAG, mInstruction);
-        intent.putExtra(Presentation.TAG, mPresentation);
-        startActivity(intent);
     }
 
     @Override

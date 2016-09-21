@@ -337,7 +337,12 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    answer.setAccepted(true);
+                    if (answer.isAccepted()) {
+                        answer.setAccepted(false);
+                    } else {
+                        answer.setAccepted(true);
+                    }
+
                     mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
                     switch (mSelectedTabPosition) {
                         case TAB_TEXT:
@@ -365,34 +370,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             }
         });
     }
-
-//    public void deleteAcceptAnswer(final Answer answer) {
-//        //setup retrofit
-//        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpApi.API_URL).build();
-//
-//        //setup service
-//        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-//
-//        //get token
-//        Preference preference = new Preference();
-//        final String auth_token_string = preference.getToken(getApplicationContext());
-//
-//        Call<Void> request = service.deleteAcceptAnswer(auth_token_string, answer.getId());
-//
-//        request.enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, Response<Void> response) {
-//                if (response.isSuccessful()) {
-//                    mTextDoubtDetailFragment.notifyDataSetChanged();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//                onRequestFailure("deleteAcceptAnswer onFailure");
-//            }
-//        });
-//    }
 
     private void onRequestSuccess() {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
@@ -783,7 +760,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
-                    if (material.getMime() != null && material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
+                    if (material.getMime() != null && (material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF) || material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE) || material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_TEXT))) {
                         material.setAccepted(answer.isAccepted());
                         listAux.add(answer);
                     }
