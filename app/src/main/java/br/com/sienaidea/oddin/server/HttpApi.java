@@ -14,6 +14,7 @@ import java.util.Map;
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
+import br.com.sienaidea.oddin.retrofitModel.Notice;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
@@ -200,11 +201,6 @@ public class HttpApi {
         Call<Void> acceptAnswer(@Header("x-session-token") String token,
                                 @Path("answer_id") int answer_id);
 
-//        //Delete Accept Answer
-//        @POST("answers/{answer_id}/accept")
-//        Call<Void> deleteAcceptAnswer(@Header("x-session-token") String token,
-//                                      @Path("answer_id") int answer_id);
-
         //Create Answer OK
         @POST("questions/{question_id}/answers")
         Call<Answer> createAnswer(@Header("x-session-token") String token,
@@ -215,6 +211,16 @@ public class HttpApi {
         @POST("questions/{question_id}/answers/materials")
         Call<ResponseCredentialsMaterial> createAnswerMaterial(@Header("x-session-token") String token,
                                                                @Path("question_id") int question_id);
+
+        //Get Notices
+        @GET("instructions/{instruction_id}/notices")
+        Call<List<Notice>> getInstructionNotices(@Header("x-session-token") String token,
+                                           @Path("instruction_id") int question_id);
+
+        //Post Notices
+        @POST("instructions/{instruction_id}/notices")
+        Call<Notice> createInstructionNotices(@Header("x-session-token") String token,
+                                              @Path("instruction_id") int question_id);
 
 
     }

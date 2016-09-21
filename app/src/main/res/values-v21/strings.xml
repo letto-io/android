@@ -8,4 +8,6 @@
     <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
     <string name="toast_request_not_completed" />
     <string name="inauthorized">Inautorizado</string>
+    <string name="action_notices">Avisos</string>
+    <string name="notices">Avisos</string>
 </resources>
