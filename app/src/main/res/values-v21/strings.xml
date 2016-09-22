@@ -10,4 +10,7 @@
     <string name="inauthorized">Inautorizado</string>
     <string name="action_notices">Avisos</string>
     <string name="notices">Avisos</string>
+    <string name="hint_notice">Digite o aviso aqui</string>
+    <string name="hint_subject">Assunto</string>
+    <string name="new_notice">Novo informativo</string>
 </resources>

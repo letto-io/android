@@ -7,6 +7,7 @@ import android.os.Parcelable;
  * Created by Siena Idea on 21/09/2016.
  */
 public class Notice implements Parcelable{
+    public static final String TAG = Notice.class.getSimpleName();
     private int id, instruction_id, person_id;
     private String subject, text, created_at, updated_at;
 

@@ -78,6 +78,9 @@
             android:name=".view.NewAnswerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".view.NewNoticeActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".view.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -86,7 +89,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.NoticeActivity" android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".view.NoticeActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

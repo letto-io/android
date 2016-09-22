@@ -220,8 +220,7 @@ public class HttpApi {
         //Post Notices
         @POST("instructions/{instruction_id}/notices")
         Call<Notice> createInstructionNotices(@Header("x-session-token") String token,
-                                              @Path("instruction_id") int question_id);
-
-
+                                              @Path("instruction_id") int instruction_id,
+                                              @Body Notice notice);
     }
 }

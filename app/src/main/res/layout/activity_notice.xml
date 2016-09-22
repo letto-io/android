@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     tools:context="br.com.sienaidea.oddin.view.NoticeActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/tb_notice" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_list"
+        <include layout="@layout/toolbar"
+            android:id="@+id/tb_notice" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tb_notice" />
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tb_notice" />
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_plus_white"
+        android:layout_gravity="bottom|end" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
