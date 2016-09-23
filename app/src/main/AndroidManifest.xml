@@ -91,7 +91,13 @@
         </activity>
         <activity
             android:name=".view.NoticeActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.DateActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.NewDateActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

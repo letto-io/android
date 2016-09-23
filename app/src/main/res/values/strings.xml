@@ -81,4 +81,9 @@
     <string name="hint_notice">Digite o aviso aqui</string>
     <string name="hint_subject">Assunto</string>
     <string name="new_notice">Novo informativo</string>
+    <string name="dates">Datas importantes</string>
+    <string name="action_dates">Datas importantes</string>
+    <string name="hint_description">Digite a descrição aqui</string>
+    <string name="hint_date">__/__/____</string>
+    <string name="new_date">Nova data</string>
 </resources>

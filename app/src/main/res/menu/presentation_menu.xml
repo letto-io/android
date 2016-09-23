@@ -23,4 +23,9 @@
         android:title="@string/action_notices"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/action_dates"
+        android:title="@string/action_dates"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>

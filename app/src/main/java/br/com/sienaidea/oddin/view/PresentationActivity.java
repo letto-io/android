@@ -373,8 +373,12 @@ public class PresentationActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ParticipantsActivity.class);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
-        }else if (id == R.id.action_notices){
+        } else if (id == R.id.action_notices) {
             Intent intent = new Intent(this, NoticeActivity.class);
+            intent.putExtra(Instruction.TAG, mInstruction);
+            startActivity(intent);
+        } else if (id == R.id.action_dates) {
+            Intent intent = new Intent(this, DateActivity.class);
             intent.putExtra(Instruction.TAG, mInstruction);
             startActivity(intent);
         }

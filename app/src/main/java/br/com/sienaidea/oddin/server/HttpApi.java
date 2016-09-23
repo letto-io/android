@@ -1,17 +1,9 @@
 package br.com.sienaidea.oddin.server;
 
-import android.content.Context;
-import android.service.voice.VoiceInteractionService;
-import android.util.Log;
-
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import br.com.sienaidea.oddin.retrofitModel.Answer;
+import br.com.sienaidea.oddin.retrofitModel.Date;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Notice;
@@ -25,17 +17,11 @@ import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
@@ -47,29 +33,6 @@ import retrofit2.http.Path;
 public class HttpApi {
     //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
     public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
-
-    /**
-     * Generic HttpBin.org Response Container
-     */
-    static class HttpBinResponse {
-        // the request url
-        String url;
-
-        // the requester ip
-        String origin;
-
-        // all headers that have been sent
-        Map headers;
-
-        // url arguments
-        Map args;
-
-        // post form parameters
-        Map form;
-
-        // post body json
-        Map json;
-    }
 
     /**
      * HttpBin.org service definition
@@ -212,15 +175,26 @@ public class HttpApi {
         Call<ResponseCredentialsMaterial> createAnswerMaterial(@Header("x-session-token") String token,
                                                                @Path("question_id") int question_id);
 
-        //Get Notices
+        //Get Notices OK
         @GET("instructions/{instruction_id}/notices")
         Call<List<Notice>> getInstructionNotices(@Header("x-session-token") String token,
-                                           @Path("instruction_id") int question_id);
+                                                 @Path("instruction_id") int question_id);
 
-        //Post Notices
+        //Post Notices OK
         @POST("instructions/{instruction_id}/notices")
         Call<Notice> createInstructionNotices(@Header("x-session-token") String token,
                                               @Path("instruction_id") int instruction_id,
                                               @Body Notice notice);
+
+        //Get Dates OK
+        @GET("instructions/{instruction_id}/dates")
+        Call<List<Date>> getInstructionDates(@Header("x-session-token") String token,
+                                             @Path("instruction_id") int instruction_id);
+
+        //Create Dates
+        @POST("instructions/{instruction_id}/dates")
+        Call<Date> createInstructionDate(@Header("x-session-token") String token,
+                                         @Path("instruction_id") int instruction_id,
+                                         @Body Date date);
     }
 }
