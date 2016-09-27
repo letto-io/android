@@ -9,6 +9,16 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
+    <item android:id="@+id/action_notices"
+        android:title="@string/action_notices"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_dates"
+        android:title="@string/action_dates"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/action_attachment"
         android:title="@string/action_attachment"
         android:orderInCategory="100"
@@ -19,13 +29,4 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_notices"
-        android:title="@string/action_notices"
-        android:orderInCategory="100"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/action_dates"
-        android:title="@string/action_dates"
-        android:orderInCategory="100"
-        app:showAsAction="never"/>
 </menu>

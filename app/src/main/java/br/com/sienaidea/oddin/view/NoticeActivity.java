@@ -31,11 +31,14 @@ public class NoticeActivity extends AppCompatActivity {
     private List<Notice> mList;
     private RecyclerView mRecyclerView;
     private NoticeAdapter mNoticeAdapter;
+    private View mEmptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
+
+        mEmptyView = findViewById(R.id.empty_view);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
@@ -97,9 +100,26 @@ public class NoticeActivity extends AppCompatActivity {
         });
     }
 
+    private void setEmpty(boolean isEmpty) {
+        if (isEmpty) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkState() {
+        if (mList.isEmpty())
+            setEmpty(true);
+        else setEmpty(false);
+    }
+
     private void onRequestSuccess() {
         mNoticeAdapter = new NoticeAdapter(this, mList);
         mRecyclerView.setAdapter(mNoticeAdapter);
+        checkState();
     }
 
     @Override
@@ -108,6 +128,8 @@ public class NoticeActivity extends AppCompatActivity {
             if (requestCode == ACTION_NEW_NOTICE) {
                 mList.add((Notice) data.getParcelableExtra(Notice.TAG));
                 mNoticeAdapter.notifyDataSetChanged();
+                checkState();
+                Toast.makeText(this, R.string.toast_new_notice_added, Toast.LENGTH_SHORT).show();
             }
         }
     }

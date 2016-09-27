@@ -31,11 +31,14 @@ public class DateActivity extends AppCompatActivity {
     private List<Date> mList;
     private RecyclerView mRecyclerView;
     private DateAdapter mDateAdapter;
+    private View mEmptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date);
+
+        mEmptyView = findViewById(R.id.empty_view);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
@@ -100,6 +103,23 @@ public class DateActivity extends AppCompatActivity {
     private void onRequestSuccess() {
         mDateAdapter = new DateAdapter(this, mList);
         mRecyclerView.setAdapter(mDateAdapter);
+        checkState();
+    }
+
+    private void setEmpty(boolean isEmpty) {
+        if (isEmpty) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkState() {
+        if (mList.isEmpty())
+            setEmpty(true);
+        else setEmpty(false);
     }
 
     @Override
@@ -110,6 +130,7 @@ public class DateActivity extends AppCompatActivity {
                 mDateAdapter.notifyDataSetChanged();
                 Toast.makeText(this, R.string.toast_new_date_added, Toast.LENGTH_SHORT).show();
                 mRecyclerView.scrollToPosition(mList.size()-1);
+                checkState();
             }
         }
     }

@@ -191,7 +191,7 @@ public class HttpApi {
         Call<List<Date>> getInstructionDates(@Header("x-session-token") String token,
                                              @Path("instruction_id") int instruction_id);
 
-        //Create Dates
+        //Create Dates OK
         @POST("instructions/{instruction_id}/dates")
         Call<Date> createInstructionDate(@Header("x-session-token") String token,
                                          @Path("instruction_id") int instruction_id,

@@ -19,6 +19,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tb_date" />
 
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textSize="20sp"
+            android:text="@string/no_data_available"
+            />
+
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
