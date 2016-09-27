@@ -108,6 +108,8 @@ public class DateActivity extends AppCompatActivity {
             if (requestCode == ACTION_NEW_DATE) {
                 mList.add((Date) data.getParcelableExtra(Date.TAG));
                 mDateAdapter.notifyDataSetChanged();
+                Toast.makeText(this, R.string.toast_new_date_added, Toast.LENGTH_SHORT).show();
+                mRecyclerView.scrollToPosition(mList.size()-1);
             }
         }
     }

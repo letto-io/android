@@ -20,7 +20,6 @@ import java.util.Calendar;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Date;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
-import br.com.sienaidea.oddin.retrofitModel.Notice;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.server.Retrofit;
 import br.com.sienaidea.oddin.util.DetectConnection;
@@ -34,8 +33,6 @@ public class NewDateActivity extends AppCompatActivity {
     private View mRootLayout;
     private Instruction mInstruction;
     private Date mDate;
-    private int mYear, mMonth, mDay;
-    private Calendar myCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +76,10 @@ public class NewDateActivity extends AppCompatActivity {
 
     private void initDatePicker() {
         // Get Current Date
-        myCalendar = Calendar.getInstance();
-        mYear = myCalendar.get(Calendar.YEAR);
-        mMonth = myCalendar.get(Calendar.MONTH);
-        mDay = myCalendar.get(Calendar.DAY_OF_MONTH);
+        Calendar myCalendar = Calendar.getInstance();
+        int mYear = myCalendar.get(Calendar.YEAR);
+        int mMonth = myCalendar.get(Calendar.MONTH);
+        int mDay = myCalendar.get(Calendar.DAY_OF_MONTH);
 
         final DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {

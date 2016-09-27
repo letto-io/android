@@ -17,7 +17,7 @@
             android:id="@+id/rv_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tb_notice" />
+            android:layout_below="@id/tb_date" />
 
     </RelativeLayout>
 
