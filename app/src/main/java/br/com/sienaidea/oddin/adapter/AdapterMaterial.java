@@ -42,6 +42,8 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
             } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+            } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_DOCX)) {
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_word_box, 0, 0, 0);
             }
         }
 

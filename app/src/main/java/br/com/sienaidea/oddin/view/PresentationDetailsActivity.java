@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -92,6 +93,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private FloatingActionButton mFab;
     private Profile mProfile = new Profile();
     private View mRootLayout;
+    private ProgressDialog mProgressDialog;
 
 
     @Override
@@ -112,6 +114,10 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
+                mProgressDialog = new ProgressDialog(PresentationDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 setupFab();
                 getMaterials();
             } else {
@@ -266,15 +272,16 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(PresentationDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-        builder.setTitle("Novo Material");
         builder.setView(inputName);
-        builder.setNegativeButton("CANCELAR", null);
-        builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.dialog_cancel, null);
+        builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
+                mProgressDialog.setMessage(getResources().getString(R.string.sent));
+                mProgressDialog.show();
                 getCredentials();
             }
         });
@@ -284,6 +291,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
+            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -311,7 +319,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure(500);
                 }
             });
 
@@ -330,6 +338,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
+            mProgressDialog.setMessage(getResources().getString(R.string.progress_upload));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
@@ -349,12 +358,12 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
 
             // add another part within the multipart request (credenciais para upload Amazon)
-            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
-            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
-            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
-            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
-            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
-            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
+            RequestBody key = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_signature());
 
             Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
 
@@ -370,8 +379,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
                     // isSuccess is true if response code => 200 and <= 300
                     if (!response.isSuccessful()) {
-                        // print response body if unsuccessful
-                        Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        onRequestFailure(response.code());
                         return;
                     }
                     confirmUpload();
@@ -383,7 +391,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                  */
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                    onRequestFailure(500);
                 }
             });
         } else {
@@ -421,6 +429,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     }
 
     private void confirmUpload() {
+        mProgressDialog.setMessage(getResources().getString(R.string.confirm_upload));
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -444,9 +453,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
-                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
                     mMaterialPresentationFragment.addItemPosition(0, mMaterial);
-                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
                 }
             }
 
@@ -456,7 +464,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Falha na Confirmação!", Toast.LENGTH_LONG).show();
+                mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+                mProgressDialog.dismiss();
             }
         });
     }
@@ -621,22 +630,18 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.rl_fragment_presentation_details, mMaterialPresentationFragment, mMaterialPresentationFragment.TAG);
             fragmentTransaction.commit();
         }
+        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(int statusCode) {
         if (statusCode == 401) {
+            mProgressDialog.setMessage(getResources().getString(R.string.error_session_expired));
             startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
             finish();
         } else {
-            startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-            finish();
+            mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+            mProgressDialog.dismiss();
         }
-    }
-
-    private void addListItem(Material material) {
-        mList.add(material);
     }
 
     public List<Material> getListMaterial() {

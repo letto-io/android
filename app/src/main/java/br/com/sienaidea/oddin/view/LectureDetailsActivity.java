@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -81,6 +82,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private View mRootLayout;
     private ResponseCredentialsMaterial mCredentialsMaterial;
     private Material mMaterial = new Material();
+    private ProgressDialog mProgressDialog;
 
 
     @Override
@@ -100,6 +102,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
                 mProfile = getIntent().getParcelableExtra(Profile.TAG);
+                mProgressDialog = new ProgressDialog(LectureDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 setupFab();
                 getMaterials();
             } else {
@@ -248,15 +254,16 @@ public class LectureDetailsActivity extends AppCompatActivity {
         inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(LectureDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-        builder.setTitle("Novo Material");
         builder.setView(inputName);
-        builder.setNegativeButton("CANCELAR", null);
-        builder.setPositiveButton("ENVIAR", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.dialog_cancel, null);
+        builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
+                mProgressDialog.setMessage(getResources().getString(R.string.sent));
+                mProgressDialog.show();
                 getCredentials();
             }
         });
@@ -266,6 +273,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
+            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -293,7 +301,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure(500);
                 }
             });
 
@@ -312,6 +320,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
+            mProgressDialog.setMessage(getResources().getString(R.string.progress_upload));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
@@ -331,12 +340,12 @@ public class LectureDetailsActivity extends AppCompatActivity {
             mMaterial.setMime(FileUtils.getMimeType(getApplicationContext(), returnUri));
 
             // add another part within the multipart request (credenciais para upload Amazon)
-            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
-            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
-            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
-            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
-            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
-            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
+            RequestBody key = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_signature());
 
             Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
 
@@ -369,11 +378,13 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(getApplicationContext(), "não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+            mProgressDialog.setMessage(getResources().getString(R.string.error_file_temporary));
+            mProgressDialog.dismiss();
         }
     }
 
     private void confirmUpload() {
+        mProgressDialog.setMessage(getResources().getString(R.string.confirm_upload));
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -397,10 +408,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
-                    Log.d("Material confirm >>>", mMaterial.toString() + mMaterial.getUrl());
                     mMaterialDisciplineFragment.addItemPosition(0, mMaterial);
-                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
                 }
+                mProgressDialog.dismiss();
             }
 
             /**
@@ -409,7 +420,8 @@ public class LectureDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Falha na Confirmação!", Toast.LENGTH_LONG).show();
+                mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+                mProgressDialog.dismiss();
             }
         });
     }
@@ -491,7 +503,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     public void deleteMaterial(final int position, Material material) {
         DetectConnection detectConnection = new DetectConnection(getApplicationContext());
-        if (detectConnection.existConnection()) {           
+        if (detectConnection.existConnection()) {
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -508,7 +520,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         mMaterialDisciplineFragment.removeItem(position);
-                    } 
+                    }
                 }
 
                 @Override
@@ -529,17 +541,19 @@ public class LectureDetailsActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.rl_fragment_discipline_details, mMaterialDisciplineFragment, MaterialDisciplineFragment.TAG);
             fragmentTransaction.commit();
         }
+        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(int statusCode) {
         if (statusCode == 401) {
+            mProgressDialog.setMessage(getResources().getString(R.string.error_session_expired));
+            mProgressDialog.dismiss();
             startActivity(new Intent(getApplication(), LoginActivity.class));
             Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
             finish();
         } else {
-            startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-            finish();
+            mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+            mProgressDialog.dismiss();
         }
     }
 

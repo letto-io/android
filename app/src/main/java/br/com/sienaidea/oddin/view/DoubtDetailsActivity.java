@@ -3,6 +3,7 @@ package br.com.sienaidea.oddin.view;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -144,6 +145,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private Profile mProfile = new Profile();
     private ResponseCredentialsMaterial mCredentialsMaterial;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +176,11 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 mPresentation = getIntent().getExtras().getParcelable(Presentation.TAG);
                 mTvPersonName.setText(mQuestion.getPerson().getName());
                 mTvText.setText(mQuestion.getText());
+
+                mProgressDialog = new ProgressDialog(DoubtDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getAnswers();
             }
         }
@@ -376,10 +384,11 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
         mAdapterViewPager.notifyDataSetChanged();
+        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(String string) {
-        Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed + string, Toast.LENGTH_LONG).show();
+        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
     }
 
     public void fabHide() {
@@ -391,6 +400,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void startRecording() {
+        isAudio = true;
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -408,7 +418,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             Toast.makeText(getApplicationContext(), "Falha ao começar a gravar...", Toast.LENGTH_LONG).show();
             Log.e(LOG_TAG, "prepare() failed");
         }
-
         mRecorder.start();
     }
 
@@ -429,13 +438,14 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-            builder.setTitle("Nova contribuição");
             inputName.setText(mFileName);
             builder.setView(inputName);
             builder.setNegativeButton(R.string.dialog_cancel, null);
             builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    mProgressDialog.setMessage(getResources().getString(R.string.sent));
+                    mProgressDialog.show();
 
                     if (!TextUtils.isEmpty(inputName.getText())) {
                         mFileName = inputName.getText().toString();
@@ -760,7 +770,9 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         for (Answer answer : mListAnswers) {
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
-                    if (material.getMime() != null && (material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF) || material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE) || material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_TEXT))) {
+                    if (material.getMime() != null && (material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF) ||
+                            material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE) ||
+                            material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_DOCX))) {
                         material.setAccepted(answer.isAccepted());
                         listAux.add(answer);
                     }
@@ -920,13 +932,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         mRequestCode = requestCode;
         isAudio = false;
         if (resultCode == Activity.RESULT_OK) {
-
-            final EditText inputName = new EditText(DoubtDetailsActivity.this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            inputName.setLayoutParams(lp);
-
             if (requestCode == ACTION_POST_TEXT_REQUEST) {
                 Answer answer = data.getParcelableExtra(Answer.TAG);
                 mTextDoubtDetailFragment.addItem(answer);
@@ -983,7 +988,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         inputName.setText(FileUtils.getFileName(getApplicationContext(), returnUri));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(DoubtDetailsActivity.this, R.style.AppCompatAlertDialogStyle);
-        //builder.setTitle("Novo Material");
         builder.setView(inputName);
         builder.setNegativeButton(R.string.dialog_cancel, null);
         builder.setPositiveButton(R.string.dialog_send, new DialogInterface.OnClickListener() {
@@ -992,6 +996,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
+                mProgressDialog.setMessage(getResources().getString(R.string.sending));
+                mProgressDialog.show();
                 getCredentials();
             }
         });
@@ -1001,6 +1007,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
+            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -1044,6 +1051,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void uploadFile() {
+        mProgressDialog.setMessage(getResources().getString(R.string.progress_upload));
         if (mRequestCode == ACTION_GET_CONTENT_REQUEST || mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
             mTempFile = createTempFile();
         }
@@ -1072,14 +1080,13 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             // MultipartBody.Part is used to send also the actual file name
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", mTempFile.getName(), requestFile);
 
-
             // add another part within the multipart request (credenciais para upload Amazon)
-            RequestBody key = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getKey());
-            RequestBody policy = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getPolicy());
-            RequestBody x_amz_credential = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_credential());
-            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_algorithm());
-            RequestBody x_amz_date = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_date());
-            RequestBody x_amz_signature = RequestBody.create(MediaType.parse("multipart/form-data"), mCredentialsMaterial.getFields().getX_amz_signature());
+            RequestBody key = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getKey());
+            RequestBody policy = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getPolicy());
+            RequestBody x_amz_credential = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_credential());
+            RequestBody x_amz_algorithm = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_algorithm());
+            RequestBody x_amz_date = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_date());
+            RequestBody x_amz_signature = RequestBody.create(MediaType.parse(Constants.MULTPART_FORM_DATA), mCredentialsMaterial.getFields().getX_amz_signature());
 
             Call<Void> call = service.sendMaterial(key, policy, x_amz_credential, x_amz_algorithm, x_amz_date, x_amz_signature, body);
 
@@ -1097,6 +1104,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                     if (!response.isSuccessful()) {
                         // print response body if unsuccessful
                         Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        onRequestFailure(response.message());
                         return;
                     }
                     confirmUpload();
@@ -1109,6 +1117,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
                     Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                    onRequestFailure(t.toString());
                 }
             });
         } else {
@@ -1146,6 +1155,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void confirmUpload() {
+        mProgressDialog.setMessage(getResources().getString(R.string.confirm_upload));
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -1170,13 +1180,14 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
                     if (mRequestCode == ACTION_GET_CONTENT_REQUEST) {
-                        //mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        mMaterialDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (mRequestCode == ACTION_VIDEO_CAPTURE_REQUEST) {
-                        //mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        mVideoDoubtDetailFragment.addItemPosition(0, mMaterial);
                     } else if (isAudio) {
-                        //mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
+                        mAudioDoubtDetailFragment.addItemPosition(0, mMaterial);
                     }
-                    Toast.makeText(getApplicationContext(), "Enviado...", Toast.LENGTH_SHORT).show();
+                    mProgressDialog.setMessage(getResources().getString(R.string.sent));
+                    mProgressDialog.dismiss();
                 }
             }
 

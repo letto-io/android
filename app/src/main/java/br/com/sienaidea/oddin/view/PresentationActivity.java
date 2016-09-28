@@ -1,6 +1,7 @@
 package br.com.sienaidea.oddin.view;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +59,8 @@ public class PresentationActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +92,10 @@ public class PresentationActivity extends AppCompatActivity {
                 } else {
                     getProfile();
                 }
+                mProgressDialog = new ProgressDialog(PresentationActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -103,6 +110,8 @@ public class PresentationActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+
     }
 
     private void setupFab() {
@@ -198,6 +207,7 @@ public class PresentationActivity extends AppCompatActivity {
             });
 
         } else {
+            mProgressDialog.dismiss();
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
@@ -213,6 +223,7 @@ public class PresentationActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
+        mProgressDialog.dismiss();
     }
 
     //request ClosePresentation

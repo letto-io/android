@@ -1,6 +1,7 @@
 package br.com.sienaidea.oddin.view;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -66,6 +67,8 @@ public class DoubtActivity extends AppCompatActivity {
     private List<Question> mList = new ArrayList<>();
     private Profile mProfile = new Profile();
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +95,10 @@ public class DoubtActivity extends AppCompatActivity {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
+                mProgressDialog = new ProgressDialog(DoubtActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -179,6 +186,7 @@ public class DoubtActivity extends AppCompatActivity {
             });
 
         } else {
+            mProgressDialog.dismiss();
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
@@ -194,6 +202,7 @@ public class DoubtActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
+        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(int statusCode) {

@@ -165,12 +165,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
         return mList.size();
     }
 
-    public void downloadFinished(int position, Uri uri) {
-//        mList.get(position).setDownloaded(true);
-//        mList.get(position).setUri(uri);
-        notifyItemChanged(position);
-    }
-
     public Material getMaterial(int position) {
         return mList.get(position).getMaterials().get(position);
     }

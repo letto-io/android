@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class ParticipantsActivity extends AppCompatActivity {
 
     private Instruction mInstruction;
     private List<Person> mList = new ArrayList<>();
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,10 @@ public class ParticipantsActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
+                mProgressDialog = new ProgressDialog(ParticipantsActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getParticipants();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_LONG).show();
@@ -117,8 +124,9 @@ public class ParticipantsActivity extends AppCompatActivity {
                 // isSuccess is true if response code => 200 and <= 300
                 if (response.isSuccessful()) {
                     onRequestSuccess(response.body());
-                }
+                } else onRequestFailure();
             }
+
             /**
              * onFailure gets called when the HTTP request didn't get through.
              * For instance if the URL is invalid / host not reachable
@@ -170,11 +178,12 @@ public class ParticipantsActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
+        mProgressDialog.dismiss();
     }
 
-    private static void onRequestFailure() {
-        // TODO: 03/08/2016
-        Log.d("API >>", "onRequestFailure");
+    private void onRequestFailure() {
+        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+        mProgressDialog.dismiss();
     }
 
     @Override

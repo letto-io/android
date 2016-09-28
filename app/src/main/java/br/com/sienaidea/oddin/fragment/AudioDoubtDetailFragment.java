@@ -162,7 +162,11 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
     }
 
-    public void addItemPosition(int position, Answer answer) {
+    public void addItemPosition(int position, Material material) {
+        Answer answer = new Answer();
+        List<Material> materials = new ArrayList<>();
+        materials.add(material);
+        answer.setMaterials(materials);
         mList.add(position, answer);
         notifyDataSetChanged();
     }

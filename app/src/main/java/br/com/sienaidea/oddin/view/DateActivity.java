@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class DateActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private DateAdapter mDateAdapter;
     private View mEmptyView;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +53,14 @@ public class DateActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mList = savedInstanceState.getParcelableArrayList(Date.TAG);
-            onRequestSuccess();
+            //onRequestSuccess();
         } else {
             mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
             if (mInstruction != null) {
+                mProgressDialog = new ProgressDialog(DateActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getNotices();
             } else {
                 finish();
@@ -95,7 +103,7 @@ public class DateActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Date>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed, Toast.LENGTH_SHORT).show();
+                onRequestFailure();
             }
         });
     }
@@ -104,6 +112,12 @@ public class DateActivity extends AppCompatActivity {
         mDateAdapter = new DateAdapter(this, mList);
         mRecyclerView.setAdapter(mDateAdapter);
         checkState();
+        mProgressDialog.dismiss();
+    }
+
+    private void onRequestFailure(){
+        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+        mProgressDialog.dismiss();
     }
 
     private void setEmpty(boolean isEmpty) {

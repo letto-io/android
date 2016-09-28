@@ -2,7 +2,7 @@
 <resources>
     <string name="toast_new_answer_added">Nova resposta adicionada</string>
     <string name="toolbar_discipline">Disciplinas</string>
-    <string name="toolbar_users">Usuários</string>
+    <string name="toolbar_users">Alunos</string>
     <string name="toolbar_presentation">Aulas</string>
     <string name="toast_recording">Gravando...</string>
     <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
@@ -20,4 +20,11 @@
     <string name="new_date">Nova data</string>
     <string name="toast_new_date_added">Adicionado...</string>
     <string name="toast_new_notice_added">Adicionado...</string>
+    <string name="loading">Carregando...</string>
+    <string name="sent">Concluído...</string>
+    <string name="picking_up_credentials">Obtendo credenciais do servidor...</string>
+    <string name="progress_upload">Fazendo Upload...</string>
+    <string name="confirm_upload">Confirmando envio ao servidor...</string>
+    <string name="logoff">Aguarde... Desconectando...</string>
+    <string name="error_file_temporary">Falha ao gerar o arquivo...</string>
 </resources>

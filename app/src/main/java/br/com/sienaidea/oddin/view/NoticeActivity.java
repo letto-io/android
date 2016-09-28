@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,10 +29,11 @@ import retrofit2.Response;
 public class NoticeActivity extends AppCompatActivity {
     private static final int ACTION_NEW_NOTICE = 12;
     private Instruction mInstruction;
-    private List<Notice> mList;
+    private List<Notice> mList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private NoticeAdapter mNoticeAdapter;
     private View mEmptyView;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,10 @@ public class NoticeActivity extends AppCompatActivity {
         } else {
             mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
             if (mInstruction != null) {
+                mProgressDialog = new ProgressDialog(NoticeActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getResources().getString(R.string.loading));
+                mProgressDialog.show();
                 getNotices();
             } else {
                 finish();
@@ -95,7 +101,7 @@ public class NoticeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Notice>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed, Toast.LENGTH_SHORT).show();
+                onRequestFailure();
             }
         });
     }
@@ -120,6 +126,12 @@ public class NoticeActivity extends AppCompatActivity {
         mNoticeAdapter = new NoticeAdapter(this, mList);
         mRecyclerView.setAdapter(mNoticeAdapter);
         checkState();
+        mProgressDialog.dismiss();
+    }
+
+    private void onRequestFailure(){
+        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+        mProgressDialog.dismiss();
     }
 
     @Override

@@ -46,16 +46,18 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
         for (final Material material : materials) {
             String mime = material.getMime();
             if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
-                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
             } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
-                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
             } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
-                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
             } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_TEXT)) {
-                holder.getName().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_document_box, 0, 0, 0);
+            } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_DOCX)) {
+                holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_word_box, 0, 0, 0);
             }
 
-            holder.getName().setText(material.getName());
+            holder.tvName.setText(material.getName());
 
             if (mProfile == Constants.INSTRUCTOR) {
                 holder.ivAccept.setEnabled(false);
@@ -101,23 +103,14 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
         return mList.get(position).getMaterials().get(0);
     }
 
-    public void downloadFinished(int position, Uri uri) {
-        // mList.get(position).setUri(uri);
-        notifyItemChanged(position);
-    }
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView Name;
+        private TextView tvName;
         private ImageView ivAccept;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            Name = (TextView) itemView.findViewById(R.id.tv_material_name);
+            tvName = (TextView) itemView.findViewById(R.id.tv_material_name);
             ivAccept = (ImageView) itemView.findViewById(R.id.iv_accepted);
-        }
-
-        public TextView getName() {
-            return Name;
         }
     }
 }
