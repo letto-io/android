@@ -18,22 +18,13 @@
         android:paddingTop="16dp">
 
         <TextView
-            android:id="@+id/tv_person_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:text="[Person Name]"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="16sp" />
-
-        <TextView
             android:id="@+id/tv_createdat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:paddingRight="16dp"
-            android:text="[yyyy-mm-yy 00:00:00]"
+            android:text="99/99/1999"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorSecondaryText"
             android:textSize="14sp" />
@@ -107,6 +98,20 @@
             android:layout_below="@+id/tv_text"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/tv_person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="[Silvana]"
+            android:textColor="@color/colorPrimaryText"
+            android:lines="1"
+            android:textSize="16sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/tv_text"
+            android:layout_alignStart="@+id/tv_text"
+            android:layout_toLeftOf="@+id/tv_createdat"
+            android:layout_toStartOf="@+id/tv_createdat" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

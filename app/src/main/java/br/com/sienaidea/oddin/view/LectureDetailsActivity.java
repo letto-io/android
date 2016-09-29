@@ -1,6 +1,7 @@
 package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -69,11 +71,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     private File mTempFile;
     private byte[] mBytes;
-    private String mFileName, mimeType;
+    private String mFileName;
     private Uri returnUri;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private MaterialDisciplineFragment mMaterialDisciplineFragment;
-    private Material mMaterialFragment;
 
     //new
     private FloatingActionButton mFab;
@@ -83,7 +84,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private ResponseCredentialsMaterial mCredentialsMaterial;
     private Material mMaterial = new Material();
     private ProgressDialog mProgressDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,17 +232,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 attemptUploadMateril();
             }
         }
-    }
-
-    private boolean checkUriPermissionGranted(Uri uri) {
-        if ((checkUriPermission(uri, 0, 0, Intent.FLAG_GRANT_READ_URI_PERMISSION) == PackageManager.PERMISSION_GRANTED) &&
-                (checkUriPermission(uri, 0, 0, Intent.FLAG_GRANT_WRITE_URI_PERMISSION) == PackageManager.PERMISSION_GRANTED)) {
-
-            attemptUploadMateril();
-            return true;
-
-        } else
-            return false;
     }
 
     private void attemptUploadMateril() {
@@ -557,36 +546,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void attemptGetMaterialContent(Material material) {
-        mMaterialFragment = material;
-
-        //se uma das duas permissões não estiverem liberadas
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            //verifica se já foi recusado a permissão de escrita
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                callDialog("É preciso permissão para SALVAR o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-                return;
-            }
-
-            //verifica se já foi recusado a permissão de leitura
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                callDialog("É preciso permissão para LER o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-                return;
-            }
-
-            //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-
-        } else {
-            //e por fim, caso já tenha permiçoes, faça download
-            getMaterial(mMaterialFragment);
-        }
-
-    }
-
-    private void getMaterial(final Material material) {
+    public void getMaterial(final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup

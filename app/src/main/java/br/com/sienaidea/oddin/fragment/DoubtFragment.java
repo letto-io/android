@@ -117,7 +117,6 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         checkState();
     }
 
-
     private void setEmpty(boolean isEmpty) {
         if (isEmpty) {
             mRecyclerView.setVisibility(View.GONE);

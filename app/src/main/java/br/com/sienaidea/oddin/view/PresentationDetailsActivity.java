@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
@@ -71,17 +72,13 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_UPLOAD = 21;
     private static final int REQUEST_PERMISSIONS_DOWNLOAD = 12;
 
-    private int mPositionFragment;
-    private Material mMaterialFragment;
     private Material mMaterial = new Material();
 
     private List<Material> mList = new ArrayList<>();
-    private Material material;
     private Presentation mPresentation;
-    private Discipline mDiscipline;
 
     private File mTempFile;
-    private String mFileName, mimeType;
+    private String mFileName;
     private Uri returnUri;
     private byte[] mBytes;
     private ResponseCredentialsMaterial mCredentialsMaterial;
@@ -545,35 +542,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void attemptGetMaterialContent(Material material) {
-        mMaterialFragment = material;
-
-        //se uma das duas permissões não estiverem liberadas
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            //verifica se já foi recusado a permissão de escrita
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                callDialog("É preciso permissão para SALVAR o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-                return;
-            }
-
-            //verifica se já foi recusado a permissão de leitura
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                callDialog("É preciso permissão para LER o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-                return;
-            }
-
-            //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_DOWNLOAD);
-
-        } else {
-            //e por fim, caso já tenha permiçoes, faça download
-            getMaterial(mMaterialFragment);
-        }
-    }
-
-    private void getMaterial(final Material material) {
+    public void getMaterial(final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
             // Retrofit setup

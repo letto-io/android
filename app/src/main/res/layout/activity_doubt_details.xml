@@ -41,15 +41,17 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_doubt_details_person_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
                     android:text="[personName]"
                     android:textColor="@color/colorPrimaryText"
                     android:textSize="14sp" />
@@ -59,9 +61,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tv_doubt_details_person_name"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:text="[descrição da dúvida descrição da dúvida descrição da dúvida descrição da dúvida]"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="14sp" />
@@ -81,7 +80,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_doubt_details"
         android:layout_width="match_parent"
@@ -100,62 +98,5 @@
         android:visibility="gone"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorDividerColor" />
-
-    <!--com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        app:menu_colorNormal="@color/colorAccent"
-        app:menu_colorPressed="@color/colorDividerColor"
-        app:menu_icon="@drawable/ic_plus_white"
-        app:menu_labels_ellipsize="end"
-        app:menu_labels_singleLine="true"
-        android:visibility="gone" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_format_text"
-            app:fab_label="Texto"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorDividerColor" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_microphone"
-            app:fab_label="Audio"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorDividerColor" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_video"
-            app:fab_label="Vídeo"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorDividerColor" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_attachment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_paperclip"
-            app:fab_label="Anexo"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorDividerColor" />
-
-    </com.github.clans.fab.FloatingActionMenu-->
 
 </android.support.design.widget.CoordinatorLayout>

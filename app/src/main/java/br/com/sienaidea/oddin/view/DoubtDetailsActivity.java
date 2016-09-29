@@ -613,37 +613,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void attemptGetMaterialContent(int position, Material material) {
-
-        //mPositionFragment = position;
-        //mMaterialFragment = material;
-
-        //se uma das duas permissões não estiverem liberadas
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            //verifica se já foi recusado a permissão de escrita
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                callDialog("É preciso a permission WRITE_EXTERNAL_STORAGE para SALVAR o conteudo em seu aparelho.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_DOWNLOAD);
-                return;
-            }
-
-            //verifica se já foi recusado a permissão de leitura
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                callDialog("É preciso a permission READ_EXTERNAL_STORAGE para LER o conteudo em seu aparelho.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_DOWNLOAD);
-                return;
-            }
-
-            //caso nenhuma das duas permissões nunca estiverem sido negadas, será solicitado aqui
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_DOWNLOAD);
-
-        } else {
-            //e por fim, caso já tenha permiçoes, faça download
-            //getMaterialContent(mPositionFragment, mMaterialFragment);
-        }
-
-    }
-
     public void getMaterial(final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {

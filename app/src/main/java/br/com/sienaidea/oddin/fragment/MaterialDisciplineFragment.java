@@ -119,7 +119,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ((LectureDetailsActivity) getActivity()).attemptGetMaterialContent(material);
+                ((LectureDetailsActivity) getActivity()).getMaterial(material);
             }
         });
         builder.show();

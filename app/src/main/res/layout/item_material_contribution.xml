@@ -13,9 +13,7 @@
         android:id="@+id/tv_material_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@+id/iv_understand"
-        android:layout_toStartOf="@+id/iv_understand"
+        android:layout_toStartOf="@+id/iv_accepted"
         android:drawableLeft="@drawable/ic_file_document_box"
         android:drawablePadding="8dp"
         android:gravity="fill_vertical"
@@ -26,7 +24,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/colorSecondaryText"
         android:textSize="14sp"
-        />
+        android:layout_toLeftOf="@+id/iv_accepted" />
 
     <ImageView
         android:id="@+id/iv_accepted"

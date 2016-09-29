@@ -108,7 +108,7 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
         builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ((PresentationDetailsActivity) getActivity()).attemptGetMaterialContent(material);
+                ((PresentationDetailsActivity) getActivity()).getMaterial(material);
             }
         });
         builder.show();
