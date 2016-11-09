@@ -25,7 +25,7 @@
             android:id="@+id/et_question"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Descreva sua dúvida"
+            android:hint="@string/hint_doubt"
             android:maxLength="140"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -36,6 +36,6 @@
         android:layout_below="@id/til_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Anônimo" />
+        android:text="@string/anonymous" />
 
 </RelativeLayout>

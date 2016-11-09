@@ -68,7 +68,7 @@ public class ParticipantsActivity extends AppCompatActivity {
                 mProgressDialog = new ProgressDialog(ParticipantsActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 getParticipants();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_LONG).show();
@@ -92,9 +92,9 @@ public class ParticipantsActivity extends AppCompatActivity {
         mParticipantsOnlineFragment = ParticipantsOnlineFragment.newInstance(getListParticipantsOnline());
         mParticipantsOfflineFragment = ParticipantsOfflineFragment.newInstance(getListParticipantsOffline());
 
-        mAdapterViewPager.addFragment(mParticipantsFragment, ParticipantsFragment.ALL);
-        mAdapterViewPager.addFragment(mParticipantsOnlineFragment, ParticipantsOnlineFragment.ONLINE);
-        mAdapterViewPager.addFragment(mParticipantsOfflineFragment, ParticipantsOfflineFragment.OFFLINE);
+        mAdapterViewPager.addFragment(mParticipantsFragment, getResources().getString(R.string.ALL));
+        mAdapterViewPager.addFragment(mParticipantsOnlineFragment, getResources().getString(R.string.ONLINE));
+        mAdapterViewPager.addFragment(mParticipantsOfflineFragment, getResources().getString(R.string.OFFLINE));
 
         viewPager.setAdapter(mAdapterViewPager);
 

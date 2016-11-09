@@ -10,7 +10,7 @@ import br.com.sienaidea.oddin.retrofitModel.Presentation;
 
 public class PresentationOpenFragment extends PresentationFragment {
 
-    public static final String OPEN = "ABERTAS";
+    public static final String OPEN = "OPEN";
 
     public static PresentationOpenFragment newInstance(List<Presentation> list, Instruction instruction) {
 

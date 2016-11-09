@@ -25,7 +25,7 @@
             android:id="@+id/et_answer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Digite sua resposta aqui..."
+            android:hint="@string/hint_answer"
             android:maxLength="255"/>
 
     </android.support.design.widget.TextInputLayout>

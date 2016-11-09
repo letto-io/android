@@ -18,7 +18,7 @@
         android:layout_below="@+id/tb_doubt"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        app:tabMode="scrollable"/>
+        app:tabMode="fixed"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"

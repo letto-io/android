@@ -116,7 +116,7 @@ public class NewPresentationActivity extends AppCompatActivity {
     }
 
     private void onRequestSuccess() {
-        Toast.makeText(getApplication(), "Enviado...", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplication(), R.string.sent, Toast.LENGTH_LONG).show();
         Intent intentResult = new Intent();
         intentResult.putExtra(Presentation.TAG, mPresentation);
         setResult(RESULT_OK, intentResult);
@@ -124,7 +124,7 @@ public class NewPresentationActivity extends AppCompatActivity {
     }
 
     private void onRequestFailure(int statusCode) {
-        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed, Toast.LENGTH_LONG).show();
         //TODO
     }
 

@@ -98,7 +98,7 @@ public class DoubtActivity extends AppCompatActivity {
                 mProgressDialog = new ProgressDialog(DoubtActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -134,16 +134,16 @@ public class DoubtActivity extends AppCompatActivity {
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
         mDoubtFragment = DoubtFragment.newInstance(getListQuestions(), mPresentation);
-        mAdapterViewPager.addFragment(mDoubtFragment, DoubtFragment.ALL);
+        mAdapterViewPager.addFragment(mDoubtFragment, getResources().getString(R.string.ALL));
 
         mDoubtOpenFragment = DoubtOpenFragment.newInstance(getListOpen(), mPresentation);
-        mAdapterViewPager.addFragment(mDoubtOpenFragment, DoubtOpenFragment.OPEN);
+        mAdapterViewPager.addFragment(mDoubtOpenFragment, getResources().getString(R.string.open));
 
         mDoubtClosedFragment = DoubtClosedFragment.newInstance(getListClose(), mPresentation);
-        mAdapterViewPager.addFragment(mDoubtClosedFragment, DoubtClosedFragment.CLOSED);
+        mAdapterViewPager.addFragment(mDoubtClosedFragment, getResources().getString(R.string.close));
 
         mDoubtRankingFragment = DoubtRankingFragment.newInstance(getListRanking(), mPresentation);
-        mAdapterViewPager.addFragment(mDoubtRankingFragment, DoubtRankingFragment.RANKING);
+        mAdapterViewPager.addFragment(mDoubtRankingFragment, getResources().getString(R.string.ranking));
 
         viewPager.setAdapter(mAdapterViewPager);
 

@@ -95,7 +95,7 @@ public class PresentationActivity extends AppCompatActivity {
                 mProgressDialog = new ProgressDialog(PresentationActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -151,8 +151,8 @@ public class PresentationActivity extends AppCompatActivity {
         presentationOpenFragment = PresentationOpenFragment.newInstance(getListOpen(), mInstruction);
         presentationClosedFragment = PresentationClosedFragment.newInstance(getListClosed(), mInstruction);
 
-        mAdapterViewPager.addFragment(presentationOpenFragment, PresentationOpenFragment.OPEN);
-        mAdapterViewPager.addFragment(presentationClosedFragment, PresentationClosedFragment.CLOSED);
+        mAdapterViewPager.addFragment(presentationOpenFragment, getResources().getString(R.string.open));
+        mAdapterViewPager.addFragment(presentationClosedFragment, getResources().getString(R.string.close));
 
         viewPager.setAdapter(mAdapterViewPager);
 

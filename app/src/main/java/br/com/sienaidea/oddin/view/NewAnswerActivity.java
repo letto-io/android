@@ -60,7 +60,7 @@ public class NewAnswerActivity extends AppCompatActivity {
         }
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_answer);
-        mToolbar.setTitle("Responder");
+        mToolbar.setTitle(R.string.answer);
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
@@ -139,7 +139,7 @@ public class NewAnswerActivity extends AppCompatActivity {
     }
 
     private void onRequestFailure(int statusCode) {
-        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed, Toast.LENGTH_LONG).show();
         //TODO
     }
 

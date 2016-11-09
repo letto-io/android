@@ -8,13 +8,13 @@
     <string name="action_logout">Sair</string>
 
     <!-- Strings related to Dialog -->
-    <string name="dialog_cancel">CANCELAR</string>
+    <string name="dialog_cancel">CENCELAR</string>
     <string name="dialog_confirm">CONFIRMAR</string>
-    <string name="dialog_close_presentation">Tem certeza que deseja fechar esta aula?</string>
-    <string name="dialog_close_doubt">Fechar dúvida?</string>
-    <string name="dialog_open_doubt">Abrir dúvida?</string>
-    <string name="dialog_accept_answer">Marcar como melhor resposta?</string>
-    <string name="dialog_delete_accept_answer">Tem certeza que gostaria de desmarcar esta resposta?</string>
+    <string name="dialog_close_presentation">Fechar aula</string>
+    <string name="dialog_close_doubt">Fechar dúvida</string>
+    <string name="dialog_open_doubt">Abrir dúvida</string>
+    <string name="dialog_accept_answer">Selecionar como melhor resposta</string>
+    <string name="dialog_delete_accept_answer">Deselect this answer</string>
 
     <!-- Strings related to Snakebar -->
     <string name="snake_no_connection">Sem conexão</string>
@@ -34,17 +34,17 @@
     <string name="unauthorized">Email e/ou senha incorretos</string>
 
     <!-- Strings related to adapters -->
-    <string name="adapter_class">Turma %1$d</string>
+    <string name="adapter_class">Aula %1$d</string>
     <string name="adapter_start_date">Início %1$s </string>
     <string name="adapter_like"> curtida</string>
     <string name="adapter_likes"> curtidas</string>
 
     <!-- Strings related to Toasts -->
-    <string name="toast_new_presentation_added">Nova apresentação adicionada</string>
+    <string name="toast_new_presentation_added">Nova aula adicionada</string>
     <string name="toast_fails_to_start">Falha ao iniciar</string>
     <string name="toast_voted">Você já votou esta opção</string>
 
-    <string name="label_forgot_password">Esqueceu a Senha?</string>
+    <string name="label_forgot_password">Esqueceu sua senha?</string>
     <string name="search">Pesquisar</string>
     <string name="search_hint">Pesquisar</string>
     <string name="action_attachment">Material</string>
@@ -52,7 +52,7 @@
     <string name="navigation_drawer_open">drawerOpen</string>
     <string name="navigation_drawer_close">drawer_close</string>
     <string name="no_data_available">Vazio</string>
-    <string name="no_data_available_searchable">Nenhum dado encontrado.</string>
+    <string name="no_data_available_searchable">Sem dados.</string>
     <string name="internal_storage">Internal Storage</string>
     <string name="action_delete">Excluir histórico</string>
     <string name="action_remove_sugestions">Limpar buscas recentes</string>
@@ -61,16 +61,16 @@
     <string name="authenticating">Autenticando</string>
     <string name="error_server">Falha no servidor</string>
     <string name="dialog_ok">OK</string>
-    <string name="recover_password">Recuperar Senha</string>
-    <string name="email_sent">Email enviado</string>
+    <string name="recover_password">Recuperar senha</string>
+    <string name="email_sent">Enviando email</string>
     <string name="sending">Enviando...</string>
     <string name="new_presentation">Nova aula</string>
-    <string name="toast_new_answer_added">Nova resposta adicionada</string>
-    <string name="dialog_delete_material">Você tem certeza que quer deletar este material?</string>
-    <string name="dialog_download_material">Iniciar download?</string>
+    <string name="toast_new_answer_added">Resposta adicionada</string>
+    <string name="dialog_delete_material">Deletar material?</string>
+    <string name="dialog_download_material">Fazer download</string>
     <string name="action_home">Home</string>
     <string name="toolbar_discipline">Disciplinas</string>
-    <string name="toolbar_users">Alunos</string>
+    <string name="toolbar_users">Participantes</string>
     <string name="toolbar_presentation">Aulas</string>
     <string name="toast_recording">Gravando...</string>
     <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
@@ -80,19 +80,33 @@
     <string name="notices">Avisos</string>
     <string name="hint_notice">Digite o aviso aqui</string>
     <string name="hint_subject">Assunto</string>
-    <string name="new_notice">Novo informativo</string>
+    <string name="new_notice">Novo aviso</string>
     <string name="dates">Datas importantes</string>
     <string name="action_dates">Datas importantes</string>
-    <string name="hint_description">Digite a descrição aqui</string>
+    <string name="hint_description">Digite descrição aqui</string>
     <string name="hint_date">Data</string>
-    <string name="new_date">Nova data</string>
-    <string name="toast_new_date_added">Adicionado...</string>
-    <string name="toast_new_notice_added">Adicionado...</string>
+    <string name="new_date">Nova dara</string>
+    <string name="toast_new_date_added">Adicionando...</string>
+    <string name="toast_new_notice_added">Adicionando...</string>
     <string name="loading">Carregando...</string>
-    <string name="sent">Concluído...</string>
-    <string name="picking_up_credentials">Obtendo credenciais do servidor...</string>
-    <string name="progress_upload">Fazendo Upload...</string>
+    <string name="sent">Completo...</string>
+    <string name="picking_up_credentials">Obtendo credenciais...</string>
+    <string name="progress_upload">Enviando...</string>
     <string name="confirm_upload">Confirmando envio ao servidor...</string>
-    <string name="logoff">Aguarde... Desconectando...</string>
-    <string name="error_file_temporary">Falha ao gerar o arquivo...</string>
+    <string name="logoff">Aguarde... desconectando...</string>
+    <string name="error_file_temporary">Falha ao gerar arquivo...</string>
+    <string name="action">Ações</string>
+    <string name="open">ABERTO</string>
+    <string name="close">FECHADO</string>
+    <string name="ALL">TODOS</string>
+    <string name="ONLINE">ONLINE</string>
+    <string name="OFFLINE">OFFLINE</string>
+    <string name="OPEN">ABERTO</string>
+    <string name="ranking">RANKING</string>
+    <string name="new_doubt">Nova dúvida</string>
+    <string name="answer">Resposta</string>
+    <string name="hint_answer">Digite a resposta aqui</string>
+    <string name="hint_doubt">Digite a dúvida aqui</string>
+    <string name="anonymous">Anônimo</string>
+    <string name="hint_theme">Tema</string>
 </resources>

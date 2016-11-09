@@ -2,8 +2,6 @@ package br.com.sienaidea.oddin.view;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -20,12 +18,11 @@ import br.com.sienaidea.oddin.retrofitModel.Session;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
+import br.com.sienaidea.oddin.server.Retrofit;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     // UI references.
@@ -78,14 +75,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             User user = new User(mEmailEditText.getText().toString(), mPasswordEditText.getText().toString());
 
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
             // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+            HttpApi.HttpBinService service = Retrofit.getInstance();
 
             Call<Session> request = service.Login(user);
 

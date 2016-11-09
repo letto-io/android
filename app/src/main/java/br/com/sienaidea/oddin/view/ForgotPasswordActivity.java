@@ -12,22 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
+import br.com.sienaidea.oddin.server.Retrofit;
 import br.com.sienaidea.oddin.util.DetectConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
-    //URL da requisiçao
-    private static final String URL_RECOVER_PASSWORD = "controller/recover-password";
-
     private EditText mEmailEditText;
     private TextInputLayout mTextInputLayoutEmail;
     private View mRootLayout;
@@ -56,12 +51,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            HttpApi.HttpBinService service = Retrofit.getInstance();
 
             User user = new User();
             user.setEmail(mEmailEditText.getText().toString());
@@ -74,7 +65,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         AlertDialog.Builder builder =
                                 new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
-                        //builder.setTitle("Informação");
                         builder.setMessage("Email enviado, acesse sua caixa de entrada");
                         builder.setPositiveButton("LOGAR", new DialogInterface.OnClickListener() {
                             @Override
@@ -86,13 +76,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         });
                         builder.show();
                     } else {
-                        //onRequestFailure(response.code());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    //onRequestFailure(401);
                 }
             });
         } else {
@@ -113,20 +101,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
 
         return valid;
-    }
-
-    private void onRecoverPasswordSuccess() {
-        Toast.makeText(getApplicationContext(), R.string.email_sent, Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    private void onRecoverPasswordFailure() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
-        builder.setMessage(R.string.error_server);
-        builder.setPositiveButton(R.string.dialog_ok, null);
-        builder.show();
     }
 
     @Override

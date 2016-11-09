@@ -10,7 +10,7 @@ import br.com.sienaidea.oddin.retrofitModel.Presentation;
 
 public class PresentationClosedFragment extends PresentationFragment {
 
-    public static final String CLOSED = "FECHADAS";
+    public static final String CLOSED = "CLOSE";
 
     public static PresentationClosedFragment newInstance(List<Presentation> list, Instruction instruction) {
 

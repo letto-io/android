@@ -8,7 +8,7 @@
         <!--<item android:title="Participantes" />-->
 
     <!--</group>-->
-    <item android:title="Opções">
+    <item android:title="@string/action">
         <menu>
             <!--<item-->
                 <!--android:id="@+id/settings"-->
@@ -17,7 +17,7 @@
             <item
                 android:id="@+id/action_logout"
                 android:icon="@drawable/ic_logout_variant"
-                android:title="Sair" />
+                android:title="@string/action_logout" />
         </menu>
     </item>
 </menu>

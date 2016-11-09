@@ -180,7 +180,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 mProgressDialog = new ProgressDialog(DoubtDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 getAnswers();
             }
         }

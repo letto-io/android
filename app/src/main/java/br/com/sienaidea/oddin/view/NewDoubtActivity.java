@@ -59,7 +59,7 @@ public class NewDoubtActivity extends AppCompatActivity {
         }
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_new_question);
-        mToolbar.setTitle("Nova dúvida");
+        mToolbar.setTitle(R.string.new_doubt);
         mToolbar.setSubtitle(mPresentation.getSubject());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -132,7 +132,7 @@ public class NewDoubtActivity extends AppCompatActivity {
     }
 
     private void onRequestSuccess() {
-        Toast.makeText(getApplication(), "Enviado...", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplication(), R.string.sent, Toast.LENGTH_LONG).show();
         Intent intentResult = new Intent();
         intentResult.putExtra(Question.TAG, mQuestion);
         setResult(RESULT_OK, intentResult);
@@ -140,7 +140,7 @@ public class NewDoubtActivity extends AppCompatActivity {
     }
 
     private void onRequestFailure(int statusCode) {
-        Toast.makeText(getApplicationContext(), "Requisição não completada, tente novamente! ", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), R.string.toast_request_not_completed, Toast.LENGTH_LONG).show();
         //TODO
     }
 

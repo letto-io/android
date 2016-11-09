@@ -60,7 +60,7 @@ public class DateActivity extends AppCompatActivity {
                 mProgressDialog = new ProgressDialog(DateActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 getNotices();
             } else {
                 finish();

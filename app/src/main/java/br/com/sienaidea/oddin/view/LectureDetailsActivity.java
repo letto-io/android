@@ -105,7 +105,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 mProgressDialog = new ProgressDialog(LectureDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                mProgressDialog.show();
+                //mProgressDialog.show();
                 setupFab();
                 getMaterials();
             } else {
