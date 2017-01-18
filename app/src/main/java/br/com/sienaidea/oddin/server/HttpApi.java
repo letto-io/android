@@ -31,8 +31,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public class HttpApi {
-    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
+    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
 
     private static final String KEY_TOKEN = "x-session-token";
 
