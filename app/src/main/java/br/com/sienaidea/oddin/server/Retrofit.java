@@ -18,7 +18,9 @@ public class Retrofit {
         // Service setup
         return retrofit.create(HttpApi.HttpBinService.class);
     }
-
+/*
+* @return instance of Retrofit
+* */
     public static HttpApi.HttpBinService getInstance(){
         if (instance == null){
             instance = newInstance();

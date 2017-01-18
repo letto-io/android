@@ -36,7 +36,6 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
     private List<Answer> mList;
     private AudioAdapter mAudioAdapter;
     private Context mContext;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private int mProfile;
 
     @Override
@@ -94,10 +93,6 @@ public class AudioDoubtDetailFragment extends Fragment implements RecyclerViewOn
         }
 
         return view;
-    }
-
-    public void swipeRefreshStop() {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void notifyDataSetChanged() {

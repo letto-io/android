@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -67,8 +69,6 @@ public class DoubtActivity extends AppCompatActivity {
     private List<Question> mList = new ArrayList<>();
     private Profile mProfile = new Profile();
 
-    private ProgressDialog mProgressDialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +95,6 @@ public class DoubtActivity extends AppCompatActivity {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-                mProgressDialog = new ProgressDialog(DoubtActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 getQuestions();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -186,7 +182,6 @@ public class DoubtActivity extends AppCompatActivity {
             });
 
         } else {
-            mProgressDialog.dismiss();
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
@@ -202,7 +197,6 @@ public class DoubtActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
-        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(int statusCode) {
@@ -321,9 +315,53 @@ public class DoubtActivity extends AppCompatActivity {
         return listAux;
     }
 
+    private void deletePresentation() {
+        DetectConnection detectConnection = new DetectConnection(this);
+        if (detectConnection.existConnection()) {
+            // Retrofit setup
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HttpApi.API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            // Service setup
+            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+
+            Preference preference = new Preference();
+            String auth_token_string = preference.getToken(getApplicationContext());
+
+            Call<Void> request = service.deletePresentation(auth_token_string, mPresentation.getId());
+
+            request.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Intent intent = new Intent(getApplicationContext(), PresentationActivity.class);
+                        intent.putExtra(Instruction.TAG, mInstruction);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    // TODO: 24/11/2016
+                }
+            });
+        } else {
+            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
+        }
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.question_menu, menu);
+
+        if (mProfile.getProfile() == Constants.INSTRUCTOR)
+            menu.findItem(R.id.action_remove_presentation).setVisible(true);
+        else
+            menu.findItem(R.id.action_remove_presentation).setVisible(false);
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
 
@@ -331,30 +369,45 @@ public class DoubtActivity extends AppCompatActivity {
 
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setQueryHint("Pesquisar...");
+        searchView.setQueryHint(getResources().getString(R.string.hint_search));
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-        } else if (id == R.id.action_attachment) {
-            Intent intent = new Intent(this, PresentationDetailsActivity.class);
-            intent.putExtra(Presentation.TAG, mPresentation);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            startActivity(intent);
-        }if (id == R.id.action_participants) {
-            Intent intent = new Intent(this, ParticipantsActivity.class);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            startActivity(intent);
-        } else if (id == R.id.action_home) {
-            startActivity(new Intent(this, LectureActivity.class));
-            finish();
+        switch (item.getItemId()) {
+            case R.id.action_remove_presentation:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deletePresentation();
+                    }
+                });
+                builder.setNegativeButton(R.string.dialog_cancel, null);
+                builder.setTitle(mPresentation.getSubject());
+                builder.setMessage(R.string.dialog_delete_presentation);
+                builder.show();
+                break;
+            case R.id.action_home:
+                startActivity(new Intent(this, LectureActivity.class));
+                finish();
+                break;
+            case R.id.action_attachment:
+                Intent intent = new Intent(this, PresentationDetailsActivity.class);
+                intent.putExtra(Presentation.TAG, mPresentation);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+            case R.id.action_participants:
+                Intent intentParticipants = new Intent(this, ParticipantsActivity.class);
+                intentParticipants.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intentParticipants);
+                break;
+            case android.R.id.home:
+                finish();
         }
-
         return true;
     }
 

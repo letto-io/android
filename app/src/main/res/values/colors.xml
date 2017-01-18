@@ -10,9 +10,4 @@
     <color name="colorSecondaryText">#727272</color>
     <color name="colorDividerColor">#B6B6B6</color>
 
-    <color name="gray">#7c7a7a</color>
-    <color name="colorFragmentDoubtDetail">#ffffff</color>
-
-    <color name="background">#fafafa</color>
-
 </resources>

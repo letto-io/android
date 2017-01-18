@@ -130,14 +130,6 @@ public class PresentationActivity extends AppCompatActivity {
         }
     }
 
-    public void fabHide() {
-        fab.hide();
-    }
-
-    public void fabShow() {
-        fab.show();
-    }
-
     private void setupPermission() {
         Preference preference = new Preference();
         preference.setUserProfile(getApplicationContext(), mProfile.getProfile());
@@ -151,8 +143,8 @@ public class PresentationActivity extends AppCompatActivity {
         presentationOpenFragment = PresentationOpenFragment.newInstance(getListOpen(), mInstruction);
         presentationClosedFragment = PresentationClosedFragment.newInstance(getListClosed(), mInstruction);
 
-        mAdapterViewPager.addFragment(presentationOpenFragment, getResources().getString(R.string.open));
-        mAdapterViewPager.addFragment(presentationClosedFragment, getResources().getString(R.string.close));
+        mAdapterViewPager.addFragment(presentationOpenFragment, getResources().getString(R.string.tab_presentation_open));
+        mAdapterViewPager.addFragment(presentationClosedFragment, getResources().getString(R.string.tab_presentation_closed));
 
         viewPager.setAdapter(mAdapterViewPager);
 

@@ -39,8 +39,6 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
     private Context mContext;
     private Instruction mInstruction;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
     public static final String TAG = PresentationFragment.class.getName();
 
     @Override
@@ -123,10 +121,6 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
         if (mListPresentation.isEmpty())
             setEmpty(true);
         else setEmpty(false);
-    }
-
-    public void swipeRefreshStop() {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void notifyDataSetChanged() {
