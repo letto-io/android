@@ -1,18 +1,10 @@
 package br.com.sienaidea.oddin.util;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-
 import android.provider.OpenableColumns;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,12 +14,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import br.com.sienaidea.oddin.R;
-
 public class FileUtils {
 
-    //OK
-    public static String getFileName(Context context, Uri uri){
+    /**
+     * @param context
+     * @param uri
+     * @return file name of the Uri
+     */
+    public static String getFileName(Context context, Uri uri) {
         Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
 
         if (returnCursor == null) {
@@ -41,13 +35,21 @@ public class FileUtils {
         }
     }
 
-    //OK
+    /**
+     * @param context
+     * @param uri
+     * @return the mimeType of the Uri
+     */
     public static String getMimeType(Context context, Uri uri) {
         return context.getContentResolver().getType(uri);
     }
 
-    //OK
-    public static InputStream getInputstream(Context context, Uri uri){
+    /**
+     * @param context
+     * @param uri
+     * @return inputstream of the Uri
+     */
+    public static InputStream getInputstream(Context context, Uri uri) {
         try {
             return context.getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
@@ -56,37 +58,11 @@ public class FileUtils {
         }
     }
 
-    //atual
-    public static File createTempFile(Uri returnUri, String fileName, Context context) {
-        File root = Environment.getExternalStorageDirectory();
-
-        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-        if (!dirOddin.exists()) {
-            dirOddin.mkdir();
-        }
-
-        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
-        if (!dirDiscipline.exists()) {
-            dirDiscipline.mkdir();
-        }
-
-        final File file = new File(dirDiscipline.getAbsolutePath(), fileName);
-        try {
-
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(readBytes(getInputstream(context, returnUri)));
-            fileOutputStream.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return file;
-    }
-
-
-
+    /**
+     * @param inputStream
+     * @return byteArray of the file inputStream
+     * @throws IOException
+     */
     public static byte[] readBytes(final InputStream inputStream) throws IOException {
         // this dynamically extends to take the bytes you read
         final ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
@@ -94,7 +70,6 @@ public class FileUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d("DEBUG", "entrou na thread bytes");
 
                 // this is storage overwritten on each iteration with bytes
                 int bufferSize = 1024;
@@ -123,32 +98,11 @@ public class FileUtils {
         return byteBuffer.toByteArray();
     }
 
-    public static byte[] readBytes(Uri uri) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new File(String.valueOf(uri)));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        byte[] buf = new byte[1024];
-        int n;
-        try {
-            while (-1 != (n = fis.read(buf)))
-                baos.write(buf, 0, n);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] videoBytes = baos.toByteArray(); //this is the video in bytes.
-        return videoBytes;
-    }
-
-
-
-    /* Checks if external storage is available for read and write */
+    /**
+     * Checks if external storage is available for read and write
+     *
+     * @return true or false
+     */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -157,80 +111,16 @@ public class FileUtils {
         return false;
     }
 
-    /* Checks if external storage is available to at least read */
-    public static boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    private void saveFile(byte[] bytes, String fileName, String mimeType, final Context context) {
-
-        if (isExternalStorageWritable()) {
-            File root = Environment.getExternalStorageDirectory();
-            File dir = new File(root.getAbsolutePath() + "/Oddin");
-
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-
-            final File file = new File(dir, fileName);
-            try {
-
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                fileOutputStream.write(bytes);
-                fileOutputStream.close();
-
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle);
-                builder.setMessage(fileName + mimeType + " Salvo em: " + file.getAbsolutePath());
-                builder.setPositiveButton("OK", null);
-                builder.setNegativeButton("ABRIR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent newIntent = new Intent();
-                        newIntent.setDataAndType(Uri.parse("file://" + file.getPath()), "application/pdf");
-                        newIntent.setAction(Intent.ACTION_VIEW);
-                        try {
-                            context.startActivity(newIntent);
-                        } catch (android.content.ActivityNotFoundException e) {
-                            Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                builder.show();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(context, "Não foi possível salvar o arquivo.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    // url = file path or whatever suitable URL you want.
-    public static String getMimeType(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-        return type;
-    }
-
     public static File getFileFromPath(String path) {
         return getFileFromPath(path, null);
     }
 
-    public static File getFileFromPath(String path, String name){
+    public static File getFileFromPath(String path, String name) {
         final File file;
 
-        if (name == null){
+        if (name == null) {
             file = new File(path);
-        }else {
+        } else {
             file = new File(path, name);
         }
 
@@ -255,53 +145,4 @@ public class FileUtils {
             return null;
         }
     }
-
-    public static File getFileFromUri(Uri returnUri, String fileName, Context context) {
-        try {
-            InputStream inputStream = context.getContentResolver().openInputStream(returnUri);
-            byte[] bytes = FileUtils.readBytes(inputStream);
-
-            File tempFile = new File(Environment.getExternalStorageDirectory(), fileName);
-            FileOutputStream fos = new FileOutputStream(tempFile);
-            fos.write(bytes);
-            return tempFile;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    //funcionava na classe lecture details
-//    private File createTempFile() {
-//
-//        File root = Environment.getExternalStorageDirectory();
-//
-//        File dirOddin = new File(root.getAbsolutePath() + "/Oddin");
-//        if (!dirOddin.exists()) {
-//            dirOddin.mkdir();
-//        }
-//
-//        File dirDiscipline = new File(dirOddin.getAbsolutePath() + "/temporarios");
-//        if (!dirDiscipline.exists()) {
-//            dirDiscipline.mkdir();
-//        }
-//
-//        //final File file = new File(dirDiscipline.getAbsolutePath(), mFileName);
-//        try {
-//
-//            FileOutputStream fileOutputStream = new FileOutputStream(file);
-//            fileOutputStream.write(mBytes);
-//            fileOutputStream.close();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//
-//        return file;
-//
-//
-//
-//    }
 }

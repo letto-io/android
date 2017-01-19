@@ -172,7 +172,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.MyViewHolder
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private SeekBar seekBar;
         private ImageView iv_player, iv_understand;
-        private TextView durationTextView;
 
         public MyViewHolder(View itemView) {
             super(itemView);

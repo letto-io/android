@@ -8,6 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Retrofit {
     private static HttpApi.HttpBinService instance = null;
 
+    /**
+     * @return new instance of Retrofit
+     */
     private static HttpApi.HttpBinService newInstance(){
         // Retrofit setup
         retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
@@ -18,9 +21,10 @@ public class Retrofit {
         // Service setup
         return retrofit.create(HttpApi.HttpBinService.class);
     }
-/*
-* @return instance of Retrofit
-* */
+
+    /**
+     * @return instance of Retrofit
+     */
     public static HttpApi.HttpBinService getInstance(){
         if (instance == null){
             instance = newInstance();

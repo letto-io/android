@@ -14,7 +14,6 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
-import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.util.DateUtil;
 
 public class AdapterLecture extends RecyclerView.Adapter<AdapterLecture.MyViewHolder> {

@@ -10,7 +10,6 @@ import br.com.sienaidea.oddin.retrofitModel.Person;
 public class ParticipantsOfflineFragment extends ParticipantsFragment {
 
     public static final String TAG = ParticipantsOfflineFragment.class.getName();
-    public static final String OFFLINE = "OFFLINE";
 
     public static ParticipantsOfflineFragment newInstance(List<Person> list) {
 

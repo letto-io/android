@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Date;
+import br.com.sienaidea.oddin.retrofitModel.Faq;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
 import br.com.sienaidea.oddin.retrofitModel.Notice;
@@ -64,6 +65,7 @@ public class HttpApi {
     private static final String ACCEPT_ANSWER_PATH = "answers/{answer_id}/accept";
     private static final String ANSWER_MATERIALS_PATH = "questions/{question_id}/answers/materials";
     private static final String NOTICES_PATH = "instructions/{instruction_id}/notices";
+    private static final String FAQS_PATH = "instructions/{instruction_id}/faqs";
     private static final String DATES_PATH = "instructions/{instruction_id}/dates";
 
     public interface HttpBinService {
@@ -212,7 +214,7 @@ public class HttpApi {
         //Get Notices OK
         @GET(NOTICES_PATH)
         Call<List<Notice>> getInstructionNotices(@Header(KEY_TOKEN) String token,
-                                                 @Path(INSTRUCTION_ID) int question_id);
+                                                 @Path(INSTRUCTION_ID) int instruction_id);
 
         //Post Notices OK
         @POST(NOTICES_PATH)
@@ -230,5 +232,17 @@ public class HttpApi {
         Call<Date> createInstructionDate(@Header(KEY_TOKEN) String token,
                                          @Path(INSTRUCTION_ID) int instruction_id,
                                          @Body Date date);
+
+        //Get FAQs
+        @GET(FAQS_PATH)
+        Call<List<Faq>> getInstructionFAQs(@Header(KEY_TOKEN) String token,
+                                           @Path(INSTRUCTION_ID) int instruction_id);
+
+        //create FAQ
+        @POST(FAQS_PATH)
+        Call<Faq> createInstructionFAQs(@Header(KEY_TOKEN) String token,
+                                           @Path(INSTRUCTION_ID) int instruction_id,
+                                           @Body Faq faq);
+
     }
 }

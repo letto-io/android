@@ -1,7 +1,5 @@
 package br.com.sienaidea.oddin.util;
 
-import android.text.format.DateFormat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

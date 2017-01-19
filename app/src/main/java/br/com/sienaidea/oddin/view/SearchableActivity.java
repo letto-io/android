@@ -3,9 +3,9 @@ package br.com.sienaidea.oddin.view;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,11 +22,9 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterDoubt;
 import br.com.sienaidea.oddin.adapter.AdapterPresentation;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerHack;
-import br.com.sienaidea.oddin.model.Discipline;
-import br.com.sienaidea.oddin.model.Doubt;
+import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
-import br.com.sienaidea.oddin.provider.SearchableProvider;
 import br.com.sienaidea.oddin.retrofitModel.Question;
 
 public class SearchableActivity extends AppCompatActivity implements RecyclerViewOnClickListenerHack, View.OnClickListener {

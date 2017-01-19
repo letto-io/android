@@ -98,4 +98,8 @@
     <string name="action_remove_presentation">Deletar aula</string>
     <string name="hint_search">Pesquisar...</string>
     <string name="dialog_delete_presentation">Você tem certeza que deseja remover esta aula e todas as dúvidas pertencentes à ela?</string>
+    <string name="faqs">FAQs</string>
+    <string name="action_faqs">FAQs</string>
+    <string name="hint_question">Pergunta</string>
+    <string name="new_faq">Adicionar FAQ</string>
 </resources>

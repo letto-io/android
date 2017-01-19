@@ -34,4 +34,6 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     //anotations
     compile "org.androidannotations:androidannotations-api:3.3.2"
+    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.1.0'
+
 }

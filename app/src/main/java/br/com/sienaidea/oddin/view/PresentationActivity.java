@@ -364,28 +364,43 @@ public class PresentationActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-        } else if (id == R.id.action_attachment) {
-            Intent intent = new Intent(this, LectureDetailsActivity.class);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            intent.putExtra(Profile.TAG, mProfile);
-            startActivity(intent);
-        } else if (id == R.id.action_participants) {
-            Intent intent = new Intent(this, ParticipantsActivity.class);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            startActivity(intent);
-        } else if (id == R.id.action_notices) {
-            Intent intent = new Intent(this, NoticeActivity.class);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            startActivity(intent);
-        } else if (id == R.id.action_dates) {
-            Intent intent = new Intent(this, DateActivity.class);
-            intent.putExtra(Instruction.TAG, mInstruction);
-            startActivity(intent);
-        }
+        Intent intent;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
 
+            case R.id.action_notices:
+                intent = new Intent(this, NoticeActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+
+            case R.id.action_dates:
+                intent = new Intent(this, DateActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+
+            case R.id.action_faqs:
+                intent = new Intent(this, FAQActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+
+            case R.id.action_attachment:
+                intent = new Intent(this, LectureDetailsActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                intent.putExtra(Profile.TAG, mProfile);
+                startActivity(intent);
+                break;
+
+            case R.id.action_participants:
+                intent = new Intent(this, ParticipantsActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+        }
         return true;
     }
 
@@ -395,8 +410,6 @@ public class PresentationActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putParcelableArrayListExtra(Presentation.ARRAYLIST, (ArrayList<Presentation>) mList);
             intent.putExtra(Instruction.TAG, mInstruction);
-            //intent.putExtra(Presentation.TAG, mPresentation);
-            //intent.putExtra(Discipline.NAME, mDiscipline);
         }
         super.startActivity(intent);
     }

@@ -3,6 +3,8 @@ package br.com.sienaidea.oddin.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.adapter.NoticeAdapter;
+import br.com.sienaidea.oddin.adapter.FaqAdapter;
+import br.com.sienaidea.oddin.fragment.FaqFragment;
+import br.com.sienaidea.oddin.fragment.MaterialDisciplineFragment;
 import br.com.sienaidea.oddin.model.Constants;
+import br.com.sienaidea.oddin.retrofitModel.Faq;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Notice;
 import br.com.sienaidea.oddin.server.Preference;
@@ -25,43 +30,34 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NoticeActivity extends AppCompatActivity {
-    private static final int ACTION_NEW_NOTICE = 12;
+public class FAQActivity extends AppCompatActivity {
+    private static final int ACTION_NEW_FAQ = 123;
     private Instruction mInstruction;
-    private List<Notice> mList = new ArrayList<>();
-    private RecyclerView mRecyclerView;
-    private NoticeAdapter mNoticeAdapter;
-    private View mEmptyView;
+    private List<Faq> mList = new ArrayList<>();
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private FaqFragment mFaqFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notice);
-
-        mEmptyView = findViewById(R.id.empty_view);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
-        mRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        setContentView(R.layout.activity_faq);
 
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
-            mList = savedInstanceState.getParcelableArrayList(Notice.TAG);
+            mList = savedInstanceState.getParcelableArrayList(Faq.TAG);
             onRequestSuccess();
         } else {
             mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
             if (mInstruction != null) {
-                getNotices();
+                getFAQs();
             } else {
                 finish();
             }
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tb_notice);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tb_faq);
         toolbar.setTitle(mInstruction.getLecture().getName());
-        toolbar.setSubtitle(R.string.notices);
+        toolbar.setSubtitle(R.string.faqs);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -73,20 +69,20 @@ public class NoticeActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), NewNoticeActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), NewFaqActivity.class);
                     intent.putExtra(Instruction.TAG, mInstruction);
-                    startActivityForResult(intent, ACTION_NEW_NOTICE);
+                    startActivityForResult(intent, ACTION_NEW_FAQ);
                 }
             });
         } else fab.setVisibility(View.GONE);
     }
 
-    private void getNotices() {
+    private void getFAQs() {
         Preference preference = new Preference();
-        Call<List<Notice>> request = Retrofit.getInstance().getInstructionNotices(preference.getToken(getApplicationContext()), mInstruction.getId());
-        request.enqueue(new Callback<List<Notice>>() {
+        Call<List<Faq>> request = Retrofit.getInstance().getInstructionFAQs(preference.getToken(getApplicationContext()), mInstruction.getId());
+        request.enqueue(new Callback<List<Faq>>() {
             @Override
-            public void onResponse(Call<List<Notice>> call, Response<List<Notice>> response) {
+            public void onResponse(Call<List<Faq>> call, Response<List<Faq>> response) {
                 if (response.isSuccessful()) {
                     mList = response.body();
                     onRequestSuccess();
@@ -94,32 +90,22 @@ public class NoticeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Notice>> call, Throwable t) {
+            public void onFailure(Call<List<Faq>> call, Throwable t) {
                 onRequestFailure();
             }
         });
     }
 
-    private void setEmpty(boolean isEmpty) {
-        if (isEmpty) {
-            mRecyclerView.setVisibility(View.GONE);
-            mEmptyView.setVisibility(View.VISIBLE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyView.setVisibility(View.GONE);
-        }
-    }
-
-    private void checkState() {
-        if (mList.isEmpty())
-            setEmpty(true);
-        else setEmpty(false);
-    }
-
     private void onRequestSuccess() {
-        mNoticeAdapter = new NoticeAdapter(this, mList);
-        mRecyclerView.setAdapter(mNoticeAdapter);
-        checkState();
+        mFaqFragment = (FaqFragment) fragmentManager.findFragmentByTag(FaqFragment.TAG);
+        if (mFaqFragment != null) {
+            mFaqFragment.notifyDataSetChanged();
+        } else {
+            mFaqFragment = FaqFragment.newInstance(mList);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.rl_fragment_faq, mFaqFragment, FaqFragment.TAG);
+            fragmentTransaction.commit();
+        }
     }
 
     private void onRequestFailure() {
@@ -129,10 +115,9 @@ public class NoticeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == ACTION_NEW_NOTICE) {
-                mList.add((Notice) data.getParcelableExtra(Notice.TAG));
-                mNoticeAdapter.notifyDataSetChanged();
-                checkState();
+            if (requestCode == ACTION_NEW_FAQ) {
+                mList.add((Faq) data.getParcelableExtra(Faq.TAG));
+                mFaqFragment.notifyDataSetChanged();
                 Toast.makeText(this, R.string.toast_new_notice_added, Toast.LENGTH_SHORT).show();
             }
         }
@@ -149,7 +134,7 @@ public class NoticeActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(Instruction.TAG, mInstruction);
-        outState.putParcelableArrayList(Notice.TAG, (ArrayList<Notice>) mList);
+        outState.putParcelableArrayList(Notice.TAG, (ArrayList<Faq>) mList);
         super.onSaveInstanceState(outState);
     }
 }

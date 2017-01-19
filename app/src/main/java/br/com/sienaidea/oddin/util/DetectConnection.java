@@ -11,6 +11,10 @@ public class DetectConnection {
         this.mContext = context;
     }
 
+    /**
+     *
+     * @return true if connections is stablished
+     */
     public boolean existConnection(){
         ConnectivityManager connectivity = (ConnectivityManager)
                 mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
