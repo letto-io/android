@@ -105,4 +105,10 @@
     <string name="hint_question">Pergunta</string>
     <string name="new_faq">Adicionar FAQ</string>
     <string name="dialog_delete_faq">Excluir FAQ?</string>
+    <string name="dialog_delete_survey">Excluir Enquete?</string>
+    <string name="action_survey">Enquetes</string>
+    <string name="surveys">Enquetes</string>
+    <string name="hint_title">Título</string>
+    <string name="hint_alternative">Alternativa</string>
+    <string name="new_survey">Criar Enquete</string>
 </resources>

@@ -25,12 +25,14 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterViewPager;
+import br.com.sienaidea.oddin.adapter.SurveyAdapter;
 import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
+import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;
@@ -378,6 +380,12 @@ public class PresentationActivity extends AppCompatActivity {
 
             case R.id.action_dates:
                 intent = new Intent(this, DateActivity.class);
+                intent.putExtra(Instruction.TAG, mInstruction);
+                startActivity(intent);
+                break;
+
+            case R.id.action_survey:
+                intent = new Intent(this, SurveyActivity.class);
                 intent.putExtra(Instruction.TAG, mInstruction);
                 startActivity(intent);
                 break;

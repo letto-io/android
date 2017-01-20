@@ -17,6 +17,7 @@ import br.com.sienaidea.oddin.retrofitModel.ResponseCredentialsMaterial;
 import br.com.sienaidea.oddin.retrofitModel.ResponseUpVoteAnswer;
 import br.com.sienaidea.oddin.retrofitModel.ResponseVote;
 import br.com.sienaidea.oddin.retrofitModel.Session;
+import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -43,6 +44,7 @@ public class HttpApi {
     private static final String QUESTION_ID = "question_id";
     private static final String ANSWER_ID = "answer_id";
     private static final String FAQ_ID = "faq_id";
+    private static final String SURVEY_ID = "survey_id";
 
     private static final String SESSION_PATH = "session";
     private static final String RECOVER_PASSWORD_PATH = "recover-password";
@@ -67,8 +69,10 @@ public class HttpApi {
     private static final String ANSWER_MATERIALS_PATH = "questions/{question_id}/answers/materials";
     private static final String NOTICES_PATH = "instructions/{instruction_id}/notices";
     private static final String FAQS_PATH = "instructions/{instruction_id}/faqs";
+    private static final String SURVEYS_PATH = "instructions/{instruction_id}/surveys";
     private static final String DATES_PATH = "instructions/{instruction_id}/dates";
     private static final String DELETE_FAQ_PATH = "faqs/{faq_id}";
+    private static final String DELETE_SURVEY_PATH = "surveys/{survey_id}";
 
     public interface HttpBinService {
 
@@ -235,21 +239,37 @@ public class HttpApi {
                                          @Path(INSTRUCTION_ID) int instruction_id,
                                          @Body Date date);
 
-        //Get FAQs
+        //Get FAQs OK
         @GET(FAQS_PATH)
         Call<List<Faq>> getInstructionFAQs(@Header(KEY_TOKEN) String token,
                                            @Path(INSTRUCTION_ID) int instruction_id);
 
-        //create FAQ
+        //create FAQ OK
         @POST(FAQS_PATH)
         Call<Faq> createInstructionFAQs(@Header(KEY_TOKEN) String token,
                                         @Path(INSTRUCTION_ID) int instruction_id,
                                         @Body Faq faq);
 
-        //delete FAQ
+        //delete FAQ OK
         @DELETE(DELETE_FAQ_PATH)
         Call<Void> deleteFAQ(@Header(KEY_TOKEN) String token,
                              @Path(FAQ_ID) int faq_id);
 
+        //Get Surveys
+        @GET(SURVEYS_PATH)
+        Call<List<Survey>> getInstructionSurveys(@Header(KEY_TOKEN) String token,
+                                                 @Path(INSTRUCTION_ID) int instruction_id);
+
+        //Delete Survey
+        @DELETE(DELETE_SURVEY_PATH)
+        Call<Void> deleteSurvey(@Header(KEY_TOKEN) String token,
+                                @Path(SURVEY_ID) int survey_id);
+
+
+        //Create Survey
+        @POST(SURVEYS_PATH)
+        Call<Survey> createInstructionSurveys(@Header(KEY_TOKEN) String token,
+                                              @Path(INSTRUCTION_ID) int instruction_id,
+                                              @Body Survey mSurvey);
     }
 }
