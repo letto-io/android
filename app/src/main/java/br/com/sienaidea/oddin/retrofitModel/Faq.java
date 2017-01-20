@@ -11,6 +11,7 @@ public class Faq implements Parcelable{
     public static final String TAG = Faq.class.getSimpleName();
     private int id;
     private String question, answer;
+    private boolean detailVisible;
 
     public Faq() {
     }
@@ -19,6 +20,7 @@ public class Faq implements Parcelable{
         id = in.readInt();
         question = in.readString();
         answer = in.readString();
+        detailVisible = in.readByte() != 0;
     }
 
     public static final Creator<Faq> CREATOR = new Creator<Faq>() {
@@ -57,6 +59,14 @@ public class Faq implements Parcelable{
         this.answer = answer;
     }
 
+    public boolean isDetailVisible() {
+        return detailVisible;
+    }
+
+    public void setDetailVisible(boolean detailVisible) {
+        this.detailVisible = detailVisible;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -67,5 +77,6 @@ public class Faq implements Parcelable{
         parcel.writeInt(id);
         parcel.writeString(question);
         parcel.writeString(answer);
+        parcel.writeByte((byte) (detailVisible ? 1 : 0));
     }
 }

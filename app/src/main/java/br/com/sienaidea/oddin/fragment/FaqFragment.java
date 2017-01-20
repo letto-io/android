@@ -1,9 +1,11 @@
 package br.com.sienaidea.oddin.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -18,10 +20,13 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.FaqAdapter;
-import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListener;
+import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
+import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Faq;
+import br.com.sienaidea.oddin.server.Preference;
+import br.com.sienaidea.oddin.view.FAQActivity;
 
-public class FaqFragment extends Fragment implements RecyclerViewOnClickListener, View.OnClickListener {
+public class FaqFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private List<Faq> mList;
@@ -94,7 +99,31 @@ public class FaqFragment extends Fragment implements RecyclerViewOnClickListener
 
     @Override
     public void onClickListener(final int position) {
-        // TODO: 1/19/2017
+        if (mList.get(position).isDetailVisible())
+            mList.get(position).setDetailVisible(false);
+        else mList.get(position).setDetailVisible(true);
+
+        mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void onLongPressClickListener(final int position) {
+        final Faq faq = mList.get(position);
+
+        Preference preference = new Preference();
+        if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
+            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((FAQActivity) getActivity()).deleteFaq(position, faq);
+                }
+            });
+            builder.setNegativeButton(R.string.dialog_cancel, null);
+            builder.setTitle(faq.getQuestion());
+            builder.setMessage(R.string.dialog_delete_faq);
+            builder.show();
+        }
     }
 
     @Override
@@ -109,15 +138,21 @@ public class FaqFragment extends Fragment implements RecyclerViewOnClickListener
     private static class RecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {
         private Context mContext;
         private GestureDetector mGestureDetector;
-        private RecyclerViewOnClickListener mRecyclerViewOnClickListener;
+        private RecyclerViewOnClickListenerOnLongPressListener mRecyclerViewOnClickListener;
 
-        public RecyclerViewTouchListener(Context c, final RecyclerView recyclerView, RecyclerViewOnClickListener rvoclh) {
+        public RecyclerViewTouchListener(Context c, final RecyclerView recyclerView, RecyclerViewOnClickListenerOnLongPressListener rvoclh) {
             mContext = c;
             mRecyclerViewOnClickListener = rvoclh;
 
             mGestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public void onLongPress(MotionEvent e) {
+                    View itemView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+
+                    if (mRecyclerViewOnClickListener != null && itemView != null) {
+                        mRecyclerViewOnClickListener.onLongPressClickListener(
+                                recyclerView.getChildAdapterPosition(itemView));
+                    }
                 }
 
                 @Override

@@ -33,35 +33,37 @@
             android:id="@+id/tv_question"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_number"
+            android:layout_alignBaseline="@+id/tv_number"
+            android:layout_alignBottom="@+id/tv_number"
             android:layout_marginBottom="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/tv_number"
+            android:layout_toRightOf="@+id/tv_number"
             android:text="[Content question...]"
             android:textColor="@color/colorPrimaryText"
             android:textSize="16sp" />
 
         <View
             android:id="@+id/vw_divider"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="0.4dp"
             android:layout_below="@id/tv_question"
-            android:background="@color/colorDividerColor" />
+            android:background="@color/colorDividerColor"
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_answer"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/vw_divider"
             android:layout_marginBottom="24dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:text="[Content answer...]"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:visibility="visible" />
 
     </RelativeLayout>
 

@@ -96,6 +96,26 @@ public class FAQActivity extends AppCompatActivity {
         });
     }
 
+    public void deleteFaq(final int position, Faq faq) {
+        Preference preference = new Preference();
+        final Call<Void> request = Retrofit.getInstance().deleteFAQ(preference.getToken(getApplicationContext()), faq.getId());
+        request.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    mList.remove(position);
+                    mFaqFragment.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                // TODO: 1/20/2017
+            }
+        });
+
+    }
+
     private void onRequestSuccess() {
         mFaqFragment = (FaqFragment) fragmentManager.findFragmentByTag(FaqFragment.TAG);
         if (mFaqFragment != null) {

@@ -103,4 +103,5 @@
     <string name="action_faqs">FAQs</string>
     <string name="hint_question">Pergunta</string>
     <string name="new_faq">Adicionar FAQ</string>
+    <string name="dialog_delete_faq">Excluir FAQ?</string>
 </resources>

@@ -42,6 +42,7 @@ public class HttpApi {
     private static final String PRESENTATION_ID = "presentation_id";
     private static final String QUESTION_ID = "question_id";
     private static final String ANSWER_ID = "answer_id";
+    private static final String FAQ_ID = "faq_id";
 
     private static final String SESSION_PATH = "session";
     private static final String RECOVER_PASSWORD_PATH = "recover-password";
@@ -67,6 +68,7 @@ public class HttpApi {
     private static final String NOTICES_PATH = "instructions/{instruction_id}/notices";
     private static final String FAQS_PATH = "instructions/{instruction_id}/faqs";
     private static final String DATES_PATH = "instructions/{instruction_id}/dates";
+    private static final String DELETE_FAQ_PATH = "faqs/{faq_id}";
 
     public interface HttpBinService {
 
@@ -241,8 +243,13 @@ public class HttpApi {
         //create FAQ
         @POST(FAQS_PATH)
         Call<Faq> createInstructionFAQs(@Header(KEY_TOKEN) String token,
-                                           @Path(INSTRUCTION_ID) int instruction_id,
-                                           @Body Faq faq);
+                                        @Path(INSTRUCTION_ID) int instruction_id,
+                                        @Body Faq faq);
+
+        //delete FAQ
+        @DELETE(DELETE_FAQ_PATH)
+        Call<Void> deleteFAQ(@Header(KEY_TOKEN) String token,
+                             @Path(FAQ_ID) int faq_id);
 
     }
 }

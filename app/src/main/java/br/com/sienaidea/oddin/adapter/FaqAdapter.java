@@ -20,10 +20,10 @@ import br.com.sienaidea.oddin.util.DateUtil;
 public class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.ViewHolder> {
     private LayoutInflater mLayoutInflater;
     private List<Faq> mList;
-
-    private static ItemClickListener sClickListener;
+    private Context mContext;
 
     public FaqAdapter(Context context, List<Faq> list) {
+        this.mContext = context;
         this.mList = list;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -36,9 +36,17 @@ public class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.tvNumber.setText(String.valueOf(mList.get(position).getId()));
+        holder.tvNumber.setText(mContext.getString(R.string.adapter_faq_number, mList.get(position).getId()));
         holder.tvQuestion.setText(mList.get(position).getQuestion());
-        holder.tvAnswer.setText(mList.get(position).getAnswer());
+
+        if (mList.get(position).isDetailVisible()) {
+            holder.tvAnswer.setText(mList.get(position).getAnswer());
+            holder.divider.setVisibility(View.VISIBLE);
+            holder.tvAnswer.setVisibility(View.VISIBLE);
+        } else {
+            holder.divider.setVisibility(View.GONE);
+            holder.tvAnswer.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -46,16 +54,7 @@ public class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.ViewHolder> {
         return mList.size();
     }
 
-    /**
-     * metodo chamado pela activity que implementa o click, para desacoplar o adapter
-     *
-     * @param itemClickListener
-     */
-    public void setClickListener(ItemClickListener itemClickListener) {
-        sClickListener = itemClickListener;
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNumber, tvQuestion, tvAnswer;
         private View divider;
 
@@ -65,19 +64,6 @@ public class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.ViewHolder> {
             tvQuestion = (TextView) itemView.findViewById(R.id.tv_question);
             tvAnswer = (TextView) itemView.findViewById(R.id.tv_answer);
             divider = itemView.findViewById(R.id.vw_divider);
-            itemView.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View view) {
-            //ativo o onclick da activity
-            //verifica se é null, caso a activity não implementa o onclick, para não setar atoa
-            if (sClickListener != null)
-                sClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
     }
 }
