@@ -23,12 +23,14 @@ import br.com.sienaidea.oddin.adapter.AlternativeAdapter;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListener;
 import br.com.sienaidea.oddin.model.Constants;
 import br.com.sienaidea.oddin.retrofitModel.Alternative;
+import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.Preference;
+import br.com.sienaidea.oddin.view.SurveyDetailsActivity;
 
 public class AlternativeFragment extends Fragment implements RecyclerViewOnClickListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private List<Alternative> mList;
+    private Survey mSurvey;
     private AlternativeAdapter mAdapter;
     private Context mContext;
 
@@ -40,12 +42,12 @@ public class AlternativeFragment extends Fragment implements RecyclerViewOnClick
         super.onAttach(context);
     }
 
-    public static AlternativeFragment newInstance(List<Alternative> list) {
+    public static AlternativeFragment newInstance(Survey survey) {
 
         AlternativeFragment fragment = new AlternativeFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Alternative.TAG, (ArrayList<Alternative>) list);
+        args.putParcelable(Survey.TAG, survey);
         fragment.setArguments(args);
 
         return fragment;
@@ -59,15 +61,19 @@ public class AlternativeFragment extends Fragment implements RecyclerViewOnClick
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
+
 
         LinearLayoutManager llm = new LinearLayoutManager(mContext);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
+        mSurvey = getArguments().getParcelable(Survey.TAG);
 
-        mList = getArguments().getParcelableArrayList(Alternative.TAG);
-        if (mList != null) {
-            mAdapter = new AlternativeAdapter(mContext, mList);
+        if (mSurvey != null) {
+            if (mSurvey.getMy_vote()==0){
+                mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
+            }
+
+            mAdapter = new AlternativeAdapter(mContext, mSurvey);
             mRecyclerView.setAdapter(mAdapter);
             notifyDataSetChanged();
         }
@@ -91,14 +97,18 @@ public class AlternativeFragment extends Fragment implements RecyclerViewOnClick
     }
 
     private void checkState() {
-        if (mList.isEmpty())
+        if (mSurvey.getAlternatives().isEmpty())
             setEmpty(true);
         else setEmpty(false);
     }
 
     @Override
     public void onClickListener(final int position) {
-        // TODO: 1/20/2017
+
+        Preference preference = new Preference();
+        if (preference.getUserProfile(mContext) != Constants.INSTRUCTOR) {
+            ((SurveyDetailsActivity) getActivity()).chooseAlternative(position, mSurvey);
+        }
     }
 
     @Override
@@ -106,7 +116,7 @@ public class AlternativeFragment extends Fragment implements RecyclerViewOnClick
     }
 
     public void addItemPosition(int position, Alternative alternative) {
-        mList.add(position, alternative);
+        mSurvey.getAlternatives().add(position, alternative);
         notifyDataSetChanged();
     }
 

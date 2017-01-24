@@ -12,18 +12,19 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Alternative;
+import br.com.sienaidea.oddin.retrofitModel.Survey;
 
 /**
  * Created by Siena Idea on 21/09/2016.
  */
 public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.ViewHolder> {
     private LayoutInflater mLayoutInflater;
-    private List<Alternative> mList;
+    private Survey mSurvey;
     private Context mContext;
 
-    public AlternativeAdapter(Context context, List<Alternative> list) {
+    public AlternativeAdapter(Context context, Survey survey) {
         this.mContext = context;
-        this.mList = list;
+        this.mSurvey = survey;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -35,13 +36,23 @@ public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.rbAlternative.setText(mList.get(position).getDescription());
-        holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mList.get(position).getChoice_count())));
+        if (mSurvey.getMy_vote() != 0) {
+            holder.rbAlternative.setEnabled(false);
+            if (mSurvey.getMy_vote() == mSurvey.getAlternatives().get(position).getId()) {
+                holder.rbAlternative.setChecked(true);
+                holder.rbAlternative.setEnabled(true);
+            } else {
+                holder.rbAlternative.setChecked(false);
+                holder.rbAlternative.setEnabled(false);
+            }
+        } else holder.rbAlternative.setEnabled(true);
+        holder.rbAlternative.setText(mSurvey.getAlternatives().get(position).getDescription());
+        holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
     }
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return mSurvey.getAlternatives().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

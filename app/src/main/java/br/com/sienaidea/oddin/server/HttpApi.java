@@ -45,6 +45,8 @@ public class HttpApi {
     private static final String ANSWER_ID = "answer_id";
     private static final String FAQ_ID = "faq_id";
     private static final String SURVEY_ID = "survey_id";
+    private static final String ALTERNATIVE_ID = "alternative_id";
+
 
     private static final String SESSION_PATH = "session";
     private static final String RECOVER_PASSWORD_PATH = "recover-password";
@@ -73,6 +75,7 @@ public class HttpApi {
     private static final String DATES_PATH = "instructions/{instruction_id}/dates";
     private static final String DELETE_FAQ_PATH = "faqs/{faq_id}";
     private static final String DELETE_SURVEY_PATH = "surveys/{survey_id}";
+    private static final String CHOOSE_PATH = "alternatives/{alternative_id}/choose";
 
     public interface HttpBinService {
 
@@ -271,5 +274,10 @@ public class HttpApi {
         Call<Survey> createInstructionSurveys(@Header(KEY_TOKEN) String token,
                                               @Path(INSTRUCTION_ID) int instruction_id,
                                               @Body Survey mSurvey);
+
+        //Vote choose
+        @POST(CHOOSE_PATH)
+        Call<Void> chooseAlternative (@Header(KEY_TOKEN) String token,
+                                      @Path(ALTERNATIVE_ID) int alternative_id);
     }
 }

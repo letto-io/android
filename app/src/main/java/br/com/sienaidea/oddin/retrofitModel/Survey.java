@@ -11,21 +11,20 @@ import java.util.List;
 
 public class Survey implements Parcelable{
     public static final String TAG = Survey.class.getSimpleName();
-    private int id;
+    private int id, my_vote;
     private String title, question, created_at;
     private List<Alternative> alternatives;
-    private boolean detailVisible;
 
     public Survey() {
     }
 
     protected Survey(Parcel in) {
         id = in.readInt();
+        my_vote = in.readInt();
         title = in.readString();
         question = in.readString();
         created_at = in.readString();
         alternatives = in.createTypedArrayList(Alternative.CREATOR);
-        detailVisible = in.readByte() != 0;
     }
 
     public static final Creator<Survey> CREATOR = new Creator<Survey>() {
@@ -46,6 +45,14 @@ public class Survey implements Parcelable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getMy_vote() {
+        return my_vote;
+    }
+
+    public void setMy_vote(int my_vote) {
+        this.my_vote = my_vote;
     }
 
     public String getTitle() {
@@ -80,14 +87,6 @@ public class Survey implements Parcelable{
         this.alternatives = alternatives;
     }
 
-    public boolean isDetailVisible() {
-        return detailVisible;
-    }
-
-    public void setDetailVisible(boolean detailVisible) {
-        this.detailVisible = detailVisible;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -96,10 +95,10 @@ public class Survey implements Parcelable{
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
+        parcel.writeInt(my_vote);
         parcel.writeString(title);
         parcel.writeString(question);
         parcel.writeString(created_at);
         parcel.writeTypedList(alternatives);
-        parcel.writeByte((byte) (detailVisible ? 1 : 0));
     }
 }

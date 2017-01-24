@@ -10,9 +10,15 @@ import android.widget.Toast;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.AlternativeFragment;
+import br.com.sienaidea.oddin.retrofitModel.Alternative;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
+import br.com.sienaidea.oddin.server.Preference;
+import br.com.sienaidea.oddin.server.Retrofit;
 import br.com.sienaidea.oddin.util.DateUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SurveyDetailsActivity extends AppCompatActivity {
     private Survey mSurvey;
@@ -56,7 +62,7 @@ public class SurveyDetailsActivity extends AppCompatActivity {
         if (mAlternativeFragment != null) {
             mAlternativeFragment.notifyDataSetChanged();
         } else {
-            mAlternativeFragment = AlternativeFragment.newInstance(mSurvey.getAlternatives());
+            mAlternativeFragment = AlternativeFragment.newInstance(mSurvey);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.rl_fragment_survey_details, mAlternativeFragment, AlternativeFragment.TAG);
             fragmentTransaction.commit();
@@ -71,4 +77,23 @@ public class SurveyDetailsActivity extends AppCompatActivity {
         return true;
     }
 
+    public void chooseAlternative(final int position, final Survey survey) {
+        Preference preference = new Preference();
+
+        Call<Void> request = Retrofit.getInstance().chooseAlternative(preference.getToken(getApplicationContext()), survey.getAlternatives().get(position).getId());
+        request.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()){
+                    survey.getAlternatives().get(position).setChoice_count(survey.getAlternatives().get(position).getChoice_count()+1);
+                    mAlternativeFragment.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
 }
