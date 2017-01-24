@@ -33,6 +33,7 @@
     <string name="adapter_class">Aula %1$d</string>
     <string name="adapter_faq_number">%1$d)</string>
     <string name="adapter_start_date">Início %1$s </string>
+    <string name="adapter_choices">%1$s Votos </string>
 
     <!-- Strings related to Toasts -->
     <string name="toast_new_presentation_added">Nova aula adicionada</string>
@@ -111,4 +112,6 @@
     <string name="hint_title">Título</string>
     <string name="hint_alternative">Alternativa</string>
     <string name="new_survey">Criar Enquete</string>
+    <string name="mais">+</string>
+    <string name="menos">-</string>
 </resources>

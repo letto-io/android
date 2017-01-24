@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -7,10 +8,16 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,15 +36,26 @@ import retrofit2.Response;
 
 public class NewSurveyActivity extends AppCompatActivity {
     private TextInputLayout mTextInputLayoutTitle, mTextInputLayoutQuestion, mTextInputLayoutAlternative;
-    private EditText mEditTextTitle, mEditTextQuestion, mEditTextAlternative ;
+    private EditText mEditTextTitle, mEditTextQuestion;
+    private AutoCompleteTextView mAutoCompleteTextViewAlternative;
+    private Button mButtonAdd;
+    private LinearLayout container;
     private View mRootLayout;
     private Instruction mInstruction;
     private Survey mSurvey;
+
+    private static final String[] NUMBER = new String[]{
+            "One", "Two", "Three", "Four", "Five",
+            "Six", "Seven", "Eight", "Nine", "Ten"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_survey);
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, NUMBER);
 
         mRootLayout = findViewById(R.id.root);
         mTextInputLayoutTitle = (TextInputLayout) findViewById(R.id.til_title);
@@ -46,13 +64,16 @@ public class NewSurveyActivity extends AppCompatActivity {
 
         mEditTextTitle = (EditText) findViewById(R.id.et_title);
         mEditTextQuestion = (EditText) findViewById(R.id.et_question);
-        mEditTextAlternative = (EditText) findViewById(R.id.et_alternative);
+        mAutoCompleteTextViewAlternative = (AutoCompleteTextView) findViewById(R.id.actv_alternative);
+
+        mButtonAdd = (Button) findViewById(R.id.btn_add);
+        container = (LinearLayout) findViewById(R.id.container);
 
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
             mEditTextTitle.setText(savedInstanceState.getString("mEditTextTitle"));
             mEditTextQuestion.setText(savedInstanceState.getString("mEditTextQuestion"));
-            mEditTextAlternative.setText(savedInstanceState.getString("mEditTextAlternative"));
+            mAutoCompleteTextViewAlternative.setText(savedInstanceState.getString("mEditTextAlternative"));
         } else {
             if (getIntent().getExtras() != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
@@ -71,6 +92,30 @@ public class NewSurveyActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        mButtonAdd.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                              LayoutInflater layoutInflater =
+                                                      (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                              final View addView = layoutInflater.inflate(R.layout.alternative_row, null);
+                                              AutoCompleteTextView textOut = (AutoCompleteTextView) addView.findViewById(R.id.actv_alternative_out);
+                                              textOut.setAdapter(adapter);
+                                              textOut.setText(mAutoCompleteTextViewAlternative.getText().toString());
+                                              Button buttonRemove = (Button) addView.findViewById(R.id.btn_remove);
+
+                                              final View.OnClickListener thisListener = new View.OnClickListener() {
+                                                  @Override
+                                                  public void onClick(View v) {
+                                                      ((LinearLayout) addView.getParent()).removeView(addView);
+                                                  }
+                                              };
+
+                                              buttonRemove.setOnClickListener(thisListener);
+                                              container.addView(addView);
+                                          }
+                                      }
+        );
     }
 
     private void newSurvey() {
@@ -83,11 +128,18 @@ public class NewSurveyActivity extends AppCompatActivity {
                 mSurvey.setTitle(mEditTextQuestion.getText().toString());
                 mSurvey.setQuestion(mEditTextQuestion.getText().toString());
 
-                Alternative alternative = new Alternative();
-                alternative.setDescription(mEditTextAlternative.getText().toString());
-
                 List<Alternative> alternatives = new ArrayList<>();
-                alternatives.add(alternative);
+
+                int childCount = container.getChildCount();
+                for (int i = 0; i < childCount; i++) {
+                    View thisChild = container.getChildAt(i);
+
+                    AutoCompleteTextView childTextView = (AutoCompleteTextView) thisChild.findViewById(R.id.actv_alternative_out);
+
+                    Alternative alternative = new Alternative();
+                    alternative.setDescription(childTextView.getText().toString());
+                    alternatives.add(alternative);
+                }
 
                 mSurvey.setAlternatives(alternatives);
 

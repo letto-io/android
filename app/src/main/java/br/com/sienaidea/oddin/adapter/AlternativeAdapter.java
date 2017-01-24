@@ -36,7 +36,7 @@ public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.rbAlternative.setText(mList.get(position).getDescription());
-        holder.tvChoices.setText(String.valueOf(mList.get(position).getChoice_count()));
+        holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mList.get(position).getChoice_count())));
     }
 
     @Override

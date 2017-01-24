@@ -255,18 +255,18 @@ public class HttpApi {
         Call<Void> deleteFAQ(@Header(KEY_TOKEN) String token,
                              @Path(FAQ_ID) int faq_id);
 
-        //Get Surveys
+        //Get Surveys OK
         @GET(SURVEYS_PATH)
         Call<List<Survey>> getInstructionSurveys(@Header(KEY_TOKEN) String token,
                                                  @Path(INSTRUCTION_ID) int instruction_id);
 
-        //Delete Survey
+        //Delete Survey OK
         @DELETE(DELETE_SURVEY_PATH)
         Call<Void> deleteSurvey(@Header(KEY_TOKEN) String token,
                                 @Path(SURVEY_ID) int survey_id);
 
 
-        //Create Survey
+        //Create Survey OK
         @POST(SURVEYS_PATH)
         Call<Survey> createInstructionSurveys(@Header(KEY_TOKEN) String token,
                                               @Path(INSTRUCTION_ID) int instruction_id,

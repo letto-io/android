@@ -108,4 +108,6 @@
     <string name="surveys">Enquetes</string>
     <string name="hint_title">Título</string>
     <string name="new_survey">Criar Enquete</string>
+    <string name="mais">+</string>
+    <string name="menos">-</string>
 </resources>

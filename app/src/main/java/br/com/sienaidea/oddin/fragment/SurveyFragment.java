@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,9 +24,11 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.SurveyAdapter;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Constants;
+import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.SurveyActivity;
+import br.com.sienaidea.oddin.view.SurveyDetailsActivity;
 
 public class SurveyFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
@@ -100,11 +103,13 @@ public class SurveyFragment extends Fragment implements RecyclerViewOnClickListe
 
     @Override
     public void onClickListener(final int position) {
-        if (mList.get(position).isDetailVisible())
-            mList.get(position).setDetailVisible(false);
-        else mList.get(position).setDetailVisible(true);
+        Instruction instruction = ((SurveyActivity) getActivity()).getInstruction();
 
-        mAdapter.notifyItemChanged(position);
+        Intent intent = new Intent(mContext, SurveyDetailsActivity.class);
+        intent.putExtra(Instruction.TAG, instruction);
+        intent.putExtra(Survey.TAG, mList.get(position));
+
+        startActivity(intent);
     }
 
     @Override

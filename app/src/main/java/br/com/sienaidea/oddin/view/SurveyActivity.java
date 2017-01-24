@@ -152,4 +152,8 @@ public class SurveyActivity extends AppCompatActivity {
         outState.putParcelableArrayList(Survey.TAG, (ArrayList<Survey>) mList);
         super.onSaveInstanceState(outState);
     }
+
+    public Instruction getInstruction() {
+        return mInstruction;
+    }
 }

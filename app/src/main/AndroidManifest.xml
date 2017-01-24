@@ -111,6 +111,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".view.SurveyDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".view.NewSurveyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
