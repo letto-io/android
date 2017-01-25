@@ -30,6 +30,8 @@ import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.SurveyActivity;
 import br.com.sienaidea.oddin.view.SurveyDetailsActivity;
 
+import static android.app.Activity.RESULT_OK;
+
 public class SurveyFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
@@ -103,13 +105,7 @@ public class SurveyFragment extends Fragment implements RecyclerViewOnClickListe
 
     @Override
     public void onClickListener(final int position) {
-        Instruction instruction = ((SurveyActivity) getActivity()).getInstruction();
-
-        Intent intent = new Intent(mContext, SurveyDetailsActivity.class);
-        intent.putExtra(Instruction.TAG, instruction);
-        intent.putExtra(Survey.TAG, mList.get(position));
-
-        startActivity(intent);
+        ((SurveyActivity) getActivity()).showSurveyDetails(mList.get(position));
     }
 
     @Override

@@ -27,6 +27,7 @@ import retrofit2.Response;
 
 public class SurveyActivity extends AppCompatActivity {
     private static final int ACTION_NEW_SURVEY = 648;
+    public static final int SURVEY_DETAIL_REQUEST = 458;
     private Instruction mInstruction;
     private List<Survey> mList = new ArrayList<>();
     private FragmentManager fragmentManager = getSupportFragmentManager();
@@ -127,6 +128,14 @@ public class SurveyActivity extends AppCompatActivity {
 
     }
 
+    public void showSurveyDetails(Survey survey) {
+        Intent intent = new Intent(this, SurveyDetailsActivity.class);
+        intent.putExtra(Instruction.TAG, mInstruction);
+        intent.putExtra(Survey.TAG, survey);
+
+        startActivityForResult(intent, SurveyActivity.SURVEY_DETAIL_REQUEST);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -134,6 +143,12 @@ public class SurveyActivity extends AppCompatActivity {
                 mList.add((Survey) data.getParcelableExtra(Survey.TAG));
                 mSurveyFragment.notifyDataSetChanged();
                 Toast.makeText(this, R.string.toast_new_notice_added, Toast.LENGTH_SHORT).show();
+            } else if (requestCode == SURVEY_DETAIL_REQUEST) {
+                Survey survey = data.getParcelableExtra(Survey.TAG);
+                int position = data.getIntExtra("position", 0);
+                mList.get(position).setMy_vote(survey.getMy_vote());
+                mList.get(position).setAlternatives(survey.getAlternatives());
+                mSurveyFragment.notifyDataSetChanged();
             }
         }
     }
@@ -156,4 +171,5 @@ public class SurveyActivity extends AppCompatActivity {
     public Instruction getInstruction() {
         return mInstruction;
     }
+
 }

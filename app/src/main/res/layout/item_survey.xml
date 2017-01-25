@@ -22,12 +22,15 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="[Title]"
+            android:hint="Essa enquete foi desenvolvida para decid"
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
+            android:paddingRight="8dp"
             android:paddingTop="16dp"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_toLeftOf="@+id/tv_date"
+            android:layout_toStartOf="@+id/tv_date" />
 
         <TextView
             android:id="@+id/tv_question"

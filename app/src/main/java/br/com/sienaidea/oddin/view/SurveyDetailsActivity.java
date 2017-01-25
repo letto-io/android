@@ -1,5 +1,6 @@
 package br.com.sienaidea.oddin.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -80,20 +81,28 @@ public class SurveyDetailsActivity extends AppCompatActivity {
     public void chooseAlternative(final int position, final Survey survey) {
         Preference preference = new Preference();
 
-        Call<Void> request = Retrofit.getInstance().chooseAlternative(preference.getToken(getApplicationContext()), survey.getAlternatives().get(position).getId());
-        request.enqueue(new Callback<Void>() {
+        Call<Survey> request = Retrofit.getInstance().chooseAlternative(preference.getToken(getApplicationContext()), survey.getAlternatives().get(position).getId());
+        request.enqueue(new Callback<Survey>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Survey> call, Response<Survey> response) {
                 if (response.isSuccessful()){
-                    survey.getAlternatives().get(position).setChoice_count(survey.getAlternatives().get(position).getChoice_count()+1);
+                    survey.setMy_vote(response.body().getMy_vote());
+                    survey.setAlternatives(response.body().getAlternatives());
                     mAlternativeFragment.notifyDataSetChanged();
+
+                    Intent intent = new Intent();
+                    intent.putExtra(Survey.TAG, survey);
+                    intent.putExtra("position", position);
+                    setResult(RESULT_OK, intent);
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Survey> call, Throwable t) {
 
             }
         });
     }
+
+
 }

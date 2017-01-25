@@ -277,7 +277,7 @@ public class HttpApi {
 
         //Vote choose
         @POST(CHOOSE_PATH)
-        Call<Void> chooseAlternative (@Header(KEY_TOKEN) String token,
+        Call<Survey> chooseAlternative (@Header(KEY_TOKEN) String token,
                                       @Path(ALTERNATIVE_ID) int alternative_id);
     }
 }

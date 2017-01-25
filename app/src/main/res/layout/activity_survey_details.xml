@@ -51,9 +51,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:hint="[título]"
+                    android:layout_marginRight="8dp"
+                    android:hint="essa enquete foi desenvolvida com o intuito de decidirmos como seria "
                     android:textColor="@color/colorPrimaryText"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:layout_toLeftOf="@+id/tv_date"
+                    android:layout_toStartOf="@+id/tv_date" />
 
                 <TextView
                     android:id="@+id/tv_description"
