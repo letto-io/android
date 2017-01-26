@@ -49,9 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/til_question"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_toLeftOf="@+id/btn_add"
-        android:layout_toStartOf="@+id/btn_add">
+        android:paddingRight="16dp">
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/actv_alternative"
@@ -60,6 +58,18 @@
             android:hint="@string/hint_alternative"
             android:maxLength="100" />
     </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/til_alternative"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:background="@color/colorAccent"
+        android:src="@drawable/ic_lock_open_outline" />
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -72,16 +82,5 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
-
-    <ImageButton
-        android:id="@+id/btn_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
-        android:src="@drawable/ic_plus"
-        android:layout_marginRight="16dp"
-        android:layout_alignBottom="@+id/til_alternative"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

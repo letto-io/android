@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -38,7 +39,7 @@ public class NewSurveyActivity extends AppCompatActivity {
     private TextInputLayout mTextInputLayoutTitle, mTextInputLayoutQuestion, mTextInputLayoutAlternative;
     private EditText mEditTextTitle, mEditTextQuestion;
     private AutoCompleteTextView mAutoCompleteTextViewAlternative;
-    private Button mButtonAdd;
+    private ImageButton mButtonAdd;
     private LinearLayout container;
     private View mRootLayout;
     private Instruction mInstruction;
@@ -66,7 +67,7 @@ public class NewSurveyActivity extends AppCompatActivity {
         mEditTextQuestion = (EditText) findViewById(R.id.et_question);
         mAutoCompleteTextViewAlternative = (AutoCompleteTextView) findViewById(R.id.actv_alternative);
 
-        mButtonAdd = (Button) findViewById(R.id.btn_add);
+        mButtonAdd = (ImageButton) findViewById(R.id.btn_add);
         container = (LinearLayout) findViewById(R.id.container);
 
         if (savedInstanceState != null) {
@@ -103,7 +104,7 @@ public class NewSurveyActivity extends AppCompatActivity {
                                               textOut.setAdapter(adapter);
                                               textOut.setText(mAutoCompleteTextViewAlternative.getText().toString());
                                               mAutoCompleteTextViewAlternative.getText().clear();
-                                              Button buttonRemove = (Button) addView.findViewById(R.id.btn_remove);
+                                              ImageButton buttonRemove = (ImageButton) addView.findViewById(R.id.btn_remove);
 
                                               final View.OnClickListener thisListener = new View.OnClickListener() {
                                                   @Override
