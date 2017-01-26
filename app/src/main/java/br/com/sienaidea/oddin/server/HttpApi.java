@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.retrofitModel.Answer;
 import br.com.sienaidea.oddin.retrofitModel.Date;
+import br.com.sienaidea.oddin.retrofitModel.Enroll;
 import br.com.sienaidea.oddin.retrofitModel.Faq;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Material;
@@ -170,7 +171,7 @@ public class HttpApi {
 
         //Get Participants OK
         @GET(PARTICIPANT_PATH)
-        Call<List<Person>> Participants(@Header(KEY_TOKEN) String token,
+        Call<List<Enroll>> Participants(@Header(KEY_TOKEN) String token,
                                         @Path(INSTRUCTION_ID) int instruction_id);
 
         //Get Questions OK

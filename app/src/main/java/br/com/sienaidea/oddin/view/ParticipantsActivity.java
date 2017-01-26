@@ -20,6 +20,7 @@ import br.com.sienaidea.oddin.adapter.AdapterViewPager;
 import br.com.sienaidea.oddin.fragment.ParticipantsFragment;
 import br.com.sienaidea.oddin.fragment.ParticipantsOfflineFragment;
 import br.com.sienaidea.oddin.fragment.ParticipantsOnlineFragment;
+import br.com.sienaidea.oddin.retrofitModel.Enroll;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.server.HttpApi;
@@ -44,7 +45,8 @@ public class ParticipantsActivity extends AppCompatActivity {
     private int mSelectedTabPosition;
 
     private Instruction mInstruction;
-    private List<Person> mList = new ArrayList<>();
+    private List<Enroll> mList = new ArrayList<>();
+    private List<Person> mPersonList = new ArrayList<>();
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -110,15 +112,15 @@ public class ParticipantsActivity extends AppCompatActivity {
         // Service setup
         HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
-        Call<List<Person>> call = service.Participants(getToken(getApplicationContext()), mInstruction.getId());
+        Call<List<Enroll>> call = service.Participants(getToken(getApplicationContext()), mInstruction.getId());
 
         // Asynchronously execute HTTP request
-        call.enqueue(new Callback<List<Person>>() {
+        call.enqueue(new Callback<List<Enroll>>() {
             /**
              * onResponse is called when any kind of response has been received.
              */
             @Override
-            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
+            public void onResponse(Call<List<Enroll>> call, Response<List<Enroll>> response) {
                 // isSuccess is true if response code => 200 and <= 300
                 if (response.isSuccessful()) {
                     onRequestSuccess(response.body());
@@ -130,20 +132,20 @@ public class ParticipantsActivity extends AppCompatActivity {
              * For instance if the URL is invalid / host not reachable
              */
             @Override
-            public void onFailure(Call<List<Person>> call, Throwable t) {
+            public void onFailure(Call<List<Enroll>> call, Throwable t) {
                 onRequestFailure();
             }
         });
     }
 
     private List<Person> getListParticipants() {
-        return mList;
+        return mPersonList;
     }
 
     private List<Person> getListParticipantsOnline() {
         List<Person> listAux = new ArrayList<>();
 
-        for (Person person : mList) {
+        for (Person person : mPersonList) {
             if (person.isOnline()) {
                 listAux.add(person);
             }
@@ -155,7 +157,7 @@ public class ParticipantsActivity extends AppCompatActivity {
     private List<Person> getListParticipantsOffline() {
         List<Person> listAux = new ArrayList<>();
 
-        for (Person person : mList) {
+        for (Person person : mPersonList) {
             if (!person.isOnline()) {
                 listAux.add(person);
             }
@@ -169,9 +171,14 @@ public class ParticipantsActivity extends AppCompatActivity {
         return preference.getToken(context);
     }
 
-    private void onRequestSuccess(List<Person> list) {
+    private void onRequestSuccess(List<Enroll> list) {
         mList.clear();
+        mPersonList.clear();
         mList = list;
+
+        for (Enroll enroll:mList){
+            mPersonList.add(enroll.getPerson());
+        }
 
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
@@ -196,7 +203,7 @@ public class ParticipantsActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(Instruction.TAG, mInstruction);
-        outState.putParcelableArrayList(Person.TAG, (ArrayList<Person>) mList);
+        outState.putParcelableArrayList(Person.TAG, (ArrayList<Person>) mPersonList);
         outState.putInt(TAB_POSITION, mTabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
     }
