@@ -180,9 +180,23 @@ public class NewSurveyActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(mEditTextTitle.getText().toString().trim())) {
             mTextInputLayoutTitle.setError(getResources().getString(R.string.error_field_required));
             valid = false;
-        } else {
+        } else
             mTextInputLayoutTitle.setError(null);
-        }
+
+        if (TextUtils.isEmpty(mEditTextQuestion.getText().toString().trim())) {
+            mTextInputLayoutQuestion.setError(getResources().getString(R.string.error_field_required));
+            valid = false;
+        } else
+            mTextInputLayoutQuestion.setError(null);
+
+        /**
+         * se huver menos que duas alternativas não é necessário uma enquete
+         */
+        if (container.getChildCount() < 2) {
+            mTextInputLayoutAlternative.setError(getResources().getString(R.string.error_alternatives_required));
+            valid = false;
+        } else mTextInputLayoutAlternative.setError(null);
+
         return valid;
     }
 

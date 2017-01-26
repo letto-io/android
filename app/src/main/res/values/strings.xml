@@ -25,6 +25,7 @@
     <string name="error_invalid_email">Informe um endereço de email válido</string>
     <string name="error_invalid_password">Senha muito curta</string>
     <string name="error_field_required">Campo obrigatório</string>
+    <string name="error_alternatives_required">Informe pelo menos duas alternativas</string>
     <string name="error_session_expired">Sua sessão expirou, faça login para continuar</string>
     <string name="error_could_not_complete_your_request">Não foi possível completar sua requisição</string>
     <string name="unauthorized">Email e/ou senha incorretos</string>
