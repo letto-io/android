@@ -102,6 +102,7 @@ public class NewSurveyActivity extends AppCompatActivity {
                                               AutoCompleteTextView textOut = (AutoCompleteTextView) addView.findViewById(R.id.actv_alternative_out);
                                               textOut.setAdapter(adapter);
                                               textOut.setText(mAutoCompleteTextViewAlternative.getText().toString());
+                                              mAutoCompleteTextViewAlternative.getText().clear();
                                               Button buttonRemove = (Button) addView.findViewById(R.id.btn_remove);
 
                                               final View.OnClickListener thisListener = new View.OnClickListener() {
