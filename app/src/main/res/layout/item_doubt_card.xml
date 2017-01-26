@@ -30,7 +30,7 @@
             android:singleLine="true"
             android:text="Anônimo"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_text"
@@ -43,7 +43,7 @@
             android:layout_marginLeft="16dp"
             android:text="[Content doubt...]"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/iv_comment"
@@ -78,7 +78,7 @@
             android:paddingTop="16dp"
             android:text="[00:00:00]"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <View
             android:id="@+id/vw_divider"

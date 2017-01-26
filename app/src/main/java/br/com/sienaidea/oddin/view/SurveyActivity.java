@@ -146,7 +146,7 @@ public class SurveyActivity extends AppCompatActivity {
             } else if (requestCode == SURVEY_DETAIL_REQUEST) {
                 Survey survey = data.getParcelableExtra(Survey.TAG);
                 int position = data.getIntExtra("position", 0);
-                mList.get(position).setMy_vote(survey.getMy_vote());
+                mList.get(position).setMy_vote(survey.getMy_vote() );
                 mList.get(position).setAlternatives(survey.getAlternatives());
                 mSurveyFragment.notifyDataSetChanged();
             }

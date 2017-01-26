@@ -22,15 +22,15 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Essa enquete foi desenvolvida para decid"
+            android:hint="[title]"
             android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
             android:paddingRight="8dp"
             android:paddingTop="16dp"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_toLeftOf="@+id/tv_date"
-            android:layout_toStartOf="@+id/tv_date" />
+            android:layout_alignLeft="@+id/tv_question"
+            android:layout_alignStart="@+id/tv_question" />
 
         <TextView
             android:id="@+id/tv_question"
@@ -43,7 +43,7 @@
             android:hint="[Content question...]"
             android:maxLines="3"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_date"
@@ -56,7 +56,7 @@
             android:paddingRight="16dp"
             android:paddingTop="16dp"
             android:textColor="@color/colorSecondaryText"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>

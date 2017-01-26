@@ -13,6 +13,9 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Alternative;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
+import br.com.sienaidea.oddin.server.Preference;
+
+import static br.com.sienaidea.oddin.model.Constants.INSTRUCTOR;
 
 /**
  * Created by Siena Idea on 21/09/2016.
@@ -36,7 +39,10 @@ public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (mSurvey.getMy_vote() != 0) {
+        Preference preference = new Preference();
+        if (preference.getUserProfile(mContext) == INSTRUCTOR)
+            holder.rbAlternative.setEnabled(false);
+        else if (mSurvey.getMy_vote() != 0) {
             holder.rbAlternative.setEnabled(false);
             if (mSurvey.getMy_vote() == mSurvey.getAlternatives().get(position).getId()) {
                 holder.rbAlternative.setChecked(true);
@@ -46,8 +52,14 @@ public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.
                 holder.rbAlternative.setEnabled(false);
             }
         } else holder.rbAlternative.setEnabled(true);
+
         holder.rbAlternative.setText(mSurvey.getAlternatives().get(position).getDescription());
-        holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
+
+        if (mSurvey.getAlternatives().get(position).getChoice_count() > 1)
+            holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
+        else
+            holder.tvChoices.setText(mContext.getString(R.string.adapter_choice, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
+
     }
 
     @Override

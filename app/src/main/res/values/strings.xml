@@ -34,6 +34,7 @@
     <string name="adapter_faq_number">%1$d)</string>
     <string name="adapter_start_date">Início %1$s </string>
     <string name="adapter_choices">%1$s Votos </string>
+    <string name="adapter_choice">%1$s Voto </string>
 
     <!-- Strings related to Toasts -->
     <string name="toast_new_presentation_added">Nova aula adicionada</string>
