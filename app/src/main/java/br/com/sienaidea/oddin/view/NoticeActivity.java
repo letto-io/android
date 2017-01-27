@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class NoticeActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private NoticeAdapter mNoticeAdapter;
     private View mEmptyView;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class NoticeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notice);
 
         mEmptyView = findViewById(R.id.empty_view);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
@@ -120,6 +123,7 @@ public class NoticeActivity extends AppCompatActivity {
         mNoticeAdapter = new NoticeAdapter(this, mList);
         mRecyclerView.setAdapter(mNoticeAdapter);
         checkState();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void onRequestFailure() {

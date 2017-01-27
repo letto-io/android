@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class DateActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private DateAdapter mDateAdapter;
     private View mEmptyView;
-    private ProgressDialog mProgressDialog;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class DateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_date);
 
         mEmptyView = findViewById(R.id.empty_view);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
@@ -55,10 +57,6 @@ public class DateActivity extends AppCompatActivity {
         } else {
             mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
             if (mInstruction != null) {
-                mProgressDialog = new ProgressDialog(DateActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 getNotices();
             } else {
                 finish();
@@ -110,12 +108,11 @@ public class DateActivity extends AppCompatActivity {
         mDateAdapter = new DateAdapter(this, mList);
         mRecyclerView.setAdapter(mDateAdapter);
         checkState();
-        mProgressDialog.dismiss();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void onRequestFailure(){
-        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-        mProgressDialog.dismiss();
+        // TODO: 1/27/2017
     }
 
     private void setEmpty(boolean isEmpty) {

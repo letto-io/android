@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -145,10 +146,14 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
 
     private ProgressDialog mProgressDialog;
 
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doubt_details);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         Preference preference = new Preference();
         mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
@@ -661,6 +666,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         mTabLayout.setupWithViewPager(viewPager);
 
         setupTabIcons();
+
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void setupTabIcons() {

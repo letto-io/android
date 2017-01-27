@@ -10,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -47,12 +49,15 @@ public class ParticipantsActivity extends AppCompatActivity {
     private Instruction mInstruction;
     private List<Enroll> mList = new ArrayList<>();
     private List<Person> mPersonList = new ArrayList<>();
-    private ProgressDialog mProgressDialog;
+
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_participants);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_participants);
         mViewPager = (ViewPager) findViewById(R.id.vp_participants);
@@ -65,10 +70,6 @@ public class ParticipantsActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mInstruction = getIntent().getParcelableExtra(Instruction.TAG);
-                mProgressDialog = new ProgressDialog(ParticipantsActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 getParticipants();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_LONG).show();
@@ -100,6 +101,8 @@ public class ParticipantsActivity extends AppCompatActivity {
 
         mTabLayout.setTabTextColors(ContextCompat.getColorStateList(this, R.xml.selector));
         mTabLayout.setupWithViewPager(viewPager);
+
+        mProgressBar.setVisibility(View.GONE);
     }
 
     public void getParticipants() {
@@ -183,12 +186,9 @@ public class ParticipantsActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
-        mProgressDialog.dismiss();
     }
 
     private void onRequestFailure() {
-        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-        mProgressDialog.dismiss();
     }
 
     @Override

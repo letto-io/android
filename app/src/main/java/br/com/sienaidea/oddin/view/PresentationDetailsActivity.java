@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
@@ -59,6 +60,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.view.View.GONE;
 import static br.com.sienaidea.oddin.R.string.toast_fails_to_start;
 
 public class PresentationDetailsActivity extends AppCompatActivity {
@@ -85,8 +87,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private FloatingActionButton mFab;
     private Profile mProfile = new Profile();
     private View mRootLayout;
-    private ProgressDialog mProgressDialog;
 
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mRootLayout = findViewById(R.id.root_lecture_detail);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         Preference preference = new Preference();
         mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
@@ -106,10 +110,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         } else {
             if (getIntent() != null && getIntent().getExtras() != null && getIntent().getParcelableExtra(Presentation.TAG) != null && getIntent().getParcelableExtra(Instruction.TAG) != null) {
                 mPresentation = getIntent().getParcelableExtra(Presentation.TAG);
-                mProgressDialog = new ProgressDialog(PresentationDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 setupFab();
                 getMaterials();
             } else {
@@ -272,8 +272,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
-                mProgressDialog.setMessage(getResources().getString(R.string.sent));
-                mProgressDialog.show();
                 getCredentials();
             }
         });
@@ -283,7 +281,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -330,7 +327,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
-            mProgressDialog.setMessage(getResources().getString(R.string.progress_upload));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
@@ -421,7 +417,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     }
 
     private void confirmUpload() {
-        mProgressDialog.setMessage(getResources().getString(R.string.confirm_upload));
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -446,7 +441,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
                     mMaterialPresentationFragment.addItemPosition(0, mMaterial);
-                    mProgressDialog.dismiss();
                 }
             }
 
@@ -456,8 +450,6 @@ public class PresentationDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-                mProgressDialog.dismiss();
             }
         });
     }
@@ -594,17 +586,14 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.rl_fragment_presentation_details, mMaterialPresentationFragment, mMaterialPresentationFragment.TAG);
             fragmentTransaction.commit();
         }
-        mProgressDialog.dismiss();
+        mProgressBar.setVisibility(GONE);
     }
 
     private void onRequestFailure(int statusCode) {
         if (statusCode == 401) {
-            mProgressDialog.setMessage(getResources().getString(R.string.error_session_expired));
             startActivity(new Intent(getApplication(), LoginActivity.class));
             finish();
         } else {
-            mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-            mProgressDialog.dismiss();
         }
     }
 

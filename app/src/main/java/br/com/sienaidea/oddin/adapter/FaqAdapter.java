@@ -36,7 +36,7 @@ public class FaqAdapter extends RecyclerView.Adapter<FaqAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.tvNumber.setText(mContext.getString(R.string.adapter_faq_number, mList.get(position).getId()));
+        holder.tvNumber.setText(mContext.getString(R.string.adapter_faq_number, position+1));
         holder.tvQuestion.setText(mList.get(position).getQuestion());
 
         if (mList.get(position).isDetailVisible()) {

@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,10 +59,9 @@ public class PresentationActivity extends AppCompatActivity {
     private AdapterViewPager mAdapterViewPager;
     private int mSelectedTabPosition;
     private View mRootLayout;
+    private ProgressBar mProgressBar;
 
     private FloatingActionButton fab;
-
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,7 @@ public class PresentationActivity extends AppCompatActivity {
         mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
 
         mRootLayout = findViewById(R.id.root_presentation);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_presentation);
         mViewPager = (ViewPager) findViewById(R.id.vp_presentation);
@@ -94,10 +95,6 @@ public class PresentationActivity extends AppCompatActivity {
                 } else {
                     getProfile();
                 }
-                mProgressDialog = new ProgressDialog(PresentationActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 getPresentations();
             } else {
                 Toast.makeText(this, R.string.toast_fails_to_start, Toast.LENGTH_SHORT).show();
@@ -152,6 +149,8 @@ public class PresentationActivity extends AppCompatActivity {
 
         mTabLayout.setTabTextColors(ContextCompat.getColorStateList(this, R.xml.selector));
         mTabLayout.setupWithViewPager(viewPager);
+
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -201,7 +200,6 @@ public class PresentationActivity extends AppCompatActivity {
             });
 
         } else {
-            mProgressDialog.dismiss();
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
@@ -217,7 +215,6 @@ public class PresentationActivity extends AppCompatActivity {
         mSelectedTabPosition = mTabLayout.getSelectedTabPosition();
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
-        mProgressDialog.dismiss();
     }
 
     //request ClosePresentation

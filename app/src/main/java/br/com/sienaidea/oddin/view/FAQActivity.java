@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,11 +37,14 @@ public class FAQActivity extends AppCompatActivity {
     private List<Faq> mList = new ArrayList<>();
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private FaqFragment mFaqFragment;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
@@ -126,6 +130,7 @@ public class FAQActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.rl_fragment_faq, mFaqFragment, FaqFragment.TAG);
             fragmentTransaction.commit();
         }
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void onRequestFailure() {

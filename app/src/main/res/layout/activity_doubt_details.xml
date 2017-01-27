@@ -99,4 +99,10 @@
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorDividerColor" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </android.support.design.widget.CoordinatorLayout>

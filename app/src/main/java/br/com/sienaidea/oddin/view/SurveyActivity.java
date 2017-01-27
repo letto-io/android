@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,11 +33,14 @@ public class SurveyActivity extends AppCompatActivity {
     private List<Survey> mList = new ArrayList<>();
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private SurveyFragment mSurveyFragment;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         if (savedInstanceState != null) {
             mInstruction = savedInstanceState.getParcelable(Instruction.TAG);
@@ -122,6 +126,7 @@ public class SurveyActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.rl_fragment_survey, mSurveyFragment, SurveyFragment.TAG);
             fragmentTransaction.commit();
         }
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void onRequestFailure() {

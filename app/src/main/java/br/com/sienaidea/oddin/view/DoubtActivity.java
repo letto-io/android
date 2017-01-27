@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -68,10 +69,14 @@ public class DoubtActivity extends AppCompatActivity {
     private List<Question> mList = new ArrayList<>();
     private Profile mProfile = new Profile();
 
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doubt);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         Preference preference = new Preference();
         mProfile.setProfile(preference.getUserProfile(getApplicationContext()));
@@ -143,6 +148,7 @@ public class DoubtActivity extends AppCompatActivity {
         viewPager.setAdapter(mAdapterViewPager);
 
         mTabLayout.setupWithViewPager(mViewPager);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     public void getQuestions() {
@@ -357,11 +363,6 @@ public class DoubtActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.question_menu, menu);
 
-        if (mProfile.getProfile() == Constants.INSTRUCTOR)
-            menu.findItem(R.id.action_remove_presentation).setVisible(true);
-        else
-            menu.findItem(R.id.action_remove_presentation).setVisible(false);
-
         MenuItem menuItem = menu.findItem(R.id.action_search);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -376,19 +377,6 @@ public class DoubtActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_remove_presentation:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deletePresentation();
-                    }
-                });
-                builder.setNegativeButton(R.string.dialog_cancel, null);
-                builder.setTitle(mPresentation.getSubject());
-                builder.setMessage(R.string.dialog_delete_presentation);
-                builder.show();
-                break;
             case R.id.action_home:
                 startActivity(new Intent(this, LectureActivity.class));
                 finish();

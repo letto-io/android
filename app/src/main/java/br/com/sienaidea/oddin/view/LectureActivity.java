@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +52,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     protected DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
-    private ProgressDialog mProgressDialog;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         setSupportActionBar(mToolbar);
 
         mRootLayout = findViewById(R.id.root);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,10 +89,6 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
             userName = savedInstanceState.getString(Person.NAME);
             userEmail = savedInstanceState.getString(Person.EMAIL);
         } else {
-            mProgressDialog = new ProgressDialog(LectureActivity.this, R.style.AppTheme_Dark_Dialog);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage(getResources().getString(R.string.loading));
-            //mProgressDialog.show();
             getInstructions();
         }
 
@@ -142,7 +141,6 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
             });
 
         } else {
-            mProgressDialog.dismiss();
             Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snake_try_again, new View.OnClickListener() {
                         @Override
@@ -165,18 +163,15 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
             fragmentTransaction.add(R.id.rl_fragment_container, mLectureFragment, LectureFragment.TAG);
             fragmentTransaction.commit();
         }
-        mProgressDialog.dismiss();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void onRequestFailure(int statusCode) {
         if (statusCode == 401) {
             startActivity(new Intent(getApplication(), LoginActivity.class));
-            mProgressDialog.setMessage(getResources().getString(R.string.error_session_expired));
-            //Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
             finish();
         } else {
             startActivity(new Intent(getApplication(), LoginActivity.class));
-            mProgressDialog.setMessage(getResources().getString(R.string.error_could_not_complete_your_request));
             finish();
         }
     }
@@ -213,8 +208,6 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     }
 
     private void logoff() {
-        mProgressDialog.setMessage(getResources().getString(R.string.logoff));
-        mProgressDialog.show();
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -236,16 +229,11 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
                     preference.clear(getApplicationContext());
                     startActivity(new Intent(LectureActivity.this, LoginActivity.class));
                     finish();
-                    mProgressDialog.dismiss();
                 }
-                mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-                mProgressDialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
-                mProgressDialog.dismiss();
             }
         });
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Oddin</string>
+    <string name="app_name">ODDIN</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -25,13 +25,17 @@
     <string name="error_invalid_email">Informe um endereço de email válido</string>
     <string name="error_invalid_password">Senha muito curta</string>
     <string name="error_field_required">Campo obrigatório</string>
+    <string name="error_alternatives_required">Informe pelo menos duas alternativas</string>
     <string name="error_session_expired">Sua sessão expirou, faça login para continuar</string>
     <string name="error_could_not_complete_your_request">Não foi possível completar sua requisição</string>
     <string name="unauthorized">Email e/ou senha incorretos</string>
 
     <!-- Strings related to adapters -->
-    <string name="adapter_class">Aula %1$d</string>
+    <string name="adapter_class">Turma %1$d</string>
+    <string name="adapter_faq_number">%1$d)</string>
     <string name="adapter_start_date">Início %1$s </string>
+    <string name="adapter_choices">%1$s Votos </string>
+    <string name="adapter_choice">%1$s Voto </string>
 
     <!-- Strings related to Toasts -->
     <string name="toast_new_presentation_added">Nova aula adicionada</string>
@@ -51,6 +55,7 @@
     <string name="error_server">Falha no servidor</string>
     <string name="dialog_ok">OK</string>
     <string name="recover_password">Recuperar senha</string>
+    <string name="sending">Enviando...</string>
     <string name="new_presentation">Nova aula</string>
     <string name="toast_new_answer_added">Resposta adicionada</string>
     <string name="dialog_delete_material">Deletar material?</string>
@@ -103,9 +108,11 @@
     <string name="hint_question">Pergunta</string>
     <string name="new_faq">Adicionar FAQ</string>
     <string name="dialog_delete_faq">Excluir FAQ?</string>
+    <string name="dialog_delete_survey">Excluir Enquete?</string>
     <string name="action_survey">Enquetes</string>
     <string name="surveys">Enquetes</string>
     <string name="hint_title">Título</string>
+    <string name="hint_alternative">Alternativa</string>
     <string name="new_survey">Criar Enquete</string>
     <string name="mais">+</string>
     <string name="menos">-</string>
