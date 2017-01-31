@@ -96,7 +96,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_presentation_details);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mRootLayout = findViewById(R.id.root_lecture_detail);
+        mRootLayout = findViewById(R.id.coordlayout);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 

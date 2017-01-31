@@ -2,7 +2,6 @@ package br.com.sienaidea.oddin.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +22,9 @@ import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.SurveyAdapter;
 import br.com.sienaidea.oddin.interfaces.RecyclerViewOnClickListenerOnLongPressListener;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.retrofitModel.Instruction;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.view.SurveyActivity;
-import br.com.sienaidea.oddin.view.SurveyDetailsActivity;
-
-import static android.app.Activity.RESULT_OK;
 
 public class SurveyFragment extends Fragment implements RecyclerViewOnClickListenerOnLongPressListener, View.OnClickListener {
     private RecyclerView mRecyclerView;

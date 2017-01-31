@@ -27,7 +27,6 @@
     <string name="error_field_required">Campo obrigatório</string>
     <string name="error_alternatives_required">Informe pelo menos duas alternativas</string>
     <string name="error_session_expired">Sua sessão expirou, faça login para continuar</string>
-    <string name="error_could_not_complete_your_request">Não foi possível completar sua requisição</string>
     <string name="unauthorized">Email e/ou senha incorretos</string>
 
     <!-- Strings related to adapters -->
@@ -55,7 +54,7 @@
     <string name="error_server">Falha no servidor</string>
     <string name="dialog_ok">OK</string>
     <string name="recover_password">Recuperar senha</string>
-    <string name="sending">Enviando...</string>
+    <string name="sending">Enviando&#8230;</string>
     <string name="new_presentation">Nova aula</string>
     <string name="toast_new_answer_added">Resposta adicionada</string>
     <string name="dialog_delete_material">Deletar material?</string>
@@ -64,7 +63,7 @@
     <string name="toolbar_discipline">Disciplinas</string>
     <string name="toolbar_users">Participantes</string>
     <string name="toolbar_presentation">Aulas</string>
-    <string name="toast_recording">Gravando...</string>
+    <string name="toast_recording">Gravando&#8230;</string>
     <string name="file_manager_info">Recomenda-se instalação do ES File Explorer File Manager</string>
     <string name="toast_request_not_completed">Requisição não completada</string>
     <string name="inauthorized">Inautorizado</string>
@@ -77,16 +76,14 @@
     <string name="action_dates">Datas importantes</string>
     <string name="hint_description">Digite descrição aqui</string>
     <string name="hint_date">Data</string>
-    <string name="new_date">Nova dara</string>
-    <string name="toast_new_date_added">Adicionando...</string>
-    <string name="toast_new_notice_added">Adicionando...</string>
-    <string name="loading">Carregando...</string>
-    <string name="sent">Completo...</string>
-    <string name="picking_up_credentials">Obtendo credenciais...</string>
-    <string name="progress_upload">Enviando...</string>
-    <string name="confirm_upload">Confirmando envio ao servidor...</string>
-    <string name="logoff">Aguarde... desconectando...</string>
-    <string name="error_file_temporary">Falha ao gerar arquivo...</string>
+    <string name="new_date">Nova data</string>
+    <string name="toast_new_date_added">Adicionando&#8230;</string>
+    <string name="toast_new_notice_added">Adicionando&#8230;</string>
+    <string name="loading">Carregando&#8230;</string>
+    <string name="sent">Completo&#8230;</string>
+    <string name="picking_up_credentials">Obtendo credenciais&#8230;</string>
+    <string name="progress_upload">Enviando&#8230;</string>
+    <string name="confirm_upload">Confirmando envio ao servidor&#8230;</string>
     <string name="action">Ações</string>
     <string name="open">ABERTO</string>
     <string name="close">FECHADO</string>
@@ -100,9 +97,7 @@
     <string name="hint_doubt">Digite a dúvida aqui</string>
     <string name="anonymous">Anônimo</string>
     <string name="hint_theme">Tema</string>
-    <string name="action_remove_presentation">Deletar aula</string>
-    <string name="hint_search">Pesquisar...</string>
-    <string name="dialog_delete_presentation">Você tem certeza que deseja remover esta aula e todas as dúvidas pertencentes à ela?</string>
+    <string name="hint_search">Pesquisar&#8230;</string>
     <string name="faqs">FAQs</string>
     <string name="action_faqs">FAQs</string>
     <string name="hint_question">Pergunta</string>
@@ -114,6 +109,6 @@
     <string name="hint_title">Título</string>
     <string name="hint_alternative">Alternativa</string>
     <string name="new_survey">Criar Enquete</string>
-    <string name="mais">+</string>
-    <string name="menos">-</string>
+    <string name="fail_to_create_file">Falha ao gerar arquivo</string>
+    <string name="download_started">Download iniciado</string>
 </resources>

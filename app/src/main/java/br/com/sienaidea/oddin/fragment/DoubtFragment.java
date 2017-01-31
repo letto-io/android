@@ -155,7 +155,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                         ((DoubtActivity) getActivity()).voteQuestion(question);
                 }
             }
-        }else {
+        } else {
             Intent intent = new Intent(mContext, DoubtDetailsActivity.class);
             intent.putExtra(Question.TAG, mAdapterDoubt.getQuestionAdapter(position));
             intent.putExtra(Instruction.TAG, mInstruction);
@@ -195,57 +195,22 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
                     Rect rect;
 
                     boolean isLike = false;
-                    boolean isUnderstand = false;
-                    boolean isLock = false;
                     if (itemView instanceof CardView) {
 
-                        x = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(6).getX();
-                        w = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(6).getWidth();
-                        h = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(6).getHeight();
+                        x = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(4).getX();
+                        w = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(4).getWidth();
+                        h = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(4).getHeight();
 
                         rect = new Rect();
-                        ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(6).getGlobalVisibleRect(rect);
+                        ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(4).getGlobalVisibleRect(rect);
                         y = rect.top;
 
                         if (e.getX() >= x && e.getX() <= w + x && e.getRawY() >= y && e.getRawY() <= h + y) {
                             isLike = true;
                         }
 
-                        if (isLike) {
+                        if (isLike)
                             option = LIKE;
-                        } else {
-                            x = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getX();
-                            w = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getWidth();
-                            h = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getHeight();
-
-                            rect = new Rect();
-                            ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getGlobalVisibleRect(rect);
-                            y = rect.top;
-
-                            if (e.getX() >= x && e.getX() <= w + x && e.getRawY() >= y && e.getRawY() <= h + y) {
-                                isUnderstand = true;
-                            }
-                        }
-
-                        if (isUnderstand) {
-                            option = UNDERSTAND;
-                        } else {
-                            x = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getX();
-                            w = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getWidth();
-                            h = ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getHeight();
-
-                            rect = new Rect();
-                            ((RelativeLayout) ((CardView) itemView).getChildAt(0)).getChildAt(7).getGlobalVisibleRect(rect);
-                            y = rect.top;
-
-                            if (e.getX() >= x && e.getX() <= w + x && e.getRawY() >= y && e.getRawY() <= h + y) {
-                                isLock = true;
-                            }
-                        }
-
-                        if (isLock) {
-                            option = LOCK;
-                        }
                     }
 
                     if (itemView != null && mRecyclerViewOnClickListenerHack != null) {

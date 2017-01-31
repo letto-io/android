@@ -1,10 +1,10 @@
 package br.com.sienaidea.oddin.view;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -26,14 +25,12 @@ import java.util.List;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.adapter.AdapterViewPager;
-import br.com.sienaidea.oddin.adapter.SurveyAdapter;
 import br.com.sienaidea.oddin.fragment.PresentationClosedFragment;
 import br.com.sienaidea.oddin.fragment.PresentationOpenFragment;
 import br.com.sienaidea.oddin.model.Constants;
-import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Presentation;
 import br.com.sienaidea.oddin.retrofitModel.Profile;
-import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.HttpApi;
 import br.com.sienaidea.oddin.server.Preference;
 import br.com.sienaidea.oddin.util.DetectConnection;

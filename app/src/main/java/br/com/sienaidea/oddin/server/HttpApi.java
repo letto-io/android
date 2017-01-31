@@ -34,8 +34,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public class HttpApi {
-    public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção
-    //public static final String API_URL = "http://ws-edupanel.herokuapp.com/"; //testes
+    //public static final String API_URL = "http://ws-oddin.herokuapp.com/"; //produção (Silvana)
+    public static final String API_URL = "http://ws-edupanel.herokuapp.com"; //testes
 
     private static final String KEY_TOKEN = "x-session-token";
 
@@ -49,34 +49,34 @@ public class HttpApi {
     private static final String ALTERNATIVE_ID = "alternative_id";
 
 
-    private static final String SESSION_PATH = "session";
-    private static final String RECOVER_PASSWORD_PATH = "recover-password";
-    private static final String PROFILE_PATH = "instructions/{instruction_id}/profile";
-    private static final String INSTRUCTION_PATH = "instructions";
-    private static final String PRESENTATION_PATH = "instructions/{instruction_id}/presentations";
-    private static final String CLOSE_PRESENTATION_PATH = "presentations/{presentation_id}/close";
-    private static final String INSTRUCTION_MATERIAL_PATH = "instructions/{instruction_id}/materials";
-    private static final String MATERIAL_PATH = "materials/{material_id}";
-    private static final String PRESENTATION_MATERIAL_PATH = "presentations/{presentation_id}/materials";
-    private static final String GET_CREDENTIALS_INSTRUCTION_PATH = "instructions/{instruction_id}/materials";
-    private static final String GET_CREDENTIALS_PRESENTATION_PATH = "presentations/{presentation_id}/materials";
-    private static final String DELETE_PRESENTATION_PATH = "presentations/{presentation_id}";
-    private static final String PARTICIPANT_PATH = "instructions/{instruction_id}/participants";
-    private static final String QUESTIONS_PATH = "presentations/{presentation_id}/questions";
-    private static final String NEW_QUESTION_PATH = "presentations/{presentation_id}/questions";
-    private static final String UPVOTE_QUESTION_PATH = "questions/{question_id}/upvote";
-    private static final String UPVOTE_ANSWER_PATH = "answers/{answer_id}/upvote";
-    private static final String DOWN_ANSWER_PATH = "answers/{answer_id}/downvote";
-    private static final String ANSWERS_PATH = "questions/{question_id}/answers";
-    private static final String ACCEPT_ANSWER_PATH = "answers/{answer_id}/accept";
-    private static final String ANSWER_MATERIALS_PATH = "questions/{question_id}/answers/materials";
-    private static final String NOTICES_PATH = "instructions/{instruction_id}/notices";
-    private static final String FAQS_PATH = "instructions/{instruction_id}/faqs";
-    private static final String SURVEYS_PATH = "instructions/{instruction_id}/surveys";
-    private static final String DATES_PATH = "instructions/{instruction_id}/dates";
-    private static final String DELETE_FAQ_PATH = "faqs/{faq_id}";
-    private static final String DELETE_SURVEY_PATH = "surveys/{survey_id}";
-    private static final String CHOOSE_PATH = "alternatives/{alternative_id}/choose";
+    private static final String SESSION_PATH = "/session";
+    private static final String RECOVER_PASSWORD_PATH = "/recover-password";
+    private static final String PROFILE_PATH = "/instructions/{instruction_id}/profile";
+    private static final String INSTRUCTION_PATH = "/instructions";
+    private static final String PRESENTATION_PATH = "/instructions/{instruction_id}/presentations";
+    private static final String CLOSE_PRESENTATION_PATH = "/presentations/{presentation_id}/close";
+    private static final String INSTRUCTION_MATERIAL_PATH = "/instructions/{instruction_id}/materials";
+    private static final String MATERIAL_PATH = "/materials/{material_id}";
+    private static final String PRESENTATION_MATERIAL_PATH = "/presentations/{presentation_id}/materials";
+    private static final String GET_CREDENTIALS_INSTRUCTION_PATH = "/instructions/{instruction_id}/materials";
+    private static final String GET_CREDENTIALS_PRESENTATION_PATH = "/presentations/{presentation_id}/materials";
+    private static final String DELETE_PRESENTATION_PATH = "/presentations/{presentation_id}";
+    private static final String PARTICIPANT_PATH = "/instructions/{instruction_id}/participants";
+    private static final String QUESTIONS_PATH = "/presentations/{presentation_id}/questions";
+    private static final String NEW_QUESTION_PATH = "/presentations/{presentation_id}/questions";
+    private static final String UPVOTE_QUESTION_PATH = "/questions/{question_id}/upvote";
+    private static final String UPVOTE_ANSWER_PATH = "/answers/{answer_id}/upvote";
+    private static final String DOWN_ANSWER_PATH = "/answers/{answer_id}/downvote";
+    private static final String ANSWERS_PATH = "/questions/{question_id}/answers";
+    private static final String ACCEPT_ANSWER_PATH = "/answers/{answer_id}/accept";
+    private static final String ANSWER_MATERIALS_PATH = "/questions/{question_id}/answers/materials";
+    private static final String NOTICES_PATH = "/instructions/{instruction_id}/notices";
+    private static final String FAQS_PATH = "/instructions/{instruction_id}/faqs";
+    private static final String SURVEYS_PATH = "/instructions/{instruction_id}/surveys";
+    private static final String DATES_PATH = "/instructions/{instruction_id}/dates";
+    private static final String DELETE_FAQ_PATH = "/faqs/{faq_id}";
+    private static final String DELETE_SURVEY_PATH = "/surveys/{survey_id}";
+    private static final String CHOOSE_PATH = "/alternatives/{alternative_id}/choose";
 
     public interface HttpBinService {
 

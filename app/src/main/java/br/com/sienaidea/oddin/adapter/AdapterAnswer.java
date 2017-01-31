@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -119,6 +122,14 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
             holder.ivAccept.setImageDrawable(mDrawable);
         }else {
             holder.ivAccept.setImageResource(R.drawable.ic_check);
+        }
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
         }
     }
 

@@ -8,10 +8,7 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import java.util.List;
-
 import br.com.sienaidea.oddin.R;
-import br.com.sienaidea.oddin.retrofitModel.Alternative;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.Preference;
 

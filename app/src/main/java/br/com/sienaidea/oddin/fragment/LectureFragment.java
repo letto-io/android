@@ -45,7 +45,6 @@ public class LectureFragment extends Fragment implements RecyclerViewOnClickList
         mEmptyView = (TextView) view.findViewById(R.id.empty_view);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_list);
-        mRecyclerView.setHasFixedSize(true);
 
         LinearLayoutManager llm = new LinearLayoutManager(mContext);
         llm.setOrientation(LinearLayoutManager.VERTICAL);

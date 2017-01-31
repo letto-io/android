@@ -8,8 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Question mQuestion = mList.get(position);
 
-        if (!mQuestion.isAnonymous()){
+        if (!mQuestion.isAnonymous()) {
             holder.tvPersonName.setText(mQuestion.getPerson().getName());
         }
         holder.tvText.setText(mQuestion.getText());
@@ -51,16 +53,18 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 
         Preference preference = new Preference();
         if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
-            //holder.tvLike.setEnabled(false);
             holder.tvLike.setClickable(false);
-        }else {
-            //holder.tvLike.setEnabled(true);
+        } else {
             holder.tvLike.setClickable(true);
         }
 
-        if (mQuestion.isAnswer()) {
-            holder.ivComment.setVisibility(View.VISIBLE);
-        } else holder.ivLock.setEnabled(false);
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 
     @Override
@@ -99,7 +103,6 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tvText, tvPersonName, tvTime, tvLike;
-        public ImageView ivLock, ivComment, ivClosed;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -108,10 +111,6 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
             tvText = (TextView) itemView.findViewById(R.id.tv_text);
             tvTime = (TextView) itemView.findViewById(R.id.tv_time);
             tvLike = (TextView) itemView.findViewById(R.id.iv_like);
-
-            ivLock = (ImageView) itemView.findViewById(R.id.iv_lock);
-            ivComment = (ImageView) itemView.findViewById(R.id.iv_comment);
-            ivClosed = (ImageView) itemView.findViewById(R.id.iv_closed);
         }
     }
 }

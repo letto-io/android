@@ -95,8 +95,6 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
                 mToolbar.setSubtitle(mInstruction.getLecture().getName());
                 if (!mListDoubt.isEmpty()) {
                     filterDoubts(query);
-                } else {
-                    //else setEmpty(true);
                 }
             } else {
                 mListPresentation = intent.getParcelableArrayListExtra(Presentation.ARRAYLIST);
@@ -109,17 +107,6 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
             }
         }
     }
-/*
-    private void setEmpty(boolean isEmpty) {
-        if (isEmpty) {
-            mRecyclerView.setVisibility(View.GONE);
-            mEmptyView.setVisibility(View.VISIBLE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyView.setVisibility(View.GONE);
-        }
-    }
-    */
 
     public void filterDoubts(String query) {
         isDoubt = true;
@@ -155,23 +142,6 @@ public class SearchableActivity extends AppCompatActivity implements RecyclerVie
         mAdapterPresentation = new AdapterPresentation(this, mListAuxPresentation);
         mRecyclerView.setAdapter(mAdapterPresentation);
     }
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_searchable_activity, menu);
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView;
-        MenuItem item = menu.findItem(R.id.action_searchable_activity);
-
-            searchView = (SearchView) MenuItemCompat.getActionView( item );
-
-        searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
-        searchView.setQueryHint( getResources().getString(R.string.search_hint) );
-
-        return true;
-    }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

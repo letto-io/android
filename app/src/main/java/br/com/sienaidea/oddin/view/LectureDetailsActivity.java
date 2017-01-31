@@ -2,7 +2,6 @@ package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -56,7 +56,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static br.com.sienaidea.oddin.R.string.toast_fails_to_start;
 
@@ -89,7 +88,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lecture_details);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mRootLayout = findViewById(R.id.root_lecture_detail);
+        mRootLayout = findViewById(R.id.coordlayout);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         if (savedInstanceState != null) {
@@ -171,7 +170,6 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.i("TAG", "onRequestPermissionsResult");
         switch (requestCode) {
             case REQUEST_PERMISSIONS_DOWNLOAD:
                 for (int i = 0; i < permissions.length; i++) {
@@ -255,19 +253,12 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            final HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
+            showSnackBar(getResources().getString(R.string.picking_up_credentials));
 
             Preference preference = new Preference();
             final String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<ResponseCredentialsMaterial> request = service.createInstructionMaterial(auth_token_string, mInstruction.getId());
+            Call<ResponseCredentialsMaterial> request = br.com.sienaidea.oddin.server.Retrofit.getInstance().createInstructionMaterial(auth_token_string, mInstruction.getId());
 
             request.enqueue(new Callback<ResponseCredentialsMaterial>() {
                 @Override
@@ -276,13 +267,13 @@ public class LectureDetailsActivity extends AppCompatActivity {
                         mCredentialsMaterial = response.body();
                         uploadFile();
                     } else {
-                        onRequestFailure(response.code());
+                        onRequestFailure();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseCredentialsMaterial> call, Throwable t) {
-                    onRequestFailure(500);
+                    onRequestFailure();
                 }
             });
 
@@ -301,6 +292,8 @@ public class LectureDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
+            showSnackBar(getResources().getString(R.string.sending));
+
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
@@ -358,23 +351,15 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
+            showSnackBar(String.valueOf(getResources().getString(R.string.fail_to_create_file)));
         }
     }
 
     private void confirmUpload() {
-        // Retrofit setup
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(HttpApi.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // Service setup
-        HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
         Preference preference = new Preference();
         final String auth_token_string = preference.getToken(getApplicationContext());
 
-        Call<ResponseConfirmMaterial> call = service.confirmMaterial(auth_token_string, mMaterial.getId(), mMaterial);
+        Call<ResponseConfirmMaterial> call = br.com.sienaidea.oddin.server.Retrofit.getInstance().confirmMaterial(auth_token_string, mMaterial.getId(), mMaterial);
 
         // Asynchronously execute HTTP request
         call.enqueue(new Callback<ResponseConfirmMaterial>() {
@@ -386,7 +371,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
                     mMaterialDisciplineFragment.addItemPosition(0, mMaterial);
-                }
+                } else onRequestFailure();
             }
 
             /**
@@ -395,6 +380,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                onRequestFailure();
             }
         });
     }
@@ -431,19 +417,11 @@ public class LectureDetailsActivity extends AppCompatActivity {
     public void getMaterials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
             Preference preference = new Preference();
             String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<List<Material>> request = service.InstructionMaterials(auth_token_string, mInstruction.getId());
+            Call<List<Material>> request = br.com.sienaidea.oddin.server.Retrofit.getInstance().InstructionMaterials(auth_token_string, mInstruction.getId());
 
             request.enqueue(new Callback<List<Material>>() {
                 @Override
@@ -453,13 +431,13 @@ public class LectureDetailsActivity extends AppCompatActivity {
                         mList = response.body();
                         onRequestSuccess();
                     } else {
-                        onRequestFailure(response.code());
+                        onRequestFailure();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<Material>> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure();
                 }
             });
 
@@ -478,16 +456,10 @@ public class LectureDetailsActivity extends AppCompatActivity {
         DetectConnection detectConnection = new DetectConnection(getApplicationContext());
         if (detectConnection.existConnection()) {
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
             Preference preference = new Preference();
             String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<Void> request = service.deleteMaterial(auth_token_string, material.getId());
+            Call<Void> request = br.com.sienaidea.oddin.server.Retrofit.getInstance().deleteMaterial(auth_token_string, material.getId());
             request.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
@@ -498,7 +470,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    // TODO: 02/09/2016
+                    onRequestFailure();
                 }
             });
         }
@@ -515,33 +487,20 @@ public class LectureDetailsActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
         mProgressBar.setVisibility(View.GONE);
-            }
+    }
 
-    private void onRequestFailure(int statusCode) {
-        if (statusCode == 401) {
-            startActivity(new Intent(getApplication(), LoginActivity.class));
-            Toast.makeText(getApplicationContext(), R.string.error_session_expired, Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-        }
+    private void onRequestFailure() {
+        showSnackBar(getResources().getString(R.string.toast_request_not_completed));
     }
 
     public void getMaterial(final Material material) {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
 
             Preference preference = new Preference();
             String auth_token_string = preference.getToken(getApplicationContext());
 
-            Call<ResponseConfirmMaterial> request = service.getMaterial(auth_token_string, material.getId());
+            Call<ResponseConfirmMaterial> request = br.com.sienaidea.oddin.server.Retrofit.getInstance().getMaterial(auth_token_string, material.getId());
 
             request.enqueue(new Callback<ResponseConfirmMaterial>() {
                 @Override
@@ -549,13 +508,13 @@ public class LectureDetailsActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         startDownload(Uri.parse(response.body().getUrl()), material);
                     } else {
-                        onRequestFailure(response.code());
+                        onRequestFailure();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
-                    onRequestFailure(401);
+                    onRequestFailure();
                 }
             });
 
@@ -571,6 +530,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         request.setMimeType(material.getMime());
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         Long DownloadReference = downloadmanager.enqueue(request);
+        showSnackBar(getResources().getString(R.string.download_started));
     }
 
     private void callDialog(String message, final String[] permissions, final int requestCode) {
@@ -607,5 +567,12 @@ public class LectureDetailsActivity extends AppCompatActivity {
         outState.putParcelable(Instruction.TAG, mInstruction);
         outState.putParcelable(Profile.TAG, mProfile);
         super.onSaveInstanceState(outState);
+    }
+
+    public void showSnackBar(String msg) {
+        CoordinatorLayout coordinatorlayout = (CoordinatorLayout) findViewById(R.id.coordlayout);
+        Snackbar.make(coordinatorlayout, msg,
+                Snackbar.LENGTH_LONG)
+                .show();
     }
 }

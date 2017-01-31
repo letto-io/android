@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
  */
 public class Preference {
     public static final String TOKEN = Preference.class.getName();
-    public static final String USER_TOKEN = "x-session-token";
+    public static final String CONFIG = "config";
 
     public static final String USER_PREFERENCE = "USER_PREFERENCE";
     public static final String USER_ID = "USER_ID";
@@ -20,7 +20,7 @@ public class Preference {
         SharedPreferences settings = context.getSharedPreferences(TOKEN, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
-        editor.putString(USER_TOKEN, token);
+        editor.putString(CONFIG, token);
         editor.commit();
     }
 
@@ -59,7 +59,7 @@ public class Preference {
     public String getToken(Context context) {
         //Restaura as preferencias gravadas
         SharedPreferences settings = context.getSharedPreferences(TOKEN, Context.MODE_PRIVATE);
-        return settings.getString(USER_TOKEN, "");
+        return settings.getString(CONFIG, "");
     }
 
     public String getUserName(Context context) {
