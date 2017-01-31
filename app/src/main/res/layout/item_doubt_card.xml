@@ -65,18 +65,18 @@
             android:layout_below="@id/tv_text"
             android:background="@color/colorDividerColor" />
 
-        <TextView
-            android:id="@+id/iv_like"
+        <Button
+            android:id="@+id/btn_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/vw_divider"
-            android:clickable="true"
-            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="8dp"
             android:drawableLeft="@drawable/ic_chevron_up"
-            android:text="[00]"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:padding="8dp" />
+            android:hint="[00]"
+            android:background="?android:attr/selectableItemBackground"
+            android:textSize="14sp" />
 
     </RelativeLayout>
 

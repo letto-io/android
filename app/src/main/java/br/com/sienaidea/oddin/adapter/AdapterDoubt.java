@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -48,14 +49,18 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
         }
         holder.tvText.setText(mQuestion.getText());
         holder.tvTime.setText(DateUtil.getTimeUFCFormat(mQuestion.getCreated_at()));
+        holder.btnLike.setText(String.valueOf(mQuestion.getUpvotes()));
 
-        holder.tvLike.setText(mQuestion.getUpvotes() + "");
+        if (mQuestion.getMy_vote() == 1){
+            Drawable mDrawable = colorize(R.drawable.ic_chevron_up_white, R.color.colorAccent);
+            holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
+        }else  holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chevron_up, 0, 0, 0);
 
         Preference preference = new Preference();
         if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
-            holder.tvLike.setClickable(false);
+            holder.btnLike.setClickable(false);
         } else {
-            holder.tvLike.setClickable(true);
+            holder.btnLike.setClickable(true);
         }
 
         try {
@@ -102,7 +107,8 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvText, tvPersonName, tvTime, tvLike;
+        public TextView tvText, tvPersonName, tvTime;
+        public Button btnLike;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -110,7 +116,7 @@ public class AdapterDoubt extends RecyclerView.Adapter<AdapterDoubt.MyViewHolder
             tvPersonName = (TextView) itemView.findViewById(R.id.tv_person_name);
             tvText = (TextView) itemView.findViewById(R.id.tv_text);
             tvTime = (TextView) itemView.findViewById(R.id.tv_time);
-            tvLike = (TextView) itemView.findViewById(R.id.iv_like);
+            btnLike = (Button) itemView.findViewById(R.id.btn_like);
         }
     }
 }
