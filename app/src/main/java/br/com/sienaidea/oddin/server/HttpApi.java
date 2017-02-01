@@ -138,7 +138,7 @@ public class HttpApi {
                                 @Part MultipartBody.Part file);
 
         //Cofirm Material OK
-        @PUT()
+        @PUT(MATERIAL_PATH)
         Call<ResponseConfirmMaterial> confirmMaterial(@Header(KEY_TOKEN) String token,
                                                       @Path(MATERIAL_ID) int material_id,
                                                       @Body Material material);
