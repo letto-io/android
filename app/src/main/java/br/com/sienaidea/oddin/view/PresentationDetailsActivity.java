@@ -89,6 +89,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private View mRootLayout;
 
     private ProgressBar mProgressBar;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +282,13 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
+
+            mProgressDialog = new ProgressDialog(PresentationDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)
@@ -327,6 +335,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
+            mProgressDialog.setMessage(getResources().getString(R.string.sending));
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(mCredentialsMaterial.getUrl())
@@ -383,7 +392,8 @@ public class PresentationDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(getApplicationContext(), "não foi possivel gerar o arquivo temporário", Toast.LENGTH_LONG).show();
+            mProgressDialog.setMessage(getResources().getString(R.string.fail_to_create_file));
+            mProgressDialog.dismiss();
         }
     }
 
@@ -417,6 +427,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
     }
 
     private void confirmUpload() {
+        mProgressDialog.setMessage(getResources().getString(R.string.confirm_upload));
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpApi.API_URL)
@@ -439,9 +450,10 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseConfirmMaterial> call, Response<ResponseConfirmMaterial> response) {
                 if (response.isSuccessful()) {
+                    mProgressDialog.dismiss();
                     mMaterial.setUrl(response.body().getUrl());
                     mMaterialPresentationFragment.addItemPosition(0, mMaterial);
-                }
+                } else onRequestFailure(response.code());
             }
 
             /**
@@ -450,6 +462,7 @@ public class PresentationDetailsActivity extends AppCompatActivity {
              */
             @Override
             public void onFailure(Call<ResponseConfirmMaterial> call, Throwable t) {
+                onRequestFailure(500);
             }
         });
     }
@@ -587,9 +600,14 @@ public class PresentationDetailsActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
         mProgressBar.setVisibility(GONE);
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(int statusCode) {
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+
         if (statusCode == 401) {
             startActivity(new Intent(getApplication(), LoginActivity.class));
             finish();

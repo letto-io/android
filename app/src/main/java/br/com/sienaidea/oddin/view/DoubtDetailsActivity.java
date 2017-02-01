@@ -179,11 +179,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 mPresentation = getIntent().getExtras().getParcelable(Presentation.TAG);
                 mTvPersonName.setText(mQuestion.getPerson().getName());
                 mTvText.setText(mQuestion.getText());
-
-                mProgressDialog = new ProgressDialog(DoubtDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getResources().getString(R.string.loading));
-                //mProgressDialog.show();
                 getAnswers();
             }
         }
@@ -387,11 +382,17 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         setupViewPager(mViewPager);
         mViewPager.setCurrentItem(mSelectedTabPosition);
         mAdapterViewPager.notifyDataSetChanged();
+
+        if (mProgressDialog != null)
         mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(String string) {
-        mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+            mProgressDialog.dismiss();
+
+        }
     }
 
     public void fabHide() {
@@ -948,8 +949,6 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
                 if (!TextUtils.isEmpty(inputName.getText())) {
                     mFileName = inputName.getText().toString();
                 }
-                mProgressDialog.setMessage(getResources().getString(R.string.sending));
-                mProgressDialog.show();
                 getCredentials();
             }
         });
@@ -959,7 +958,11 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
+            mProgressDialog = new ProgressDialog(DoubtDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+            mProgressDialog.setIndeterminate(true);
             mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(HttpApi.API_URL)

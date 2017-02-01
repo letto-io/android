@@ -2,6 +2,7 @@ package br.com.sienaidea.oddin.view;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -81,6 +82,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private ResponseCredentialsMaterial mCredentialsMaterial;
     private Material mMaterial = new Material();
     private ProgressBar mProgressBar;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,7 +255,11 @@ public class LectureDetailsActivity extends AppCompatActivity {
     private void getCredentials() {
         DetectConnection detectConnection = new DetectConnection(this);
         if (detectConnection.existConnection()) {
-            showSnackBar(getResources().getString(R.string.picking_up_credentials));
+            mProgressDialog = new ProgressDialog(LectureDetailsActivity.this, R.style.AppTheme_Dark_Dialog);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage(getResources().getString(R.string.picking_up_credentials));
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
 
             Preference preference = new Preference();
             final String auth_token_string = preference.getToken(getApplicationContext());
@@ -292,7 +298,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
         mTempFile = createTempFile();
 
         if (mTempFile != null) {
-            showSnackBar(getResources().getString(R.string.sending));
+            mProgressDialog.setMessage(getResources().getString(R.string.sending));
 
             // Retrofit setup
             Retrofit retrofit = new Retrofit.Builder()
@@ -336,6 +342,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         // print response body if unsuccessful
                         Toast.makeText(getApplicationContext(), "Não foi possível completar a requisição (Amazon) no servidor: Cód:" + response.code(), Toast.LENGTH_LONG).show();
+                        onRequestFailure();
                         return;
                     }
                     confirmUpload();
@@ -348,14 +355,18 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
                     Toast.makeText(getApplicationContext(), "Falha na requisição à Amazon!", Toast.LENGTH_LONG).show();
+                    onRequestFailure();
                 }
             });
         } else {
-            showSnackBar(String.valueOf(getResources().getString(R.string.fail_to_create_file)));
+            mProgressDialog.setMessage(String.valueOf(getResources().getString(R.string.fail_to_create_file)));
+            mProgressDialog.dismiss();
         }
     }
 
     private void confirmUpload() {
+        mProgressDialog.setMessage(getResources().getString(R.string.sending));
+
         Preference preference = new Preference();
         final String auth_token_string = preference.getToken(getApplicationContext());
 
@@ -371,6 +382,7 @@ public class LectureDetailsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     mMaterial.setUrl(response.body().getUrl());
                     mMaterialDisciplineFragment.addItemPosition(0, mMaterial);
+                    mProgressDialog.dismiss();
                 } else onRequestFailure();
             }
 
@@ -487,10 +499,17 @@ public class LectureDetailsActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
         mProgressBar.setVisibility(View.GONE);
+
+        if (mProgressDialog != null){
+            mProgressDialog.dismiss();
+        }
     }
 
     private void onRequestFailure() {
-        showSnackBar(getResources().getString(R.string.toast_request_not_completed));
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage(getResources().getString(R.string.toast_request_not_completed));
+            mProgressDialog.dismiss();
+        }
     }
 
     public void getMaterial(final Material material) {

@@ -36,7 +36,7 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
         if (mime != null) {
             if (mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
-            } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
+            } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_JPEG) || mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_PNG)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
             } else if (mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);
