@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -36,6 +39,14 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
         holder.tvDate.setText(DateUtil.getDateUFCFormat(mList.get(position).getDate()));
         holder.tvSubject.setText(mList.get(position).getSubject());
         holder.tvText.setText(mList.get(position).getText());
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 
     @Override

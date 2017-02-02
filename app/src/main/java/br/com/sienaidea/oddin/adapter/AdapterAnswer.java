@@ -117,29 +117,22 @@ public class AdapterAnswer extends RecyclerView.Adapter<AdapterAnswer.MyViewHold
 
         }
 
-        if (answer.isAccepted()){
+        if (answer.isAccepted()) {
             Drawable mDrawable = colorize(R.drawable.ic_check_white, R.color.colorAccent);
             holder.ivAccept.setImageDrawable(mDrawable);
-        }else
+        } else
             holder.ivAccept.setImageResource(R.drawable.ic_check);
 
-        if (answer.getMy_vote() == Constants.UP_VOTE){
+        if (answer.getMy_vote() == Constants.UP_VOTE) {
             Drawable mDrawable = colorize(R.drawable.ic_chevron_up_white, R.color.colorAccent);
             holder.ivUpVote.setImageDrawable(mDrawable);
-        }else holder.ivUpVote.setImageResource(R.drawable.ic_chevron_up);
+        } else holder.ivUpVote.setImageResource(R.drawable.ic_chevron_up);
 
-        if (answer.getMy_vote() == Constants.DOWN_VOTE){
+        if (answer.getMy_vote() == Constants.DOWN_VOTE) {
             Drawable mDrawable = colorize(R.drawable.ic_chevron_down_white, R.color.colorAccent);
             holder.ivDownVote.setImageDrawable(mDrawable);
-        }else holder.ivDownVote.setImageResource(R.drawable.ic_chevron_down);
+        } else holder.ivDownVote.setImageResource(R.drawable.ic_chevron_down);
 
-        try {
-            YoYo.with(Techniques.ZoomIn)
-                    .duration(400)
-                    .playOn(holder.itemView);
-        } catch (Exception e) {
-            e.getMessage();
-        }
     }
 
     private Drawable colorize(int resource, int color) {

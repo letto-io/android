@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -43,6 +46,14 @@ public class AdapterParticipant extends RecyclerView.Adapter<AdapterParticipant.
             holder.tvName.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
         }else {
             holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_account_circle, 0, 0, 0);
+        }
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
         }
     }
 

@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.Survey;
 import br.com.sienaidea.oddin.server.Preference;
@@ -56,6 +59,14 @@ public class AlternativeAdapter extends RecyclerView.Adapter<AlternativeAdapter.
             holder.tvChoices.setText(mContext.getString(R.string.adapter_choices, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
         else
             holder.tvChoices.setText(mContext.getString(R.string.adapter_choice, String.valueOf(mSurvey.getAlternatives().get(position).getChoice_count())));
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
+        }
 
     }
 

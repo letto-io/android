@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -36,6 +39,14 @@ public class SurveyAdapter extends RecyclerView.Adapter<SurveyAdapter.ViewHolder
         holder.tvTitle.setText(mList.get(position).getTitle());
         holder.tvQuestion.setText(mList.get(position).getQuestion());
         holder.tvDate.setText(DateUtil.getDateUFCFormat(mList.get(position).getCreated_at()));
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 
     @Override

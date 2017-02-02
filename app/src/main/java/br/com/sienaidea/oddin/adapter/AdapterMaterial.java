@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -48,6 +51,14 @@ public class AdapterMaterial extends RecyclerView.Adapter<AdapterMaterial.MyView
         }
 
         holder.tvName.setText(material.getName());
+
+        try {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(400)
+                    .playOn(holder.itemView);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 
     public void addItemPosition(int position, Material material) {

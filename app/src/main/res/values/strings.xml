@@ -11,7 +11,7 @@
     <string name="dialog_cancel">CANCELAR</string>
     <string name="dialog_confirm">CONFIRMAR</string>
     <string name="dialog_close_presentation">Fechar aula?</string>
-    <string name="dialog_accept_answer">Selecionar como melhor resposta</string>
+    <string name="dialog_accept_answer">Marcar como melhor resposta?</string>
 
     <!-- Strings related to Snakebar -->
     <string name="snake_no_connection">Sem conexão</string>
@@ -115,4 +115,5 @@
     <string name="dialog_close">FECHAR</string>
     <string name="dialog_delete">EXCLUIR</string>
     <string name="dialog_download">DOWNLOAD</string>
+    <string name="dialog_accept">MARCAR</string>
 </resources>

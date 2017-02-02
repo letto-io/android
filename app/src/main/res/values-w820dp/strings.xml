@@ -115,4 +115,5 @@
     <string name="dialog_close">FECHAR</string>
     <string name="dialog_delete">EXCLUIR</string>
     <string name="dialog_download">DOWNLOAD</string>
+    <string name="dialog_accept">MARCAR</string>
 </resources>

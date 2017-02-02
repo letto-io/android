@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -78,7 +81,7 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
 //                        builder.show();
                         } else {
                             builder.setMessage(R.string.dialog_accept_answer);
-                            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(R.string.dialog_accept, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     ((DoubtDetailsActivity) mContext).acceptAnswer(mList.get(position));
