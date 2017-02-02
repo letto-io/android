@@ -45,7 +45,7 @@ public class AdapterMaterialDoubt extends RecyclerView.Adapter<AdapterMaterialDo
             String mime = material.getMime();
             if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_PDF)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file_pdf_box, 0, 0, 0);
-            } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE)) {
+            } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_JPEG) || mime.equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_PNG)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
             } else if (mime != null && mime.equalsIgnoreCase(Constants.MIME_TYPE_VIDEO)) {
                 holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_movie, 0, 0, 0);

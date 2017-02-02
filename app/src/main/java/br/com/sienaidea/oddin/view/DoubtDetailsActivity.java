@@ -384,7 +384,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
         mAdapterViewPager.notifyDataSetChanged();
 
         if (mProgressDialog != null)
-        mProgressDialog.dismiss();
+            mProgressDialog.dismiss();
     }
 
     private void onRequestFailure(String string) {
@@ -724,7 +724,8 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             if (!answer.getMaterials().isEmpty()) {
                 for (Material material : answer.getMaterials()) {
                     if (material.getMime() != null && (material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_PDF) ||
-                            material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE) ||
+                            material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_JPEG) ||
+                            material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_IMAGE_PNG) ||
                             material.getMime().equalsIgnoreCase(Constants.MIME_TYPE_DOCX))) {
                         material.setAccepted(answer.isAccepted());
                         listAux.add(answer);
