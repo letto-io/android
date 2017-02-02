@@ -155,7 +155,7 @@ public class PresentationFragment extends Fragment implements RecyclerViewOnClic
             Preference preference = new Preference();
             if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-                builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.dialog_close, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ((PresentationActivity) getActivity()).closePresentation(position, presentation);

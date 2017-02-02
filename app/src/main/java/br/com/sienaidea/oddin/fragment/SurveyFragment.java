@@ -109,7 +109,7 @@ public class SurveyFragment extends Fragment implements RecyclerViewOnClickListe
         Preference preference = new Preference();
         if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     ((SurveyActivity) getActivity()).deleteSurvey(position, survey);

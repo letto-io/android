@@ -114,9 +114,9 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
         builder.setTitle(material.getName());
-        builder.setMessage(R.string.dialog_download_material);
+        builder.setMessage(R.string.dialog_start_download);
         builder.setNegativeButton(R.string.dialog_cancel, null);
-        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.dialog_download, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ((LectureDetailsActivity) getActivity()).getMaterial(material);
@@ -132,7 +132,7 @@ public class MaterialDisciplineFragment extends Fragment implements RecyclerView
         Preference preference = new Preference();
         if (preference.getUserProfile(mContext) == Constants.INSTRUCTOR) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
-            builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     ((LectureDetailsActivity) getActivity()).deleteMaterial(position, material);

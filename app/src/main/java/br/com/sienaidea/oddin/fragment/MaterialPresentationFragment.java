@@ -103,9 +103,9 @@ public class MaterialPresentationFragment extends Fragment implements RecyclerVi
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppCompatAlertDialogStyle);
         builder.setTitle(material.getName());
-        builder.setMessage(R.string.dialog_download_material);
+        builder.setMessage(R.string.dialog_start_download);
         builder.setNegativeButton(R.string.dialog_cancel, null);
-        builder.setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.dialog_download, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ((PresentationDetailsActivity) getActivity()).getMaterial(material);

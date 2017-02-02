@@ -10,7 +10,7 @@
     <!-- Strings related to Dialog -->
     <string name="dialog_cancel">CANCELAR</string>
     <string name="dialog_confirm">CONFIRMAR</string>
-    <string name="dialog_close_presentation">Fechar aula</string>
+    <string name="dialog_close_presentation">Fechar aula?</string>
     <string name="dialog_accept_answer">Selecionar como melhor resposta</string>
 
     <!-- Strings related to Snakebar -->
@@ -57,8 +57,8 @@
     <string name="sending">Enviando&#8230;</string>
     <string name="new_presentation">Nova aula</string>
     <string name="toast_new_answer_added">Resposta adicionada</string>
-    <string name="dialog_delete_material">Deletar material?</string>
-    <string name="dialog_download_material">Fazer download</string>
+    <string name="dialog_delete_material">Excluir material?</string>
+    <string name="dialog_start_download">Fazer download?</string>
     <string name="action_home">Home</string>
     <string name="toolbar_discipline">Disciplinas</string>
     <string name="toolbar_users">Participantes</string>
@@ -103,7 +103,7 @@
     <string name="hint_question">Pergunta</string>
     <string name="new_faq">Adicionar FAQ</string>
     <string name="dialog_delete_faq">Excluir FAQ?</string>
-    <string name="dialog_delete_survey">Excluir Enquete?</string>
+    <string name="dialog_delete_survey">Excluir enquete?</string>
     <string name="action_survey">Enquetes</string>
     <string name="surveys">Enquetes</string>
     <string name="hint_title">Título</string>
@@ -112,4 +112,7 @@
     <string name="fail_to_create_file">Falha ao gerar arquivo</string>
     <string name="download_started">Download iniciado</string>
     <string name="disconnecting">Saindo&#8230;</string>
+    <string name="dialog_close">FECHAR</string>
+    <string name="dialog_delete">EXCLUIR</string>
+    <string name="dialog_download">DOWNLOAD</string>
 </resources>
