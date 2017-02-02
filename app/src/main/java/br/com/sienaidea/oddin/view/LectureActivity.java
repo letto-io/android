@@ -28,6 +28,7 @@ import java.util.List;
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.fragment.LectureFragment;
 import br.com.sienaidea.oddin.retrofitModel.Instruction;
+import br.com.sienaidea.oddin.retrofitModel.Lecture;
 import br.com.sienaidea.oddin.retrofitModel.Person;
 import br.com.sienaidea.oddin.retrofitModel.User;
 import br.com.sienaidea.oddin.server.HttpApi;
@@ -53,6 +54,7 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     private NavigationView mNavigationView;
 
     private ProgressBar mProgressBar;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,6 +202,11 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.action_logout) {
+            mProgressDialog = new ProgressDialog(LectureActivity.this, R.style.AppTheme_Dark_Dialog);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage(getResources().getString(R.string.disconnecting));
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
             logoff();
         }
 
@@ -224,16 +231,20 @@ public class LectureActivity extends AppCompatActivity implements NavigationView
         request.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Preference preference = new Preference();
-                    preference.clear(getApplicationContext());
-                    startActivity(new Intent(LectureActivity.this, LoginActivity.class));
-                    finish();
-                }
+                Preference preference = new Preference();
+                preference.clear(getApplicationContext());
+                mProgressDialog.dismiss();
+                startActivity(new Intent(LectureActivity.this, LoginActivity.class));
+                finish();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Preference preference = new Preference();
+                preference.clear(getApplicationContext());
+                mProgressDialog.dismiss();
+                startActivity(new Intent(LectureActivity.this, LoginActivity.class));
+                finish();
             }
         });
     }

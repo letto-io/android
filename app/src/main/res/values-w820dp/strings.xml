@@ -111,4 +111,5 @@
     <string name="new_survey">Criar Enquete</string>
     <string name="fail_to_create_file">Falha ao gerar arquivo</string>
     <string name="download_started">Download iniciado</string>
+    <string name="disconnecting">Saindo&#8230;</string>
 </resources>
