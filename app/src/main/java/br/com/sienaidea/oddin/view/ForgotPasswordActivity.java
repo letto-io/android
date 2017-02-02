@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import br.com.sienaidea.oddin.R;
 import br.com.sienaidea.oddin.retrofitModel.User;
@@ -62,11 +63,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
                     if (response.isSuccessful()) {
-                        AlertDialog.Builder builder =
-                                new AlertDialog.Builder(ForgotPasswordActivity.this, R.style.AppCompatAlertDialogStyle);
-                        builder.setMessage("Email enviado, acesse sua caixa de entrada");
-                        builder.setPositiveButton("LOGAR", new DialogInterface.OnClickListener() {
+                        builder.setMessage(getResources().getString(R.string.email_sent));
+                        builder.setPositiveButton(R.string.sign_in, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
@@ -76,11 +76,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         });
                         builder.show();
                     } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_request_not_completed), Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), String.valueOf(R.string.toast_request_not_completed), Toast.LENGTH_LONG).show();
                 }
             });
         } else {

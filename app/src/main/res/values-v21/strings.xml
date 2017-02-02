@@ -116,4 +116,6 @@
     <string name="dialog_delete">EXCLUIR</string>
     <string name="dialog_download">DOWNLOAD</string>
     <string name="dialog_accept">MARCAR</string>
+    <string name="email_sent">Email enviado, acesse sua caixa de entrada.</string>
+    <string name="sign_in">LOGAR</string>
 </resources>
