@@ -9,16 +9,19 @@ import android.os.Parcelable;
 public class Instruction implements Parcelable {
     public static String TAG = Instruction.class.getName();
 
-    private int id, class_number;
-    private String start_date, end_date;
+    private int id;
+    private String start_date, end_date, class_code;
     private Event event;
     private Lecture lecture;
 
+    public Instruction() {
+    }
+
     protected Instruction(Parcel in) {
         id = in.readInt();
-        class_number = in.readInt();
         start_date = in.readString();
         end_date = in.readString();
+        class_code = in.readString();
         event = in.readParcelable(Event.class.getClassLoader());
         lecture = in.readParcelable(Lecture.class.getClassLoader());
     }
@@ -43,14 +46,6 @@ public class Instruction implements Parcelable {
         this.id = id;
     }
 
-    public int getClass_number() {
-        return class_number;
-    }
-
-    public void setClass_number(int class_number) {
-        this.class_number = class_number;
-    }
-
     public String getStart_date() {
         return start_date;
     }
@@ -65,6 +60,14 @@ public class Instruction implements Parcelable {
 
     public void setEnd_date(String end_date) {
         this.end_date = end_date;
+    }
+
+    public String getClass_code() {
+        return class_code;
+    }
+
+    public void setClass_code(String class_code) {
+        this.class_code = class_code;
     }
 
     public Event getEvent() {
@@ -89,12 +92,12 @@ public class Instruction implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeInt(class_number);
-        dest.writeString(start_date);
-        dest.writeString(end_date);
-        dest.writeParcelable(event, flags);
-        dest.writeParcelable(lecture, flags);
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(start_date);
+        parcel.writeString(end_date);
+        parcel.writeString(class_code);
+        parcel.writeParcelable(event, i);
+        parcel.writeParcelable(lecture, i);
     }
 }
