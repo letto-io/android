@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +67,12 @@ public class DoubtActivity extends AppCompatActivity {
     private AdapterViewPager mAdapterViewPager;
 
     private View mRootLayout;
+
     private List<Question> mList = new ArrayList<>();
+    private List<Question> mListOpen = new ArrayList<>();
+    private List<Question> mListClose = new ArrayList<>();
+    private List<Question> mListHanking = new ArrayList<>();
+
     private Profile mProfile = new Profile();
 
     private ProgressBar mProgressBar;
@@ -173,8 +179,7 @@ public class DoubtActivity extends AppCompatActivity {
                 public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                     if (response.isSuccessful()) {
                         mList.clear();
-                        mList = response.body();
-
+                        mList.addAll(response.body());
                         Collections.sort(mList, new Comparator() {
                             public int compare(Object o1, Object o2) {
                                 Question q1 = (Question) o1;
@@ -290,39 +295,37 @@ public class DoubtActivity extends AppCompatActivity {
     }
 
     private List<Question> getListOpen() {
-        List<Question> listAux = new ArrayList<>();
-
+        mListOpen.clear();
         for (Question question : mList) {
             if (!question.isAnswer()) {
-                listAux.add(question);
+                mListOpen.add(question);
             }
         }
-        return listAux;
+        return mListOpen;
     }
 
     private List<Question> getListClose() {
-        List<Question> listAux = new ArrayList<>();
-
+        mListClose.clear();
         for (Question question : mList) {
             if (question.isAnswer()) {
-                listAux.add(question);
+                mListClose.add(question);
             }
         }
-        return listAux;
+        return mListClose;
     }
 
     private List<Question> getListRanking() {
-        List<Question> listAux = new ArrayList<>();
-        listAux.addAll(mList);
+        mListHanking.clear();
+        mListHanking.addAll(mList);
 
-        Collections.sort(listAux, new Comparator() {
+        Collections.sort(mListHanking, new Comparator() {
             public int compare(Object o1, Object o2) {
                 Question q1 = (Question) o1;
                 Question q2 = (Question) o2;
                 return q1.getUpvotes() > q2.getUpvotes() ? -1 : (q1.getUpvotes() < q2.getUpvotes() ? +1 : 0);
             }
         });
-        return listAux;
+        return mListHanking;
     }
 
     @Override
