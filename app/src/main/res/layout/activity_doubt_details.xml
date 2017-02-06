@@ -94,7 +94,7 @@
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
-        android:src="@drawable/ic_plus_white"
+        android:src="@drawable/ic_plus"
         android:visibility="gone"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorDividerColor" />

@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import br.com.sienaidea.oddin.R;
@@ -72,7 +74,7 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_doubt, container, false);
         mEmptyView = (TextView) view.findViewById(R.id.empty_view);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_list);
@@ -82,6 +84,14 @@ public class DoubtFragment extends Fragment implements RecyclerViewOnClickListen
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(mContext, mRecyclerView, this));
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                       @Override
+                        public void onRefresh() {
+                               ((DoubtActivity) getActivity()).getQuestions();
+                           }
+                   });
 
         return view;
     }

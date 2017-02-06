@@ -11,7 +11,6 @@ import br.com.sienaidea.oddin.retrofitModel.Question;
 public class DoubtRankingFragment extends DoubtFragment {
 
     public static final String TAG = DoubtRankingFragment.class.getName();
-    public static final String RANKING = "RANKING";
 
     public static DoubtRankingFragment newInstance(List<Question> list, Presentation presentation) {
 

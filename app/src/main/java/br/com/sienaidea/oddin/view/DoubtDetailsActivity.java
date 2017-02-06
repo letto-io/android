@@ -126,7 +126,7 @@ public class DoubtDetailsActivity extends AppCompatActivity implements View.OnCl
             R.drawable.ic_paperclip_selector
     };
 
-    private int[] fabIcons = {R.drawable.ic_plus_white, R.drawable.ic_microphone};
+    private int[] fabIcons = {R.drawable.ic_plus, R.drawable.ic_microphone};
 
     private int mMaxProgress = 100;
     private LinkedList<ProgressType> mProgressTypes;

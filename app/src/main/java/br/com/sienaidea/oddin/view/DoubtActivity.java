@@ -133,7 +133,7 @@ public class DoubtActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         mAdapterViewPager = new AdapterViewPager(fragmentManager);
 
-        mDoubtFragment = DoubtFragment.newInstance(getListQuestions(), mPresentation);
+        mDoubtFragment = DoubtFragment.newInstance(mList, mPresentation);
         mAdapterViewPager.addFragment(mDoubtFragment, getResources().getString(R.string.ALL));
 
         mDoubtOpenFragment = DoubtOpenFragment.newInstance(getListOpen(), mPresentation);
@@ -174,6 +174,14 @@ public class DoubtActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         mList.clear();
                         mList = response.body();
+
+                        Collections.sort(mList, new Comparator() {
+                            public int compare(Object o1, Object o2) {
+                                Question q1 = (Question) o1;
+                                Question q2 = (Question) o2;
+                                return q1.getId() > q2.getId() ? -1 : (q1.getId() < q2.getId() ? +1 : 0);
+                            }
+                        });
                         onRequestSuccess();
                     } else {
                         onRequestFailure(response.code());
@@ -281,10 +289,6 @@ public class DoubtActivity extends AppCompatActivity {
         }
     }
 
-    private List<Question> getListQuestions() {
-        return mList;
-    }
-
     private List<Question> getListOpen() {
         List<Question> listAux = new ArrayList<>();
 
@@ -308,7 +312,8 @@ public class DoubtActivity extends AppCompatActivity {
     }
 
     private List<Question> getListRanking() {
-        List<Question> listAux = mList;
+        List<Question> listAux = new ArrayList<>();
+        listAux.addAll(mList);
 
         Collections.sort(listAux, new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -318,45 +323,6 @@ public class DoubtActivity extends AppCompatActivity {
             }
         });
         return listAux;
-    }
-
-    private void deletePresentation() {
-        DetectConnection detectConnection = new DetectConnection(this);
-        if (detectConnection.existConnection()) {
-            // Retrofit setup
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpApi.API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            // Service setup
-            HttpApi.HttpBinService service = retrofit.create(HttpApi.HttpBinService.class);
-
-            Preference preference = new Preference();
-            String auth_token_string = preference.getToken(getApplicationContext());
-
-            Call<Void> request = service.deletePresentation(auth_token_string, mPresentation.getId());
-
-            request.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        Intent intent = new Intent(getApplicationContext(), PresentationActivity.class);
-                        intent.putExtra(Instruction.TAG, mInstruction);
-                        startActivity(intent);
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    // TODO: 24/11/2016
-                }
-            });
-        } else {
-            Snackbar.make(mRootLayout, R.string.snake_no_connection, Snackbar.LENGTH_LONG).show();
-        }
-
     }
 
     @Override

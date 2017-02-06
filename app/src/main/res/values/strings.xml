@@ -11,7 +11,7 @@
     <string name="dialog_cancel">CANCELAR</string>
     <string name="dialog_confirm">CONFIRMAR</string>
     <string name="dialog_close_presentation">Fechar aula?</string>
-    <string name="dialog_accept_answer">Marcar como melhor resposta?</string>
+    <string name="dialog_accept_answer">Selecionar como melhor resposta</string>
 
     <!-- Strings related to Snakebar -->
     <string name="snake_no_connection">Sem conexão</string>
@@ -79,7 +79,6 @@
     <string name="new_date">Nova data</string>
     <string name="toast_new_date_added">Adicionando&#8230;</string>
     <string name="toast_new_notice_added">Adicionando&#8230;</string>
-    <string name="loading">Carregando&#8230;</string>
     <string name="sent">Completo&#8230;</string>
     <string name="picking_up_credentials">Obtendo credenciais&#8230;</string>
     <string name="progress_upload">Enviando&#8230;</string>
